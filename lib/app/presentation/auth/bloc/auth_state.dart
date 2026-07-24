@@ -11,6 +11,10 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
+class LoggedIn extends AuthState {}
+
+class LoggedOut extends AuthState {}
+
 class SignUpSuccess extends AuthState {
   final String email;
 

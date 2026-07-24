@@ -19,9 +19,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> verifyCode({required String email, required String code}) async {
     print('Repo Function Started!');
-    await remoteDataSource.verifyCode(email: email, code: code);
+    final token = await remoteDataSource.verifyCode(email: email, code: code);
 
     // Store the token returned from otp varefication
+    await localDataSource.saveToken(token);
   }
 
   @override

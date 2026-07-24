@@ -6,6 +6,19 @@ import 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthUsecases usecases;
   AuthBloc({required this.usecases}) : super(AuthInitial()) {
+    on<CheckLoginStatus>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        final isLoggedIn = await usecases.isLogged();
+        if (isLoggedIn) {
+          emit(LoggedIn());
+        } else {
+          emit(LoggedOut());
+        }
+      } catch (e) {
+        emit(AuthFailure(message: e.toString()));
+      }
+    });
     on<SignUpSubmitted>(_onSignUp);
 
     on<VerifyCodeSubmitted>(_onVerifyCode);
