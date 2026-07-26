@@ -16,10 +16,11 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
-  // void initState() {
-  //   super.initState();
-  //   context.read<AuthBloc>().add(CheckLoginStatus());
-  // }
+  void initState() {
+    super.initState();
+    context.read<AuthBloc>().add(CheckLoginStatus());
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.sizeOf(context);
