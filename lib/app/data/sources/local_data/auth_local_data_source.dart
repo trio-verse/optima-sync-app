@@ -12,4 +12,8 @@ class AuthLocalDataSource {
   Future<void> saveToken(String token) async {
     await storage.setString('Token', token);
   }
+
+  Future<String?> getToken() async {
+    return storage.getString('Token');
+  }
 }

@@ -5,7 +5,7 @@ import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_event.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_state.dart';
 import 'package:optima_sync_v2/app/presentation/auth/screens/auth_screen.dart';
-import 'package:optima_sync_v2/app/presentation/home/screens/home_screen.dart';
+import 'package:optima_sync_v2/app/presentation/createOrg/screens/createOrg_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
         if (state is LoggedIn) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => HomeScreen()),
+            MaterialPageRoute(builder: (_) => CreateOrgScreen()),
           );
         }
         if (state is LoggedOut) {

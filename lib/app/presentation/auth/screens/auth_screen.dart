@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_event.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_state.dart';
-import 'package:optima_sync_v2/app/presentation/home/screens/home_screen.dart';
+import 'package:optima_sync_v2/app/presentation/createOrg/screens/createOrg_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -153,7 +153,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   if (current is VerifySuccess) {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (c) => HomeScreen()),
+                      MaterialPageRoute(builder: (c) => CreateOrgScreen()),
                     );
                   }
                 },
