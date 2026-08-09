@@ -1,11 +1,13 @@
-class OrgEntity {
+class OrgModel {
+  final String? id;
   final String name;
   final String email;
   final String phone;
   final String address;
   final String description;
 
-  OrgEntity({
+  OrgModel({
+    required this.id,
     required this.name,
     required this.email,
     required this.phone,

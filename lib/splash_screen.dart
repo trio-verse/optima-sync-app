@@ -1,0 +1,93 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/check_selected_org/cubit/check_selected_org_cubit.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/check_selected_org/cubit/check_selected_org_state.dart';
+import 'package:optima_sync_v2/app/presentation/Org/screens/select_org_screen.dart';
+import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_event.dart';
+import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_state.dart';
+import 'package:optima_sync_v2/app/presentation/auth/screens/auth_screen.dart';
+import 'package:optima_sync_v2/app/presentation/navigation/screens/navigation_screen.dart';
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    context.read<AuthBloc>().add(CheckLoginStatus());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.sizeOf(context);
+
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) async {
+            if (state is LoggedIn) {
+              context.read<CheckSelectedOrgCubit>().hasSelectedOrganization();
+            }
+
+            if (state is LoggedOut) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => AuthScreen()),
+              );
+            }
+          },
+        ),
+
+        BlocListener<CheckSelectedOrgCubit, CheckSelectedOrgState>(
+          listener: (context, state) {
+            if (state is CheckSelectedOrgSuccess) {
+              if (state.hasSelected) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                );
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SelectOrgScreen()),
+                );
+              }
+            }
+          },
+        ),
+      ],
+
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Column(
+            spacing: 20,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Optima Sync",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 40,
+                ),
+              ),
+              Text("Precision Enterprise Management"),
+              SizedBox(
+                width: screenSize.width * 0.3,
+                child: LinearProgressIndicator(backgroundColor: Colors.blue),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

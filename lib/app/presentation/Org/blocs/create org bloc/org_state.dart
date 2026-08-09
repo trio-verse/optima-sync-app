@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:optima_sync_v2/app/presentation/Org/screens/create_and_apdate_Org_screen.dart';
 
 abstract class CreateOrgState extends Equatable {
   const CreateOrgState();
@@ -11,16 +12,14 @@ class CreateOrgInitial extends CreateOrgState {}
 
 class CreateOrgLoading extends CreateOrgState {}
 
-class CreateOrgImageSelected extends CreateOrgState {
-  final String imagePath;
+class CreateOrgSuccess extends CreateOrgState {
+  final String organizationId;
 
-  const CreateOrgImageSelected({required this.imagePath});
+  const CreateOrgSuccess({required this.organizationId});
 
   @override
-  List<Object> get props => [imagePath];
+  List<Object> get props => [organizationId];
 }
-
-class CreateOrgSuccess extends CreateOrgState {}
 
 class CreateOrgFailure extends CreateOrgState {
   final String message;
