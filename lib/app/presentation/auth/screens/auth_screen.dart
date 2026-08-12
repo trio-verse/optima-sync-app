@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/Org/screens/select_org_screen.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_event.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_state.dart';
-import 'package:optima_sync_v2/app/presentation/home/screens/home_screen.dart';
+import 'package:optima_sync_v2/app/presentation/Org/screens/create_and_apdate_Org_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -124,6 +125,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       backgroundColor: Colors.blue,
                     ),
                     onPressed: () {
+                      print(' SEND BUTTON PRESSED');
                       context.read<AuthBloc>().add(
                         SignUpSubmitted(email: emailController.text),
                       );
@@ -153,7 +155,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   if (current is VerifySuccess) {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (c) => HomeScreen()),
+                      MaterialPageRoute(builder: (c) => SelectOrgScreen()),
                     );
                   }
                 },

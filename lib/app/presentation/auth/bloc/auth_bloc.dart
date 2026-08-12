@@ -7,8 +7,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthUsecases usecases;
   AuthBloc({required this.usecases}) : super(AuthInitial()) {
     on<CheckLoginStatus>((event, emit) async {
+      print(' AuthBloc: SignUpSubmitted received');
+
       emit(AuthLoading());
       try {
+        print(' Calling usecases.signup...');
         final isLoggedIn = await usecases.isLogged();
         if (isLoggedIn) {
           emit(LoggedIn());
@@ -16,6 +19,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(LoggedOut());
         }
       } catch (e) {
+        print(' AuthBloc Error: $e');
         emit(AuthFailure(message: e.toString()));
       }
     });

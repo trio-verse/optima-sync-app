@@ -13,7 +13,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> signUp(String email) async {
+    print(' RepositoryImpl: signUp called');
     await remoteDataSource.signUp(email);
+    print(' RepositoryImpl: remoteDataSource finished');
   }
 
   @override
