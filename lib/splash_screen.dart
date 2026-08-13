@@ -7,7 +7,7 @@ import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_event.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_state.dart';
 import 'package:optima_sync_v2/app/presentation/auth/screens/auth_screen.dart';
-import 'package:optima_sync_v2/app/presentation/navigation/screens/navigation_screen.dart';
+import 'package:optima_sync_v2/app/presentation/home/screens/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

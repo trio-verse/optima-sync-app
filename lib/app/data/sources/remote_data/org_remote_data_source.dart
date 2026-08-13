@@ -24,6 +24,14 @@ class CreateOrgRemoteDataSource {
     return res!;
   }
 
+  Future<void> updateOrg(OrgEntity org) async {
+    await client.patch<void>(
+      "${ApiConstants.baseUrl}/api/v1/organizations/${org.id}",
+      org.toJson(),
+      (json) => null,
+    );
+  }
+
   Future<void> uploadLogo({
     required String organizationId,
     required XFile image,
@@ -63,6 +71,19 @@ class CreateOrgRemoteDataSource {
   Future<List<OrgEntity>> getOrganizations() async {
     final result = await client.get<List<OrgEntity>>(
       "${ApiConstants.baseUrl}/api/v1/organizations",
+      (json) {
+        return (json["data"] as List)
+            .map((e) => OrgEntity.fromJson(e))
+            .toList();
+      },
+    );
+
+    return result!;
+  }
+
+  Future<List<OrgEntity>> getMyOrganizations() async {
+    final result = await client.get<List<OrgEntity>>(
+      "${ApiConstants.baseUrl}/api/v1/organizations/myOrgs",
       (json) {
         return (json["data"] as List)
             .map((e) => OrgEntity.fromJson(e))

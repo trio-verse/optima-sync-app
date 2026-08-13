@@ -6,9 +6,9 @@ import 'package:optima_sync_v2/app/presentation/Org/blocs/create%20org%20bloc/or
 import 'package:optima_sync_v2/app/presentation/Org/blocs/create%20org%20bloc/org_state.dart';
 
 class CreateOrgForm extends StatefulWidget {
-  const CreateOrgForm({super.key, required this.callback});
+  const CreateOrgForm({super.key, required this.callback, this.oldvalue});
   final VoidCallback callback;
-
+  final OrgEntity? oldvalue;
   @override
   State<CreateOrgForm> createState() => _CreateOrgFormState();
 }
@@ -25,6 +25,20 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
   final addressController = TextEditingController();
 
   final descriptionController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+
+    final oldOrg = widget.oldvalue;
+
+    if (oldOrg != null) {
+      nameController.text = oldOrg.name;
+      emailController.text = oldOrg.email;
+      phoneController.text = oldOrg.phone;
+      addressController.text = oldOrg.address;
+      descriptionController.text = oldOrg.description;
+    }
+  }
 
   List<String> countryCode = [
     "🇦🇪 +971",
@@ -85,17 +99,17 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                     ),
                     TextFormField(
                       controller: emailController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Email is required";
-                        }
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return "Email is required";
+                      //   }
 
-                        if (!value.trim().endsWith("@gmail.com")) {
-                          return "Enter a valid Gmail address";
-                        }
+                      //   if (!value.trim().endsWith("@gmail.com")) {
+                      //     return "Enter a valid Gmail address";
+                      //   }
 
-                        return null;
-                      },
+                      //   return null;
+                      // },
                       decoration: InputDecoration(
                         label: Text('Organisation Email'),
                         hint: Text('john.doe@gmail.com'),
@@ -222,15 +236,8 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                               ? null
                               : () {
                                   if (formKey.currentState!.validate()) {
-                                    // final org = OrgEntity(
-                                    //   id: '',
-                                    //   name: "name",
-                                    //   email: "email",
-                                    //   phone: "phone",
-                                    //   address: "address",
-                                    //   description: "description",
-                                    // );
                                     final org = OrgEntity(
+                                      id: widget.oldvalue?.id,
                                       name: nameController.text.trim(),
                                       email: emailController.text.trim(),
                                       phone: phoneController.text.trim(),
@@ -254,7 +261,11 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text("Create & Get Started"),
+                              : Text(
+                                  widget.oldvalue == null
+                                      ? "Create & Get Started"
+                                      : "Update",
+                                ),
                         );
                       },
                     ),

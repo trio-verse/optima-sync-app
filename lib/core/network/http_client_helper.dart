@@ -55,4 +55,25 @@ class HttpClientHelper {
       throw Exception("${res.statusCode} ${res.body}");
     }
   }
+
+  Future<T?> patch<T>(
+    String url,
+    Map<String, dynamic> body,
+    T? Function(Map<String, dynamic> json) fromJson,
+  ) async {
+    final res = await client.patch(
+      Uri.parse(url),
+      body: jsonEncode(body),
+      headers: {
+        'Authorization': "Bearer ${await getToken()}",
+        "Content-Type": "application/json",
+      },
+    );
+
+    if (res.statusCode == 200) {
+      return fromJson(jsonDecode(res.body));
+    } else {
+      throw Exception("${res.statusCode} ${res.body}");
+    }
+  }
 }
