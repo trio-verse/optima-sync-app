@@ -37,4 +37,8 @@ class OrgUsecases {
   Future<List<OrgEntity>> getOrganizations() {
     return repo.getOrganizations();
   }
+
+  Future<void> updateOrg(OrgEntity org) {
+    return repo.updateOrg(org);
+  }
 }

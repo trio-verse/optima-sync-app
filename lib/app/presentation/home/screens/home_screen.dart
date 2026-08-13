@@ -1,0 +1,280 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/bloc/upload_logo_org_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/bloc/upload_logo_org_event.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_event.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_state.dart';
+import 'package:optima_sync_v2/app/presentation/Org/screens/create_and_apdate_Org_screen.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(iconTheme: IconThemeData()),
+      drawer: Drawer(
+        width: 280,
+
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 25,
+                ),
+
+                child: Row(
+                  children: [
+                    Container(
+                      width: 45,
+                      height: 45,
+
+                      decoration: BoxDecoration(
+                        color: Colors.teal,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.business, color: Colors.white),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Optima Sync',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  children: [
+                    ListTile(
+                      tileColor: Colors.teal.withOpacity(0.12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      leading: const Icon(
+                        Icons.dashboard_outlined,
+                        color: Colors.teal,
+                      ),
+                      title: const Text(
+                        'Dashboard',
+                        style: TextStyle(
+                          color: Colors.teal,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.business_outlined),
+                      title: const Text('Sales'),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.people_outline),
+                      title: const Text('Marketing'),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.security_outlined),
+                      title: const Text('industries'),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.notifications_none),
+                      title: const Text('Notifications'),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.chat_bubble_outline),
+                      title: const Text('Chat'),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+              ExpansionTile(
+                leading: const Icon(Icons.settings_outlined),
+                title: const Text('Settings'),
+                children: [
+                  ListTile(
+                    contentPadding: const EdgeInsets.only(left: 72),
+                    leading: const Icon(Icons.person_outline),
+                    title: const Text('Edit Profile'),
+                    onTap: () {
+                      Navigator.pop(context);
+
+                      final bloc = context.read<SelectOrganizationBloc>();
+
+                      bloc.add(LoadOrganizations());
+
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (dialogContext) {
+                          return BlocProvider.value(
+                            value: bloc,
+                            child:
+                                BlocListener<
+                                  SelectOrganizationBloc,
+                                  SelectOrganizationState
+                                >(
+                                  listener: (context, state) {
+                                    if (state is SelectOrganizationSuccess) {
+                                      final selectedId = state.selectedId;
+                                      if (selectedId == null) {
+                                        Navigator.pop(dialogContext);
+
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'No selected organization',
+                                            ),
+                                          ),
+                                        );
+                                        return;
+                                      }
+                                      final organizations = state.organizations;
+                                      final selectedOrg = organizations
+                                          .firstWhere(
+                                            (org) => org.id == selectedId,
+                                          );
+                                      Navigator.pop(dialogContext);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => CreateOrgScreen(
+                                            oldvalue: selectedOrg,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    if (state is SelectOrganizationFailure) {
+                                      Navigator.pop(dialogContext);
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(content: Text(state.message)),
+                                      );
+                                    }
+                                  },
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                  ListTile(
+                    contentPadding: const EdgeInsets.only(left: 72),
+                    leading: const Icon(Icons.image_outlined),
+                    title: const Text('Edit Logo'),
+                    onTap: () {
+                      Navigator.pop(context);
+
+                      final selectBloc = context.read<SelectOrganizationBloc>();
+                      final uploadBloc = context.read<UploadLogoOrgBloc>();
+
+                      selectBloc.add(LoadOrganizations());
+
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (dialogContext) {
+                          return BlocProvider.value(
+                            value: selectBloc,
+                            child:
+                                BlocListener<
+                                  SelectOrganizationBloc,
+                                  SelectOrganizationState
+                                >(
+                                  listener: (context, state) {
+                                    if (state is SelectOrganizationSuccess) {
+                                      final selectedId = state.selectedId;
+
+                                      if (selectedId == null) {
+                                        Navigator.pop(dialogContext);
+
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'No selected organization',
+                                            ),
+                                          ),
+                                        );
+
+                                        return;
+                                      }
+
+                                      Navigator.pop(dialogContext);
+
+                                      uploadBloc.add(
+                                        PickAndUploadLogoEvent(
+                                          organizationId: selectedId,
+                                        ),
+                                      );
+                                    }
+
+                                    if (state is SelectOrganizationFailure) {
+                                      Navigator.pop(dialogContext);
+
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(content: Text(state.message)),
+                                      );
+                                    }
+                                  },
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Logout'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

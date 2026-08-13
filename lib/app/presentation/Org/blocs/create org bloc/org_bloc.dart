@@ -18,11 +18,17 @@ class CreateOrgBloc extends Bloc<CreateOrgEvent, CreateOrgState> {
     emit(CreateOrgLoading());
 
     try {
-      final organizationId = await usecases.createOrg(event.org);
+      if (event.org.id == null) {
+        final organizationId = await usecases.createOrg(event.org);
 
-      await usecases.saveSelectedOrganization(organizationId);
+        await usecases.saveSelectedOrganization(organizationId);
 
-      emit(CreateOrgSuccess(organizationId: organizationId));
+        emit(CreateOrgSuccess(organizationId: organizationId));
+      } else {
+        await usecases.updateOrg(event.org);
+
+        emit(CreateOrgSuccess(organizationId: event.org.id!));
+      }
     } catch (e) {
       emit(CreateOrgFailure(message: e.toString()));
     }

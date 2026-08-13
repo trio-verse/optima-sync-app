@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/create%20org%20bloc/org_state.dart';
-import 'package:optima_sync_v2/app/presentation/navigation/screens/navigation_screen.dart';
+import 'package:optima_sync_v2/app/presentation/home/screens/home_screen.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/bloc/upload_logo_org_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/bloc/upload_logo_org_event.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/bloc/upload_logo_org_state.dart';

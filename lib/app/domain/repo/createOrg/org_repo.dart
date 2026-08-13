@@ -18,4 +18,5 @@ abstract class OrgRepository {
   Future<bool> CheckSelectedOrg();
 
   Future<String?> getSelectedOrganizationId();
+  Future<void> updateOrg(OrgEntity org);
 }

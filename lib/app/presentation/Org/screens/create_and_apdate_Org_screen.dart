@@ -45,6 +45,8 @@ class _HomeScreenState extends State<CreateOrgScreen> {
         physics: NeverScrollableScrollPhysics(),
         children: [
           CreateOrgForm(
+            oldvalue: widget.oldvalue,
+
             callback: () {
               controller.animateToPage(
                 1,
