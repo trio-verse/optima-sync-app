@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/Org/blocs/create%20org%20bloc/org_state.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/cerate_and_update_org_bloc/create_and_update_org_state.dart';
 import 'package:optima_sync_v2/app/presentation/home/screens/home_screen.dart';
-import 'package:optima_sync_v2/app/presentation/Org/blocs/bloc/upload_logo_org_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/Org/blocs/bloc/upload_logo_org_event.dart';
-import 'package:optima_sync_v2/app/presentation/Org/blocs/bloc/upload_logo_org_state.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/upload_logo_org/upload_logo_org_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/upload_logo_org/upload_logo_org_event.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/upload_logo_org/upload_logo_org_state.dart';
 
 class UploadLogoWidget extends StatelessWidget {
   const UploadLogoWidget({super.key});
@@ -16,7 +16,7 @@ class UploadLogoWidget extends StatelessWidget {
         if (state is UploadOrgLogoSuccess) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
+            MaterialPageRoute(builder: (_) => HomeScreen()),
           );
         }
 
@@ -42,11 +42,12 @@ class UploadLogoWidget extends StatelessWidget {
                 onTap: state is UploadOrgLogoLoading
                     ? null
                     : () {
-                        if (state is CreateOrgSuccess) {
+                        if (state is CreateAndUpdateOrgSuccess) {
                           context.read<UploadLogoOrgBloc>().add(
                             PickAndUploadLogoEvent(
                               organizationId:
-                                  (state as CreateOrgSuccess).organizationId,
+                                  (state as CreateAndUpdateOrgSuccess)
+                                      .organizationId,
                             ),
                           );
                         }
@@ -66,7 +67,7 @@ class UploadLogoWidget extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (_) => const HomeScreen()),
+                    MaterialPageRoute(builder: (_) => HomeScreen()),
                   );
                 },
                 child: Text("skip"),

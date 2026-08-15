@@ -24,7 +24,7 @@ class OrgEntity {
     phone: json['phone_number'],
     address: json['address'],
     description: json['description'],
-    logo: json['logo'],
+    logo: json['logo_url'],
   );
 
   Map<String, dynamic> toJson() => {
