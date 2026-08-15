@@ -11,7 +11,7 @@ class CheckSelectedOrgCubit extends Cubit<CheckSelectedOrgState> {
     emit(CheckSelectedOrgLoading());
 
     try {
-      final hasSelected = await usecases.CheckSelectedOrg();
+      final hasSelected = await usecases.checkSelectedOrg();
 
       emit(CheckSelectedOrgSuccess(hasSelected: hasSelected));
     } catch (e) {

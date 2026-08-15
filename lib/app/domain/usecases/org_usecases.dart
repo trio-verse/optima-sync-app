@@ -26,8 +26,8 @@ class OrgUsecases {
     return repo.uploadLogo(organizationId: organizationId, image: image);
   }
 
-  Future<bool> CheckSelectedOrg() async {
-    return repo.CheckSelectedOrg();
+  Future<bool> checkSelectedOrg() async {
+    return repo.checkSelectedOrg();
   }
 
   Future<String?> getSelectedOrganizationId() {

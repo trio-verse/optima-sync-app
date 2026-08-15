@@ -59,14 +59,17 @@ class HttpClientHelper {
   Future<T?> patch<T>(
     String url,
     Map<String, dynamic> body,
-    T? Function(Map<String, dynamic> json) fromJson,
-  ) async {
+    T? Function(Map<String, dynamic> json) fromJson, {
+    String? organizationId,
+  }) async {
     final res = await client.patch(
       Uri.parse(url),
       body: jsonEncode(body),
       headers: {
         'Authorization': "Bearer ${await getToken()}",
         "Content-Type": "application/json",
+        "Accept": "application/json",
+        if (organizationId != null) "X-Organization-Id": organizationId,
       },
     );
 

@@ -31,7 +31,7 @@ class _SelectOrgScreenState extends State<SelectOrgScreen> {
             if (state is SelectOrganizationSelected) {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
+                MaterialPageRoute(builder: (_) => HomeScreen()),
               );
             }
 
@@ -148,7 +148,7 @@ class _SelectOrgScreenState extends State<SelectOrgScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const CreateOrgScreen(),
+                          builder: (_) => const CreateAndUpdateOrgScreen(),
                         ),
                       );
                     },
