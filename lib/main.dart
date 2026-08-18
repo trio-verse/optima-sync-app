@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/check_selected_org/cubit/check_selected_org_cubit.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/city/bloc/city_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/home/bloc/home_bloc.dart';
 import 'package:optima_sync_v2/splash_screen.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/cerate_and_update_org_bloc/create_and_update_org_bloc.dart';
@@ -21,6 +22,7 @@ void main() async {
         BlocProvider(create: (_) => HomeBloc()),
         BlocProvider(create: (_) => SelectOrganizationBloc(usecases: sl())),
         BlocProvider(create: (_) => CheckSelectedOrgCubit(usecases: sl())),
+        BlocProvider(create: (_) => CityBloc(usecases: sl())),
       ],
       child: const MyApp(),
     ),

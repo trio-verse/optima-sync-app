@@ -57,10 +57,4 @@ class CreateOrgRepositoryImpl implements OrgRepository {
   Future<void> updateOrg(OrgEntity org) {
     return remoteDataSource.updateOrg(org);
   }
-
-  @override
-  Future<bool> CheckSelectedOrg() {
-    // TODO: implement CheckSelectedOrg
-    throw UnimplementedError();
-  }
 }
