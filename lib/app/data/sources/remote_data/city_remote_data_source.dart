@@ -53,4 +53,25 @@ class CityRemoteDataSource {
 
     return result!;
   }
+
+  Future<CityEntity> updateCity({
+    required String id,
+    required String name,
+    required String color,
+  }) async {
+    final organizationId = await orgLocalDataSource.getSelectedOrganization();
+
+    if (organizationId == null) {
+      throw Exception('No selected organization found');
+    }
+
+    final result = await client.patch<CityEntity>(
+      "${ApiConstants.baseUrl}/api/v1/cities/$id",
+      {"name": name, "color": color},
+      (json) => CityEntity.fromJson(json["data"]),
+      organizationId: organizationId,
+    );
+
+    return result!;
+  }
 }

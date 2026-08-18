@@ -4,6 +4,8 @@ import 'package:optima_sync_v2/app/presentation/City/pages/add_city_form.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_event.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_state.dart';
+import 'package:optima_sync_v2/app/domain/entities/city_entity.dart';
+import 'package:optima_sync_v2/app/presentation/city/pages/edit_city_form.dart';
 
 class CityScreen extends StatefulWidget {
   const CityScreen({super.key});
@@ -30,6 +32,24 @@ class _CityScreenState extends State<CityScreen> {
       ),
       builder: (dialogContext) {
         return BlocProvider.value(value: bloc, child: const AddCityForm());
+      },
+    );
+  }
+
+  void _openEditCityForm(CityEntity city) {
+    final bloc = context.read<CityBloc>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (dialogContext) {
+        return BlocProvider.value(
+          value: bloc,
+          child: EditCityForm(city: city),
+        );
       },
     );
   }
@@ -61,12 +81,10 @@ class _CityScreenState extends State<CityScreen> {
 
       body: BlocBuilder<CityBloc, CityState>(
         builder: (context, state) {
-          // Initial / Loading
           if (state is CityInitial || state is CityLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Failure
           if (state is CityFailure) {
             return Center(
               child: Padding(
@@ -88,7 +106,6 @@ class _CityScreenState extends State<CityScreen> {
             );
           }
 
-          // Success
           if (state is CitySuccess) {
             final cities = state.cities;
 
@@ -108,6 +125,12 @@ class _CityScreenState extends State<CityScreen> {
                 return ListTile(
                   leading: Icon(Icons.location_city_outlined, color: cityColor),
                   title: Text(city.name),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.edit_outlined),
+                    onPressed: () {
+                      _openEditCityForm(city);
+                    },
+                  ),
                 );
               },
             );

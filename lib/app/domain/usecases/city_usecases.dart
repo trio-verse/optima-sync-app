@@ -13,4 +13,12 @@ class CityUsecases {
   Future<CityEntity> createCity({required String name, required String color}) {
     return repo.createCity(name: name, color: color);
   }
+
+  Future<CityEntity> updateCity({
+    required String id,
+    required String name,
+    required String color,
+  }) {
+    return repo.updateCity(id: id, name: name, color: color);
+  }
 }
