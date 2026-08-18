@@ -25,4 +25,9 @@ class CityRepositoryImpl implements CityRepository {
   }) {
     return remoteDataSource.updateCity(id: id, name: name, color: color);
   }
+
+  @override
+  Future<void> deleteCity(String id) {
+    return remoteDataSource.deleteCity(id);
+  }
 }

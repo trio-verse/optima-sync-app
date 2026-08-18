@@ -10,4 +10,5 @@ abstract class CityRepository {
     required String name,
     required String color,
   });
+  Future<void> deleteCity(String id);
 }

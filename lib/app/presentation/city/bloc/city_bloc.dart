@@ -11,6 +11,7 @@ class CityBloc extends Bloc<CityEvent, CityState> {
     on<LoadCities>(_onLoadCities);
     on<AddCitySubmitted>(_onAddCitySubmitted);
     on<UpdateCitySubmitted>(_onUpdateCitySubmitted);
+    on<DeleteCitySubmitted>(_onDeleteCitySubmitted);
   }
 
   Future<void> _onLoadCities(LoadCities event, Emitter<CityState> emit) async {
@@ -68,6 +69,31 @@ class CityBloc extends Bloc<CityEvent, CityState> {
       final cities = await usecases.getCities();
 
       emit(CitySuccess(cities: cities));
+    } catch (e) {
+      emit(CityFailure(message: e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteCitySubmitted(
+    DeleteCitySubmitted event,
+    Emitter<CityState> emit,
+  ) async {
+    final currentState = state;
+
+    if (currentState is! CitySuccess) {
+      return;
+    }
+
+    emit(CityLoading());
+
+    try {
+      await usecases.deleteCity(event.id);
+
+      final updatedCities = currentState.cities
+          .where((city) => city.id != event.id)
+          .toList();
+
+      emit(CitySuccess(cities: updatedCities));
     } catch (e) {
       emit(CityFailure(message: e.toString()));
     }

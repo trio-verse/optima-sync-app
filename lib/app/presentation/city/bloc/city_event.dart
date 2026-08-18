@@ -33,3 +33,12 @@ class UpdateCitySubmitted extends CityEvent {
   @override
   List<Object?> get props => [id, name, color];
 }
+
+class DeleteCitySubmitted extends CityEvent {
+  final String id;
+
+  const DeleteCitySubmitted({required this.id});
+
+  @override
+  List<Object?> get props => [id];
+}

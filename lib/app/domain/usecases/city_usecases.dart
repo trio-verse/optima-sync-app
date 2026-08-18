@@ -21,4 +21,8 @@ class CityUsecases {
   }) {
     return repo.updateCity(id: id, name: name, color: color);
   }
+
+  Future<void> deleteCity(String id) {
+    return repo.deleteCity(id);
+  }
 }

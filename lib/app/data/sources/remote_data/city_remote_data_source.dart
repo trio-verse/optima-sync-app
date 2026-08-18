@@ -74,4 +74,17 @@ class CityRemoteDataSource {
 
     return result!;
   }
+
+  Future<void> deleteCity(String id) async {
+    final organizationId = await orgLocalDataSource.getSelectedOrganization();
+
+    if (organizationId == null) {
+      throw Exception('No selected organization found');
+    }
+
+    await client.delete(
+      "${ApiConstants.baseUrl}/api/v1/cities/$id",
+      organizationId: organizationId,
+    );
+  }
 }
