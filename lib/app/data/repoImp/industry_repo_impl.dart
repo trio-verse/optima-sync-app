@@ -25,4 +25,9 @@ class IndustryRepositoryImpl implements IndustryRepository {
   }) {
     return remoteDataSource.updateIndustry(id.toString(), name, color);
   }
+
+  @override
+  Future<void> deleteIndustry({required int id}) {
+    return remoteDataSource.deleteIndustry(id: id);
+  }
 }

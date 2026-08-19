@@ -73,4 +73,17 @@ class IndustryRemoteDataSource {
 
     return result!;
   }
+
+  Future<void> deleteIndustry({required int id}) async {
+    final organizationId = await orgLocalDataSource.getSelectedOrganization();
+
+    if (organizationId == null) {
+      throw Exception('No selected organization found');
+    }
+
+    await client.delete(
+      "${ApiConstants.baseUrl}/api/v1/industries/$id",
+      organizationId: organizationId,
+    );
+  }
 }

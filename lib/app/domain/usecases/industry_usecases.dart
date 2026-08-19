@@ -21,4 +21,8 @@ class IndustryUsecases {
   }) {
     return repo.updateIndustry(id: id, name: name, color: color);
   }
+
+  Future<void> deleteIndustry({required int id}) {
+    return repo.deleteIndustry(id: id);
+  }
 }

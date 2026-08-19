@@ -12,6 +12,7 @@ class IndustryBloc extends Bloc<IndustryEvent, IndustryState> {
     on<LoadIndustries>(_onLoadIndustries);
     on<AddIndustrySubmitted>(_onAddIndustrySubmitted);
     on<UpdateIndustrySubmitted>(_onUpdateIndustrySubmitted);
+    on<DeleteIndustrySubmitted>(_onDeleteIndustrySubmitted);
   }
 
   Future<void> _onLoadIndustries(
@@ -112,6 +113,34 @@ class IndustryBloc extends Bloc<IndustryEvent, IndustryState> {
     }
   }
 
+  Future<void> _onDeleteIndustrySubmitted(
+    DeleteIndustrySubmitted event,
+    Emitter<IndustryState> emit,
+  ) async {
+    final currentIndustries = _currentIndustries(state);
+
+    final industryId = int.tryParse(event.id);
+
+    if (industryId == null) {
+      emit(IndustryFailure(message: 'Invalid industry ID'));
+      return;
+    }
+
+    emit(IndustryDeleting(industries: currentIndustries, deletingId: event.id));
+
+    try {
+      await usecases.deleteIndustry(id: industryId);
+
+      final updatedIndustries = currentIndustries
+          .where((industry) => industry.id != event.id)
+          .toList();
+
+      emit(IndustrySuccess(industries: updatedIndustries));
+    } catch (e) {
+      emit(IndustryFailure(message: e.toString()));
+    }
+  }
+
   List<IndustryEntity> _currentIndustries(IndustryState state) {
     if (state is IndustrySuccess) {
       return state.industries;
@@ -128,7 +157,9 @@ class IndustryBloc extends Bloc<IndustryEvent, IndustryState> {
     if (state is IndustryUpdating) {
       return state.industries;
     }
-
+    if (state is IndustryDeleting) {
+      return state.industries;
+    }
     return [];
   }
 }

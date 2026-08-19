@@ -45,6 +45,44 @@ class IndustryListItem extends StatefulWidget {
 }
 
 class _IndustryListItemState extends State<IndustryListItem> {
+  void _deleteIndustry() {
+    final id = widget.industry.id;
+
+    if (id == null) {
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Delete Industry'),
+          content: Text(
+            'Are you sure you want to delete "${widget.industry.name}"?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+
+                context.read<IndustryBloc>().add(
+                  DeleteIndustrySubmitted(id: id),
+                );
+              },
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   late final TextEditingController nameController;
 
   late Color selectedColor;
@@ -191,10 +229,17 @@ class _IndustryListItemState extends State<IndustryListItem> {
               ),
             ),
 
-            IconButton(
-              onPressed: _startEditing,
-              icon: const Icon(Icons.edit_outlined),
-              tooltip: 'Edit',
+            Row(
+              children: [
+                IconButton(
+                  onPressed: _startEditing,
+                  icon: const Icon(Icons.edit_outlined),
+                ),
+                IconButton(
+                  onPressed: _deleteIndustry,
+                  icon: const Icon(Icons.delete_outline),
+                ),
+              ],
             ),
           ],
         ),

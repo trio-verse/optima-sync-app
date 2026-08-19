@@ -58,3 +58,13 @@ class IndustryUpdating extends IndustryState {
   @override
   List<Object?> get props => [industries, updatingId];
 }
+
+class IndustryDeleting extends IndustryState {
+  final List<IndustryEntity> industries;
+  final String deletingId;
+
+  const IndustryDeleting({required this.industries, required this.deletingId});
+
+  @override
+  List<Object?> get props => [industries, deletingId];
+}

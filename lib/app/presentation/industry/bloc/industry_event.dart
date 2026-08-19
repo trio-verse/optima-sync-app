@@ -33,3 +33,12 @@ class UpdateIndustrySubmitted extends IndustryEvent {
   @override
   List<Object?> get props => [id, name, color];
 }
+
+class DeleteIndustrySubmitted extends IndustryEvent {
+  final String id;
+
+  const DeleteIndustrySubmitted({required this.id});
+
+  @override
+  List<Object?> get props => [id];
+}

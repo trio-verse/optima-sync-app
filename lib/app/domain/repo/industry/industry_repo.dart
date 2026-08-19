@@ -10,4 +10,5 @@ abstract class IndustryRepository {
     required String name,
     required String color,
   });
+  Future<void> deleteIndustry({required int id});
 }
