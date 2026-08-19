@@ -4,6 +4,7 @@ import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bl
 import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_event.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_state.dart';
 import 'package:optima_sync_v2/app/presentation/Org/screens/create_and_apdate_Org_screen.dart';
+import 'package:optima_sync_v2/app/presentation/channel/screen/channel_screen.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_event.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_state.dart';
@@ -61,6 +62,13 @@ class HomeScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       children: [
                         ListTile(
+                          leading: const Icon(Icons.business_outlined),
+                          title: const Text('Sales'),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        ListTile(
                           tileColor: Colors.teal.withOpacity(0.12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -70,7 +78,7 @@ class HomeScreen extends StatelessWidget {
                             color: Colors.teal,
                           ),
                           title: const Text(
-                            'Dashboard',
+                            'Member',
                             style: TextStyle(
                               color: Colors.teal,
                               fontWeight: FontWeight.w600,
@@ -83,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                         ListTile(
                           leading: const Icon(Icons.business_outlined),
-                          title: const Text('Sales'),
+                          title: const Text('Product'),
                           onTap: () {
                             Navigator.pop(context);
                           },
@@ -91,6 +99,13 @@ class HomeScreen extends StatelessWidget {
                         ListTile(
                           leading: const Icon(Icons.people_outline),
                           title: const Text('Marketing'),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.business_outlined),
+                          title: const Text('Clients'),
                           onTap: () {
                             Navigator.pop(context);
                           },
@@ -110,15 +125,8 @@ class HomeScreen extends StatelessWidget {
                           },
                         ),
                         ListTile(
-                          leading: const Icon(Icons.notifications_none),
-                          title: const Text('Notifications'),
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                        ListTile(
                           leading: const Icon(Icons.chat_bubble_outline),
-                          title: const Text('City'),
+                          title: const Text('Cities'),
                           onTap: () {
                             Navigator.pop(context);
 
@@ -126,6 +134,20 @@ class HomeScreen extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => const CityScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.tag_outlined),
+                          title: const Text('Channels'),
+                          onTap: () {
+                            Navigator.pop(context);
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ChannelScreen(),
                               ),
                             );
                           },
