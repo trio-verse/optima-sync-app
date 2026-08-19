@@ -48,3 +48,13 @@ class IndustryAddFailure extends IndustryState {
   @override
   List<Object?> get props => [industries, message];
 }
+
+class IndustryUpdating extends IndustryState {
+  final List<IndustryEntity> industries;
+  final String updatingId;
+
+  const IndustryUpdating({required this.industries, required this.updatingId});
+
+  @override
+  List<Object?> get props => [industries, updatingId];
+}

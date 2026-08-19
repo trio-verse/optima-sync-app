@@ -50,4 +50,27 @@ class IndustryRemoteDataSource {
 
     return result!;
   }
+
+  Future<IndustryEntity> updateIndustry(
+    String id,
+    String editingName,
+    String editingColor,
+  ) async {
+    final organizationId = await orgLocalDataSource.getSelectedOrganization();
+
+    if (organizationId == null) {
+      throw Exception('No selected organization found');
+    }
+
+    final result = await client.patch<IndustryEntity>(
+      "${ApiConstants.baseUrl}/api/v1/industries/$id",
+      {"name": editingName, "color": editingColor},
+      (json) {
+        return IndustryEntity.fromJson(json["data"]);
+      },
+      organizationId: organizationId,
+    );
+
+    return result!;
+  }
 }

@@ -107,6 +107,8 @@ class _IndustryScreenState extends State<IndustryScreen> {
             industries = state.industries;
           } else if (state is IndustryAddFailure) {
             industries = state.industries;
+          } else if (state is IndustryUpdating) {
+            industries = state.industries;
           }
 
           final filtered = _filter(industries);

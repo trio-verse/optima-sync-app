@@ -13,4 +13,12 @@ class IndustryUsecases {
   Future<IndustryEntity> createIndustry(String newName, String newColor) {
     return repo.createIndustry(newName, newColor);
   }
+
+  Future<IndustryEntity> updateIndustry({
+    required int id,
+    required String name,
+    required String color,
+  }) {
+    return repo.updateIndustry(id: id, name: name, color: color);
+  }
 }

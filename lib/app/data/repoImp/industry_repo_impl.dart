@@ -16,4 +16,13 @@ class IndustryRepositoryImpl implements IndustryRepository {
   Future<IndustryEntity> createIndustry(String newName, String newColor) {
     return remoteDataSource.createIndustry(newName, newColor);
   }
+
+  @override
+  Future<IndustryEntity> updateIndustry({
+    required int id,
+    required String name,
+    required String color,
+  }) {
+    return remoteDataSource.updateIndustry(id.toString(), name, color);
+  }
 }

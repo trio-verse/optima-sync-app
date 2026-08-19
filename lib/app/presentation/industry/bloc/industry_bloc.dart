@@ -11,6 +11,7 @@ class IndustryBloc extends Bloc<IndustryEvent, IndustryState> {
   IndustryBloc({required this.usecases}) : super(IndustryInitial()) {
     on<LoadIndustries>(_onLoadIndustries);
     on<AddIndustrySubmitted>(_onAddIndustrySubmitted);
+    on<UpdateIndustrySubmitted>(_onUpdateIndustrySubmitted);
   }
 
   Future<void> _onLoadIndustries(
@@ -43,6 +44,7 @@ class IndustryBloc extends Bloc<IndustryEvent, IndustryState> {
           message: 'Industry name cannot be empty',
         ),
       );
+
       return;
     }
 
@@ -64,10 +66,69 @@ class IndustryBloc extends Bloc<IndustryEvent, IndustryState> {
     }
   }
 
+  Future<void> _onUpdateIndustrySubmitted(
+    UpdateIndustrySubmitted event,
+    Emitter<IndustryState> emit,
+  ) async {
+    final currentIndustries = _currentIndustries(state);
+
+    final name = event.name.trim();
+    final color = event.color.trim();
+
+    if (name.isEmpty) {
+      emit(IndustryFailure(message: 'Industry name cannot be empty'));
+
+      return;
+    }
+
+    final industryId = int.tryParse(event.id);
+
+    if (industryId == null) {
+      emit(IndustryFailure(message: 'Invalid industry ID'));
+
+      return;
+    }
+
+    emit(IndustryUpdating(industries: currentIndustries, updatingId: event.id));
+
+    try {
+      final updatedIndustry = await usecases.updateIndustry(
+        id: industryId,
+        name: name,
+        color: color,
+      );
+
+      final updatedIndustries = currentIndustries.map((industry) {
+        if (industry.id == event.id) {
+          return updatedIndustry;
+        }
+
+        return industry;
+      }).toList();
+
+      emit(IndustrySuccess(industries: updatedIndustries));
+    } catch (e) {
+      emit(IndustryFailure(message: e.toString()));
+    }
+  }
+
   List<IndustryEntity> _currentIndustries(IndustryState state) {
-    if (state is IndustrySuccess) return state.industries;
-    if (state is IndustryAdding) return state.industries;
-    if (state is IndustryAddFailure) return state.industries;
+    if (state is IndustrySuccess) {
+      return state.industries;
+    }
+
+    if (state is IndustryAdding) {
+      return state.industries;
+    }
+
+    if (state is IndustryAddFailure) {
+      return state.industries;
+    }
+
+    if (state is IndustryUpdating) {
+      return state.industries;
+    }
+
     return [];
   }
 }
