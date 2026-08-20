@@ -68,7 +68,9 @@ class _ClientFormState extends State<ClientForm> {
     websiteController = TextEditingController(text: initial?.website ?? '');
     notesController = TextEditingController(text: initial?.notes ?? '');
 
-    clientType = initial?.clientType ?? kClientTypes.first;
+    clientType = (initial != null && kClientTypes.contains(initial.clientType))
+        ? initial.clientType
+        : kClientTypes.first;
     industryId = initial != null && initial.industryId != 0
         ? initial.industryId
         : null;
