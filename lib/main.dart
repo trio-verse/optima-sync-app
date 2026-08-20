@@ -5,6 +5,7 @@ import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bl
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/client/bloc/client_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/home/bloc/home_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/industry/bloc/industry_bloc.dart';
 import 'package:optima_sync_v2/splash_screen.dart';
@@ -27,6 +28,7 @@ void main() async {
         BlocProvider(create: (_) => CityBloc(usecases: sl())),
         BlocProvider(create: (_) => IndustryBloc(usecases: sl())),
         BlocProvider(create: (_) => ChannelBloc(usecases: sl())),
+        BlocProvider(create: (_) => ClientBloc(usecases: sl())),
       ],
       child: const MyApp(),
     ),

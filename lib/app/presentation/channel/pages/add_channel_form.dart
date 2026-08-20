@@ -40,9 +40,6 @@ class _AddChannelFormState extends State<AddChannelForm> {
         bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       ),
       child: BlocListener<ChannelBloc, ChannelState>(
-        // Only close the sheet when a submission we triggered (Submitting)
-        // has just resolved into Success — not when some unrelated list
-        // reload happens to land on Success while this sheet is open.
         listenWhen: (previous, current) {
           return previous is ChannelSubmitting && current is ChannelSuccess;
         },
