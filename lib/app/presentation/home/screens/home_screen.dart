@@ -11,6 +11,7 @@ import 'package:optima_sync_v2/app/presentation/city/bloc/city_state.dart';
 import 'package:optima_sync_v2/app/presentation/city/screen/city_screen.dart';
 import 'package:optima_sync_v2/app/presentation/client/screen/client_screen.dart';
 import 'package:optima_sync_v2/app/presentation/industry/screen/industry_screen.dart';
+import 'package:optima_sync_v2/app/presentation/product/screen/product_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -95,6 +96,13 @@ class HomeScreen extends StatelessWidget {
                           title: const Text('Product'),
                           onTap: () {
                             Navigator.pop(context);
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ProductScreen(),
+                              ),
+                            );
                           },
                         ),
                         ListTile(
