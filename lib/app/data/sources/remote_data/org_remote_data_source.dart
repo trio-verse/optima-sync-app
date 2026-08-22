@@ -1,10 +1,8 @@
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:optima_sync_v2/app/data/sources/local_data/auth_local_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/org_entity.dart';
 import 'package:optima_sync_v2/core/constants/api_constant.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateOrgRemoteDataSource {
   final HttpClientHelper client;
@@ -22,6 +20,15 @@ class CreateOrgRemoteDataSource {
     );
 
     return res!;
+  }
+
+  Future<void> updateOrg(OrgEntity org) async {
+    await client.patch<void>(
+      "${ApiConstants.baseUrl}/api/v1/organizations/${org.id}",
+      org.toJson(),
+      (json) => null,
+      organizationId: org.id,
+    );
   }
 
   Future<void> uploadLogo({
@@ -62,7 +69,23 @@ class CreateOrgRemoteDataSource {
 
   Future<List<OrgEntity>> getOrganizations() async {
     final result = await client.get<List<OrgEntity>>(
-      "${ApiConstants.baseUrl}/api/v1/organizations",
+      "${ApiConstants.baseUrl}/api/v1/organizations/myOrgs",
+      (json) {
+        print("MY ORGS RESPONSE:");
+        print(json);
+
+        return (json["data"] as List)
+            .map((e) => OrgEntity.fromJson(e))
+            .toList();
+      },
+    );
+
+    return result!;
+  }
+
+  Future<List<OrgEntity>> getMyOrganizations() async {
+    final result = await client.get<List<OrgEntity>>(
+      "${ApiConstants.baseUrl}/api/v1/organizations/myOrgs",
       (json) {
         return (json["data"] as List)
             .map((e) => OrgEntity.fromJson(e))

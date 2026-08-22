@@ -44,12 +44,17 @@ class CreateOrgRepositoryImpl implements OrgRepository {
   }
 
   @override
-  Future<bool> CheckSelectedOrg() {
+  Future<bool> checkSelectedOrg() {
     return localDataSource.hasSelectedOrganization();
   }
 
   @override
   Future<String?> getSelectedOrganizationId() {
     return localDataSource.getSelectedOrganization();
+  }
+
+  @override
+  Future<void> updateOrg(OrgEntity org) {
+    return remoteDataSource.updateOrg(org);
   }
 }

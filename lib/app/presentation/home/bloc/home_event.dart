@@ -1,15 +1,15 @@
 import 'package:equatable/equatable.dart';
-import 'navigation_state.dart';
+import 'home_state.dart';
 
-abstract class NavigationEvent extends Equatable {
-  const NavigationEvent();
+abstract class HomeEvent extends Equatable {
+  const HomeEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class ChangeTab extends NavigationEvent {
-  final NavigationTab currentTab;
+class ChangeTab extends HomeEvent {
+  final HomeTab currentTab;
 
   const ChangeTab({required this.currentTab});
 

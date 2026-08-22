@@ -1,30 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/org_entity.dart';
-import 'package:optima_sync_v2/app/presentation/Org/blocs/create%20org%20bloc/org_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/Org/blocs/create%20org%20bloc/org_event.dart';
-import 'package:optima_sync_v2/app/presentation/Org/blocs/create%20org%20bloc/org_state.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/upload_logo_org/upload_logo_org_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/upload_logo_org/upload_logo_org_event.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/upload_logo_org/upload_logo_org_state.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/cerate_and_update_org_bloc/create_and_update_org_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/cerate_and_update_org_bloc/create_and_update_org_event.dart';
+import 'package:optima_sync_v2/app/presentation/Org/blocs/cerate_and_update_org_bloc/create_and_update_org_state.dart';
 
-class CreateOrgForm extends StatefulWidget {
-  const CreateOrgForm({super.key, required this.callback});
+class CreateAndUpdateOrgForm extends StatefulWidget {
+  const CreateAndUpdateOrgForm({
+    super.key,
+    required this.callback,
+    this.oldvalue,
+  });
+
   final VoidCallback callback;
+  final OrgEntity? oldvalue;
 
   @override
-  State<CreateOrgForm> createState() => _CreateOrgFormState();
+  State<CreateAndUpdateOrgForm> createState() => _CreateAndUpdateOrgFormState();
 }
 
-class _CreateOrgFormState extends State<CreateOrgForm> {
+class _CreateAndUpdateOrgFormState extends State<CreateAndUpdateOrgForm> {
   final formKey = GlobalKey<FormState>();
 
   final nameController = TextEditingController();
-
   final emailController = TextEditingController();
-
   final phoneController = TextEditingController();
-
   final addressController = TextEditingController();
-
   final descriptionController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    final oldOrg = widget.oldvalue;
+    if (oldOrg != null) {
+      nameController.text = oldOrg.name;
+      emailController.text = oldOrg.email;
+      phoneController.text = oldOrg.phone;
+      addressController.text = oldOrg.address;
+      descriptionController.text = oldOrg.description;
+    }
+  }
 
   List<String> countryCode = [
     "🇦🇪 +971",
@@ -33,35 +50,69 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
     "🇯🇴 +962",
     "🇸🇾 +963",
   ];
-
   String selectedCode = "🇯🇴 +962";
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Center(
-        child: BlocListener<CreateOrgBloc, CreateOrgState>(
+        child: BlocListener<CreateAndUpdateOrgBloc, CreateAndUpdateOrgState>(
           listener: (context, state) {
-            if (state is CreateOrgFailure) {
+            if (state is CreateAndUpdateOrgSuccess) {
+              if (widget.oldvalue == null) {
+                widget.callback();
+              } else {
+                Navigator.pop(context);
+              }
+            }
+
+            if (state is CreateAndUpdateOrgFailure) {
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(SnackBar(content: Text(state.message)));
             }
           },
-          child: BlocBuilder<CreateOrgBloc, CreateOrgState>(
+          child: BlocBuilder<CreateAndUpdateOrgBloc, CreateAndUpdateOrgState>(
             builder: (context, state) {
-              if (state is CreateOrgSuccess) {
-                widget.callback();
-              }
               return Form(
                 key: formKey,
                 child: Column(
                   spacing: 15,
                   children: [
+                    if (widget.oldvalue != null)
+                      BlocBuilder<UploadLogoOrgBloc, UploadOrgLogoState>(
+                        builder: (context, state) {
+                          return InkWell(
+                            onTap: state is UploadOrgLogoLoading
+                                ? null
+                                : () {
+                                    context.read<UploadLogoOrgBloc>().add(
+                                      PickAndUploadLogoEvent(
+                                        organizationId: widget.oldvalue!.id!,
+                                      ),
+                                    );
+                                  },
+                            child: CircleAvatar(
+                              radius: 60,
+                              backgroundImage: widget.oldvalue!.logo != null
+                                  ? NetworkImage(widget.oldvalue!.logo!)
+                                  : null,
+                              child: state is UploadOrgLogoLoading
+                                  ? const CircularProgressIndicator()
+                                  : widget.oldvalue!.logo == null
+                                  ? const Icon(Icons.business, size: 50)
+                                  : null,
+                            ),
+                          );
+                        },
+                      ),
+
                     Row(
                       spacing: 2,
-                      children: [Icon(Icons.info_outline), Text("IDENTITY")],
+                      children: const [
+                        Icon(Icons.info_outline),
+                        Text("IDENTITY"),
+                      ],
                     ),
                     TextFormField(
                       controller: nameController,
@@ -71,7 +122,7 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                         }
                         return null;
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         label: Text('Organisation Name'),
                         hint: Text('Optima Sync'),
                         suffixIcon: Icon(Icons.person_2_outlined),
@@ -85,18 +136,7 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                     ),
                     TextFormField(
                       controller: emailController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Email is required";
-                        }
-
-                        if (!value.trim().endsWith("@gmail.com")) {
-                          return "Enter a valid Gmail address";
-                        }
-
-                        return null;
-                      },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         label: Text('Organisation Email'),
                         hint: Text('john.doe@gmail.com'),
                         suffixIcon: Icon(Icons.email),
@@ -108,9 +148,13 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                         ),
                       ),
                     ),
+
                     Row(
                       spacing: 15,
-                      children: [Icon(Icons.info_outline), Text("PERSENCE")],
+                      children: const [
+                        Icon(Icons.info_outline),
+                        Text("PERSENCE"),
+                      ],
                     ),
                     Center(
                       child: Row(
@@ -120,12 +164,11 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                             width: 100,
                             child: DropdownButton<String>(
                               value: selectedCode,
-
                               items: countryCode
                                   .map(
                                     (code) => DropdownMenuItem<String>(
-                                      child: Text(code),
                                       value: code,
+                                      child: Text(code),
                                     ),
                                   )
                                   .toList(),
@@ -151,7 +194,7 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
 
                                 return null;
                               },
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 label: Text('Phone Number'),
                                 hint: Text('999 999 999'),
                                 suffixIcon: Icon(Icons.phone_android_outlined),
@@ -170,6 +213,7 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                         ],
                       ),
                     ),
+
                     TextFormField(
                       controller: addressController,
                       validator: (value) {
@@ -178,7 +222,7 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                         }
                         return null;
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         label: Text('Address'),
                         hint: Text('City , Country'),
                         suffixIcon: Icon(Icons.location_city_outlined),
@@ -190,6 +234,7 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                         ),
                       ),
                     ),
+
                     TextFormField(
                       controller: descriptionController,
                       validator: (value) {
@@ -200,7 +245,7 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                         }
                         return null;
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         label: Text('description'),
                         hint: Text(
                           'Tell us more about your buissniss fields, branches, or operations...',
@@ -215,22 +260,18 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                       ),
                     ),
 
-                    BlocBuilder<CreateOrgBloc, CreateOrgState>(
+                    BlocBuilder<
+                      CreateAndUpdateOrgBloc,
+                      CreateAndUpdateOrgState
+                    >(
                       builder: (context, state) {
                         return ElevatedButton(
-                          onPressed: state is CreateOrgLoading
+                          onPressed: state is CreateAndUpdateOrgLoading
                               ? null
                               : () {
                                   if (formKey.currentState!.validate()) {
-                                    // final org = OrgEntity(
-                                    //   id: '',
-                                    //   name: "name",
-                                    //   email: "email",
-                                    //   phone: "phone",
-                                    //   address: "address",
-                                    //   description: "description",
-                                    // );
                                     final org = OrgEntity(
+                                      id: widget.oldvalue?.id,
                                       name: nameController.text.trim(),
                                       email: emailController.text.trim(),
                                       phone: phoneController.text.trim(),
@@ -239,14 +280,14 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                                           .trim(),
                                     );
 
-                                    print(org.toJson());
+                                    // print(org.toJson());
 
-                                    context.read<CreateOrgBloc>().add(
-                                      CreateOrgSubmitted(org: org),
+                                    context.read<CreateAndUpdateOrgBloc>().add(
+                                      CreateAndUpdateOrgSubmitted(org: org),
                                     );
                                   }
                                 },
-                          child: state is CreateOrgLoading
+                          child: state is CreateAndUpdateOrgLoading
                               ? const SizedBox(
                                   width: 18,
                                   height: 18,
@@ -254,7 +295,11 @@ class _CreateOrgFormState extends State<CreateOrgForm> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text("Create & Get Started"),
+                              : Text(
+                                  widget.oldvalue == null
+                                      ? "Create & Get Started"
+                                      : "Update",
+                                ),
                         );
                       },
                     ),

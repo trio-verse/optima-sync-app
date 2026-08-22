@@ -39,7 +39,8 @@ class SelectOrganizationBloc
     try {
       final organizations = await usecases.getOrganizations();
       final selectedId = await usecases.getSelectedOrganizationId();
-
+      print(organizations.where((t) => t.id == selectedId));
+      print(selectedId);
       emit(
         SelectOrganizationSuccess(
           organizations: organizations,

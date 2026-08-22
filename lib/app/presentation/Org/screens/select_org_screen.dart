@@ -5,7 +5,7 @@ import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bl
 import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_state.dart';
 
 import 'package:optima_sync_v2/app/presentation/Org/screens/create_and_apdate_Org_screen.dart';
-import 'package:optima_sync_v2/app/presentation/navigation/screens/navigation_screen.dart';
+import 'package:optima_sync_v2/app/presentation/home/screens/home_screen.dart';
 
 class SelectOrgScreen extends StatefulWidget {
   const SelectOrgScreen({super.key});
@@ -31,7 +31,7 @@ class _SelectOrgScreenState extends State<SelectOrgScreen> {
             if (state is SelectOrganizationSelected) {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
+                MaterialPageRoute(builder: (_) => HomeScreen()),
               );
             }
 
@@ -148,7 +148,7 @@ class _SelectOrgScreenState extends State<SelectOrgScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const CreateOrgScreen(),
+                          builder: (_) => const CreateAndUpdateOrgScreen(),
                         ),
                       );
                     },
