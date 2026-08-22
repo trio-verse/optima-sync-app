@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:optima_sync_v2/app/domain/entities/product_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/product_usecases.dart';
 
 import 'product_event.dart';
@@ -43,13 +44,24 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         return;
       }
 
-      await usecases.createProduct(
+      final created = await usecases.createProduct(
         name: name,
         price: event.price,
         description: event.description.trim(),
       );
 
-      final products = await usecases.getProducts();
+      // The write succeeded — don't let a refresh failure disguise it as
+      // a failed submission (that would cause a false "duplicate name"
+      // error on the next retry, since the product already exists).
+      List<ProductEntity> products;
+      try {
+        products = await usecases.getProducts();
+      } catch (_) {
+        final previous = state is ProductSuccess
+            ? (state as ProductSuccess).products
+            : <ProductEntity>[];
+        products = [...previous, created];
+      }
 
       emit(ProductSuccess(products: products));
     } catch (e) {
@@ -71,14 +83,27 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         return;
       }
 
-      await usecases.updateProduct(
+      final updated = await usecases.updateProduct(
         id: event.id,
         name: name,
         price: event.price,
         description: event.description.trim(),
       );
 
-      final products = await usecases.getProducts();
+      // Same reasoning as create: the write already succeeded, so a
+      // refresh failure here must not be reported as a submit failure.
+      List<ProductEntity> products;
+      try {
+        products = await usecases.getProducts();
+      } catch (_) {
+        final previous = state is ProductSuccess
+            ? (state as ProductSuccess).products
+            : <ProductEntity>[];
+        products = [
+          for (final p in previous)
+            if (p.id == updated.id) updated else p,
+        ];
+      }
 
       emit(ProductSuccess(products: products));
     } catch (e) {

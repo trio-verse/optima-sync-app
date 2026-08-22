@@ -36,7 +36,6 @@ class ProductListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      // leading: const Icon(Icons.inventory_2_outlined),
       title: Text(product.name),
 
       subtitle: Text(
