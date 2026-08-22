@@ -4,4 +4,11 @@ abstract class CityRepository {
   Future<List<CityEntity>> getCities();
 
   Future<CityEntity> createCity({required String name, required String color});
+
+  Future<CityEntity> updateCity({
+    required String id,
+    required String name,
+    required String color,
+  });
+  Future<void> deleteCity(String id);
 }

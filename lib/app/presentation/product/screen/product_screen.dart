@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/City/pages/add_city_form.dart';
-import 'package:optima_sync_v2/app/presentation/city/bloc/city_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/city/bloc/city_event.dart';
-import 'package:optima_sync_v2/app/presentation/city/bloc/city_state.dart';
-import 'package:optima_sync_v2/app/presentation/city/pages/city_list_item.dart';
+import 'package:optima_sync_v2/app/presentation/product/bloc/product_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/product/bloc/product_event.dart';
+import 'package:optima_sync_v2/app/presentation/product/bloc/product_state.dart';
+import 'package:optima_sync_v2/app/presentation/product/pages/add_product_form.dart';
+import 'package:optima_sync_v2/app/presentation/product/pages/product_list_item.dart';
 
-class CityScreen extends StatefulWidget {
-  const CityScreen({super.key});
+class ProductScreen extends StatefulWidget {
+  const ProductScreen({super.key});
 
   @override
-  State<CityScreen> createState() => _CityScreenState();
+  State<ProductScreen> createState() => _ProductScreenState();
 }
 
-class _CityScreenState extends State<CityScreen> {
+class _ProductScreenState extends State<ProductScreen> {
   @override
   void initState() {
     super.initState();
 
-    context.read<CityBloc>().add(LoadCities());
+    context.read<ProductBloc>().add(LoadProducts());
   }
 
-  void _openAddCityForm() {
-    final bloc = context.read<CityBloc>();
+  void _openAddProductForm() {
+    final bloc = context.read<ProductBloc>();
 
     showModalBottomSheet(
       context: context,
@@ -31,7 +31,7 @@ class _CityScreenState extends State<CityScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (_) {
-        return BlocProvider.value(value: bloc, child: const AddCityForm());
+        return BlocProvider.value(value: bloc, child: const AddProductForm());
       },
     );
   }
@@ -39,21 +39,21 @@ class _CityScreenState extends State<CityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Cities")),
+      appBar: AppBar(title: const Text("Products")),
 
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openAddCityForm,
+        onPressed: _openAddProductForm,
         icon: const Icon(Icons.add),
-        label: const Text("Add City"),
+        label: const Text("Add Product"),
       ),
 
-      body: BlocBuilder<CityBloc, CityState>(
+      body: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
-          if (state is CityInitial || state is CityLoading) {
+          if (state is ProductInitial || state is ProductLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (state is CityFailure) {
+          if (state is ProductFailure) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -64,7 +64,7 @@ class _CityScreenState extends State<CityScreen> {
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
-                        context.read<CityBloc>().add(LoadCities());
+                        context.read<ProductBloc>().add(LoadProducts());
                       },
                       child: const Text("Retry"),
                     ),
@@ -74,19 +74,19 @@ class _CityScreenState extends State<CityScreen> {
             );
           }
 
-          if (state is CitySuccess) {
-            if (state.cities.isEmpty) {
-              return const Center(child: Text("No cities yet"));
+          if (state is ProductSuccess) {
+            if (state.products.isEmpty) {
+              return const Center(child: Text("No products yet"));
             }
 
             return ListView.separated(
               padding: const EdgeInsets.all(12),
-              itemCount: state.cities.length,
+              itemCount: state.products.length,
               separatorBuilder: (_, __) {
                 return const Divider(height: 1);
               },
               itemBuilder: (context, index) {
-                return CityListItem(city: state.cities[index]);
+                return ProductListItem(product: state.products[index]);
               },
             );
           }

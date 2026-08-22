@@ -94,4 +94,22 @@ class HttpClientHelper {
       throw Exception("${res.statusCode} ${res.body}");
     }
   }
+
+  Future<void> delete(String url, {String? organizationId}) async {
+    final res = await client.delete(
+      Uri.parse(url),
+      headers: {
+        "Authorization": "Bearer ${await getToken()}",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        if (organizationId != null) "X-Organization-Id": organizationId,
+      },
+    );
+
+    if (res.statusCode == 200 || res.statusCode == 204) {
+      return;
+    } else {
+      throw Exception("${res.statusCode} ${res.body}");
+    }
+  }
 }
