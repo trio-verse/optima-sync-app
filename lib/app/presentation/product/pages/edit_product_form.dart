@@ -108,7 +108,6 @@ class _EditProductFormState extends State<EditProductForm> {
                     },
                     decoration: InputDecoration(
                       label: const Text("Product Name"),
-                      // suffixIcon: const Icon(Icons.inventory_2_outlined),
                       errorText: errorMessage,
                       enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(width: 1),
@@ -172,7 +171,6 @@ class _EditProductFormState extends State<EditProductForm> {
                     },
                     decoration: const InputDecoration(
                       label: Text('Description'),
-                      // prefixIcon: Icon(Icons.notes_outlined),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(width: 1),
                       ),

@@ -90,7 +90,6 @@ class _AddProductFormState extends State<AddProductForm> {
                     decoration: InputDecoration(
                       label: const Text('Product Name'),
                       hint: const Text('Wireless Mouse'),
-                      // suffixIcon: const Icon(Icons.inventory_2_outlined),
                       errorText: errorMessage,
                       enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(width: 1),
