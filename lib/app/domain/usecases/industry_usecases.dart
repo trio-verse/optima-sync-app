@@ -1,20 +1,25 @@
+import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/domain/entities/industry_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/industry/industry_repo.dart';
+import 'package:optima_sync_v2/core/errors/failures.dart';
 
 class IndustryUsecases {
   final IndustryRepository repo;
 
   IndustryUsecases({required this.repo});
 
-  Future<List<IndustryEntity>> getIndustries() {
+  Future<Either<WhateverFailure, List<IndustryEntity>>> getIndustries() {
     return repo.getIndustries();
   }
 
-  Future<IndustryEntity> createIndustry(String newName, String newColor) {
+  Future<Either<WhateverFailure, IndustryEntity>> createIndustry(
+    String newName,
+    String newColor,
+  ) {
     return repo.createIndustry(newName, newColor);
   }
 
-  Future<IndustryEntity> updateIndustry({
+  Future<Either<WhateverFailure, IndustryEntity>> updateIndustry({
     required int id,
     required String name,
     required String color,
@@ -22,7 +27,7 @@ class IndustryUsecases {
     return repo.updateIndustry(id: id, name: name, color: color);
   }
 
-  Future<void> deleteIndustry({required int id}) {
+  Future<Either<WhateverFailure, void>> deleteIndustry({required int id}) {
     return repo.deleteIndustry(id: id);
   }
 }

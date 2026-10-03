@@ -17,12 +17,14 @@ class ClientSuccess extends ClientState {
   final ClientFilter filter;
   final bool hasMore;
   final bool isLoadingMore;
+  final ClientEntity? createdClient;
 
   const ClientSuccess({
     required this.clients,
     required this.filter,
     required this.hasMore,
     this.isLoadingMore = false,
+    this.createdClient,
   });
 
   ClientSuccess copyWith({
@@ -30,17 +32,28 @@ class ClientSuccess extends ClientState {
     ClientFilter? filter,
     bool? hasMore,
     bool? isLoadingMore,
+    ClientEntity? createdClient,
+    bool clearCreatedClient = false,
   }) {
     return ClientSuccess(
       clients: clients ?? this.clients,
       filter: filter ?? this.filter,
       hasMore: hasMore ?? this.hasMore,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      createdClient: clearCreatedClient
+          ? null
+          : (createdClient ?? this.createdClient),
     );
   }
 
   @override
-  List<Object?> get props => [clients, filter, hasMore, isLoadingMore];
+  List<Object?> get props => [
+        clients,
+        filter,
+        hasMore,
+        isLoadingMore,
+        createdClient,
+      ];
 }
 
 class ClientSubmitting extends ClientState {

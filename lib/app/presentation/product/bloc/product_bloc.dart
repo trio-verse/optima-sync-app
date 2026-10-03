@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/product_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/product_usecases.dart';
+import 'package:optima_sync_v2/core/errors/failures.dart';
 
 import 'product_event.dart';
 import 'product_state.dart';
@@ -21,13 +22,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ) async {
     emit(ProductLoading());
 
-    try {
-      final products = await usecases.getProducts();
+    final result = await usecases.getProducts();
 
-      emit(ProductSuccess(products: products));
-    } catch (e) {
-      emit(ProductFailure(message: e.toString()));
-    }
+    result.fold(
+      (failure) => emit(ProductFailure(message: _messageFor(failure))),
+      (products) => emit(ProductSuccess(products: products)),
+    );
   }
 
   Future<void> _onAddProductSubmitted(
@@ -36,37 +36,34 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ) async {
     emit(ProductLoading());
 
-    try {
-      final name = event.name.trim();
+    final name = event.name.trim();
 
-      if (name.isEmpty) {
-        emit(const ProductFailure(message: 'Product name cannot be empty'));
-        return;
-      }
-
-      final created = await usecases.createProduct(
-        name: name,
-        price: event.price,
-        description: event.description.trim(),
-      );
-
-      // The write succeeded — don't let a refresh failure disguise it as
-      // a failed submission (that would cause a false "duplicate name"
-      // error on the next retry, since the product already exists).
-      List<ProductEntity> products;
-      try {
-        products = await usecases.getProducts();
-      } catch (_) {
-        final previous = state is ProductSuccess
-            ? (state as ProductSuccess).products
-            : <ProductEntity>[];
-        products = [...previous, created];
-      }
-
-      emit(ProductSuccess(products: products));
-    } catch (e) {
-      emit(ProductFailure(message: e.toString()));
+    if (name.isEmpty) {
+      emit(const ProductFailure(message: 'Product name cannot be empty'));
+      return;
     }
+
+    final createResult = await usecases.createProduct(
+      name: name,
+      price: event.price,
+      description: event.description.trim(),
+    );
+
+    await createResult.fold(
+      (failure) async => emit(ProductFailure(message: _messageFor(failure))),
+      (created) async {
+        final refreshResult = await usecases.getProducts();
+
+        final products = refreshResult.fold((_) {
+          final previous = state is ProductSuccess
+              ? (state as ProductSuccess).products
+              : <ProductEntity>[];
+          return [...previous, created];
+        }, (list) => list);
+
+        emit(ProductSuccess(products: products));
+      },
+    );
   }
 
   Future<void> _onUpdateProductSubmitted(
@@ -75,40 +72,38 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ) async {
     emit(ProductLoading());
 
-    try {
-      final name = event.name.trim();
+    final name = event.name.trim();
 
-      if (name.isEmpty) {
-        emit(const ProductFailure(message: 'Product name cannot be empty'));
-        return;
-      }
-
-      final updated = await usecases.updateProduct(
-        id: event.id,
-        name: name,
-        price: event.price,
-        description: event.description.trim(),
-      );
-
-      // Same reasoning as create: the write already succeeded, so a
-      // refresh failure here must not be reported as a submit failure.
-      List<ProductEntity> products;
-      try {
-        products = await usecases.getProducts();
-      } catch (_) {
-        final previous = state is ProductSuccess
-            ? (state as ProductSuccess).products
-            : <ProductEntity>[];
-        products = [
-          for (final p in previous)
-            if (p.id == updated.id) updated else p,
-        ];
-      }
-
-      emit(ProductSuccess(products: products));
-    } catch (e) {
-      emit(ProductFailure(message: e.toString()));
+    if (name.isEmpty) {
+      emit(const ProductFailure(message: 'Product name cannot be empty'));
+      return;
     }
+
+    final updateResult = await usecases.updateProduct(
+      id: event.id,
+      name: name,
+      price: event.price,
+      description: event.description.trim(),
+    );
+
+    await updateResult.fold(
+      (failure) async => emit(ProductFailure(message: _messageFor(failure))),
+      (updated) async {
+        final refreshResult = await usecases.getProducts();
+
+        final products = refreshResult.fold((_) {
+          final previous = state is ProductSuccess
+              ? (state as ProductSuccess).products
+              : <ProductEntity>[];
+          return [
+            for (final p in previous)
+              if (p.id == updated.id) updated else p,
+          ];
+        }, (list) => list);
+
+        emit(ProductSuccess(products: products));
+      },
+    );
   }
 
   Future<void> _onDeleteProductSubmitted(
@@ -123,16 +118,23 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
     emit(ProductLoading());
 
-    try {
-      await usecases.deleteProduct(event.id);
+    final result = await usecases.deleteProduct(event.id);
 
-      final updatedProducts = currentState.products
-          .where((product) => product.id != event.id)
-          .toList();
+    result.fold(
+      (failure) => emit(ProductFailure(message: _messageFor(failure))),
+      (_) {
+        final updatedProducts =
+            currentState.products.where((product) => product.id != event.id).toList();
+        emit(ProductSuccess(products: updatedProducts));
+      },
+    );
+  }
 
-      emit(ProductSuccess(products: updatedProducts));
-    } catch (e) {
-      emit(ProductFailure(message: e.toString()));
-    }
+  String _messageFor(WhateverFailure failure) {
+    return failure.when(
+      serverError: () => 'Server error, please try again',
+      whatoffline: () => 'No internet connection',
+      database: () => 'Something went wrong, please try again',
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/usecases/org_usecases.dart';
+import 'package:optima_sync_v2/core/errors/failures.dart';
 
 import 'select_organization_event.dart';
 import 'select_organization_state.dart';
@@ -21,9 +22,7 @@ class SelectOrganizationBloc
     emit(SelectOrganizationLoading());
 
     try {
-      // await usecases.selectOrganization(organizationId: event.organizationId);
       await usecases.saveSelectedOrganization(event.organizationId);
-
       emit(SelectOrganizationSelected(organizationId: event.organizationId));
     } catch (e) {
       emit(SelectOrganizationFailure(message: e.toString()));
@@ -36,19 +35,28 @@ class SelectOrganizationBloc
   ) async {
     emit(SelectOrganizationLoading());
 
-    try {
-      final organizations = await usecases.getOrganizations();
-      final selectedId = await usecases.getSelectedOrganizationId();
-      print(organizations.where((t) => t.id == selectedId));
-      print(selectedId);
-      emit(
-        SelectOrganizationSuccess(
-          organizations: organizations,
-          selectedId: selectedId,
-        ),
-      );
-    } catch (e) {
-      emit(SelectOrganizationFailure(message: e.toString()));
-    }
+    final orgsResult = await usecases.getOrganizations();
+
+    await orgsResult.fold(
+      (failure) async =>
+          emit(SelectOrganizationFailure(message: _messageFor(failure))),
+      (organizations) async {
+        final selectedId = await usecases.getSelectedOrganizationId();
+        emit(
+          SelectOrganizationSuccess(
+            organizations: organizations,
+            selectedId: selectedId,
+          ),
+        );
+      },
+    );
+  }
+
+  String _messageFor(WhateverFailure failure) {
+    return failure.when(
+      serverError: () => 'Server error, please try again',
+      whatoffline: () => 'No internet connection',
+      database: () => 'Something went wrong, please try again',
+    );
   }
 }

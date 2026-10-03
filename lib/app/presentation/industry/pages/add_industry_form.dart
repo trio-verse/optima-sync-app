@@ -4,23 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/industry/bloc/industry_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/industry/bloc/industry_event.dart';
 import 'package:optima_sync_v2/app/presentation/industry/bloc/industry_state.dart';
+import 'package:optima_sync_v2/app/presentation/industry/pages/industry_list_item.dart'
+    show presetIndustryColors, colorToHex;
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
-const Color kDefaultIndustryColor = Color(0xFF2563EB);
-
-const List<Color> _presetColors = [
-  kDefaultIndustryColor,
-  Color(0xFFDC2626),
-  Color(0xFF16A34A),
-  Color(0xFFF59E0B),
-  Color(0xFF9333EA),
-  Color(0xFF0891B2),
-  Color(0xFFDB2777),
-  Color(0xFF475569),
-];
-
-String colorToHex(Color color) {
-  return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
-}
+const Color kDefaultIndustryColor = AppPallete.industryPrimary;
 
 class AddIndustryForm extends StatefulWidget {
   const AddIndustryForm({super.key});
@@ -58,7 +46,7 @@ class _AddIndustryFormState extends State<AddIndustryForm> {
       padding: EdgeInsets.only(
         left: 20,
         right: 20,
-        top: 20,
+        top: 16,
         bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       ),
       child: BlocListener<IndustryBloc, IndustryState>(
@@ -81,17 +69,74 @@ class _AddIndustryFormState extends State<AddIndustryForm> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Add Industry",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: AppPallete.cardBorder,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
                   ),
 
-                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppPallete.industryPrimarySoft,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: AppPallete.industryPrimary,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          "Add Industry",
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: AppPallete.textPrimary,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: isSubmitting
+                            ? null
+                            : () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.close,
+                          color: AppPallete.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  const Text(
+                    'Industry Name',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: AppPallete.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
 
                   TextFormField(
                     controller: nameController,
                     autofocus: true,
                     enabled: !isSubmitting,
+                    style: const TextStyle(fontSize: 14),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return "Industry name cannot be empty";
@@ -100,32 +145,61 @@ class _AddIndustryFormState extends State<AddIndustryForm> {
                       return null;
                     },
                     decoration: InputDecoration(
-                      label: const Text('Industry Name'),
-                      hint: const Text('Technology'),
-                      suffixIcon: const Icon(Icons.factory_outlined),
-                      errorText: errorMessage,
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(width: 1),
+                      hintText: 'e.g. Software, Healthcare...',
+                      hintStyle: const TextStyle(
+                        color: AppPallete.textSecondary,
+                        fontSize: 13.5,
                       ),
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(width: 1, color: Colors.blue),
+                      errorText: errorMessage,
+                      filled: true,
+                      fillColor: AppPallete.inputFill,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: AppPallete.industryPrimary,
+                          width: 1.4,
+                        ),
                       ),
                     ),
                   ),
 
                   const SizedBox(height: 20),
 
-                  const Text(
-                    'Industry Color',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Theme Color',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: AppPallete.textPrimary,
+                        ),
+                      ),
+                      Text(
+                        colorToHex(selectedColor),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppPallete.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 10),
 
                   Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: _presetColors.map((color) {
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: presetIndustryColors.map((color) {
                       final isSelected = color.value == selectedColor.value;
 
                       return GestureDetector(
@@ -137,14 +211,14 @@ class _AddIndustryFormState extends State<AddIndustryForm> {
                                 });
                               },
                         child: Container(
-                          width: 40,
-                          height: 40,
+                          width: 36,
+                          height: 36,
                           decoration: BoxDecoration(
                             color: color,
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.circular(9),
                             border: Border.all(
                               color: isSelected
-                                  ? Colors.black87
+                                  ? AppPallete.textPrimary
                                   : Colors.transparent,
                               width: 2,
                             ),
@@ -153,7 +227,7 @@ class _AddIndustryFormState extends State<AddIndustryForm> {
                               ? const Icon(
                                   Icons.check,
                                   color: Colors.white,
-                                  size: 20,
+                                  size: 18,
                                 )
                               : null,
                         ),
@@ -161,40 +235,58 @@ class _AddIndustryFormState extends State<AddIndustryForm> {
                     }).toList(),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 24),
 
                   Row(
                     children: [
-                      Container(
-                        width: 18,
-                        height: 18,
-                        decoration: BoxDecoration(
-                          color: selectedColor,
-                          borderRadius: BorderRadius.circular(4),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: isSubmitting
+                              ? null
+                              : () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppPallete.textPrimary,
+                            side: const BorderSide(
+                              color: AppPallete.cardBorder,
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text('Cancel'),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        colorToHex(selectedColor),
-                        style: TextStyle(color: Colors.grey.shade700),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton.icon(
+                          onPressed: isSubmitting ? null : _submit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppPallete.industryPrimary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          icon: isSubmitting
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Icon(Icons.check, size: 18),
+                          label: Text(
+                            isSubmitting ? 'Saving...' : 'Save Industry',
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                        ),
                       ),
                     ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: isSubmitting ? null : _submit,
-                      child: isSubmitting
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text("Add"),
-                    ),
                   ),
                 ],
               ),

@@ -3,6 +3,18 @@ import 'package:optima_sync_v2/app/domain/entities/product_entity.dart';
 import 'package:optima_sync_v2/core/constants/api_constant.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
+class _ProductPage {
+  final List<ProductEntity> products;
+  final int currentPage;
+  final int lastPage;
+
+  const _ProductPage({
+    required this.products,
+    required this.currentPage,
+    required this.lastPage,
+  });
+}
+
 class ProductRemoteDataSource {
   final HttpClientHelper client;
   final OrgLocalDataSource orgLocalDataSource;
@@ -24,21 +36,46 @@ class ProductRemoteDataSource {
 
   Future<List<ProductEntity>> getProducts() async {
     final organizationId = await _requireOrganizationId();
+    final allProducts = <ProductEntity>[];
+    var page = 1;
+    var lastPage = 1;
 
-    final result = await client.get<List<ProductEntity>>(
-      "${ApiConstants.baseUrl}/api/v1/products",
-      (json) {
+    do {
+      final uri = Uri.parse(
+        "${ApiConstants.baseUrl}/api/v1/products",
+      ).replace(queryParameters: {"per_page": "100", "page": page.toString()});
+
+      final result = await client.get<_ProductPage>(uri.toString(), (json) {
         final data = json["data"];
-        final list = data is List ? data : [data];
-
-        return list
+        final list = data is List ? data : (data == null ? [] : [data]);
+        final products = list
+            .whereType<Map>()
             .map((e) => ProductEntity.fromJson(Map<String, dynamic>.from(e)))
             .toList();
-      },
-      organizationId: organizationId,
-    );
 
-    return result!;
+        final meta = json["meta"] is Map
+            ? Map<String, dynamic>.from(json["meta"] as Map)
+            : json;
+        final currentPage =
+            int.tryParse('${meta["current_page"] ?? page}') ?? page;
+        final parsedLastPage =
+            int.tryParse('${meta["last_page"] ?? currentPage}') ?? currentPage;
+
+        return _ProductPage(
+          products: products,
+          currentPage: currentPage,
+          lastPage: parsedLastPage,
+        );
+      }, organizationId: organizationId);
+
+      if (result == null) break;
+
+      allProducts.addAll(result.products);
+      lastPage = result.lastPage;
+      page = result.currentPage + 1;
+    } while (page <= lastPage && page <= 100);
+
+    return allProducts;
   }
 
   Future<ProductEntity> createProduct({
@@ -66,10 +103,6 @@ class ProductRemoteDataSource {
           );
         }
 
-        // The server confirmed creation (status 201) but didn't return
-        // the created object (e.g. an empty "data" list). We don't have
-        // a server-issued id in that case, so the caller should reload
-        // the list to pick up the new product and its id.
         fallback = ProductEntity(
           name: name,
           price: price,
@@ -92,12 +125,6 @@ class ProductRemoteDataSource {
   }) async {
     final organizationId = await _requireOrganizationId();
 
-    // We already know what the product should look like after a
-    // successful update (we're the ones sending these values). The
-    // server confirms success with a 200, but its response body doesn't
-    // reliably contain the updated object (sometimes it's an empty
-    // list). So we use the server's copy when available, and fall back
-    // to our own local copy instead of treating "no data" as failure.
     final localFallback = ProductEntity(
       id: id,
       name: name,

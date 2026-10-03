@@ -1,0 +1,3 @@
+bool currentUserCanApproveCost() {
+  return true;
+}

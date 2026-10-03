@@ -82,9 +82,6 @@ class _AuthScreenState extends State<AuthScreen> {
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
                   if (state is SignUpSuccess) {
-                    //
-                    //  OTP Submittion
-                    //
                     return ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
@@ -117,9 +114,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     );
                   }
-                  //
-                  //  Email Submittion
-                  //
+
                   return ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
