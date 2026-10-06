@@ -3,13 +3,14 @@ import 'package:optima_sync_v2/app/domain/entities/client_entity.dart';
 
 class ClientListItem extends StatelessWidget {
   final ClientEntity client;
-  final VoidCallback? onEdit;
+
+  final VoidCallback? onViewDetails;
   final bool isLoading;
 
   const ClientListItem({
     super.key,
     required this.client,
-    this.onEdit,
+    this.onViewDetails,
     this.isLoading = false,
   });
 
@@ -48,10 +49,11 @@ class ClientListItem extends StatelessWidget {
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : IconButton(
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: onEdit,
+              icon: const Icon(Icons.visibility_outlined),
+              tooltip: 'Details',
+              onPressed: onViewDetails,
             ),
-      onTap: onEdit,
+      onTap: onViewDetails,
     );
   }
 }

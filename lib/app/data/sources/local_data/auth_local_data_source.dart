@@ -6,10 +6,16 @@ class AuthLocalDataSource {
   AuthLocalDataSource({required this.storage});
 
   Future<bool> isLogged() async {
-    return storage.containsKey('Token');
+    final token = storage.getString('Token');
+    return token != null && token.trim().isNotEmpty;
   }
 
   Future<void> saveToken(String token) async {
     await storage.setString('Token', token);
+  }
+
+  Future<void> clearSession() async {
+    await storage.remove('Token');
+    await storage.remove('selectedOrganizationId');
   }
 }

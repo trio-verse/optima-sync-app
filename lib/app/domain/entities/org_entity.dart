@@ -23,7 +23,7 @@ class OrgEntity {
     email: json['email'],
     phone: json['phone_number'],
     address: json['address'],
-    description: json['description'],
+    description: json['description'] ?? "",
     logo: json['logo_url'],
   );
 
@@ -31,7 +31,7 @@ class OrgEntity {
     "id": id,
     "name": name,
     "email": email,
-    "phone": phone,
+    "phone_number": phone,
     "address": address,
     "description": description,
     "logo": logo,

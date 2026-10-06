@@ -9,7 +9,8 @@ import 'package:optima_sync_v2/app/presentation/client/bloc/client_state.dart';
 import 'package:optima_sync_v2/app/presentation/client/pages/add_client_form.dart';
 import 'package:optima_sync_v2/app/presentation/client/pages/client_filter_sheet.dart';
 import 'package:optima_sync_v2/app/presentation/client/pages/client_list_item.dart';
-import 'package:optima_sync_v2/app/presentation/client/pages/edit_client_form.dart';
+import 'package:optima_sync_v2/app/presentation/client/screen/client_details_screen.dart';
+import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
 
 class ClientScreen extends StatefulWidget {
   const ClientScreen({super.key});
@@ -101,21 +102,22 @@ class _ClientScreenState extends State<ClientScreen> {
     );
   }
 
-  void _openEditClientForm(ClientEntity client) {
-    final bloc = context.read<ClientBloc>();
+  void _openClientDetails(ClientEntity client) {
+    final clientBloc = context.read<ClientBloc>();
+    final connectionBloc = context.read<ConnectionBloc>();
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) {
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider.value(value: clientBloc),
+              BlocProvider.value(value: connectionBloc),
+            ],
+            child: ClientDetailsScreen(client: client),
+          );
+        },
       ),
-      builder: (_) {
-        return BlocProvider.value(
-          value: bloc,
-          child: EditClientForm(client: client),
-        );
-      },
     );
   }
 
@@ -265,9 +267,9 @@ class _ClientScreenState extends State<ClientScreen> {
                           return ClientListItem(
                             client: client,
                             isLoading: isSubmitting,
-                            onEdit: isSubmitting
+                            onViewDetails: isSubmitting
                                 ? null
-                                : () => _openEditClientForm(client),
+                                : () => _openClientDetails(client),
                           );
                         },
                       );

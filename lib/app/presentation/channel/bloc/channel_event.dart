@@ -11,11 +11,12 @@ class LoadChannels extends ChannelEvent {}
 
 class AddChannelSubmitted extends ChannelEvent {
   final String name;
+  final String color;
 
-  const AddChannelSubmitted({required this.name});
+  const AddChannelSubmitted({required this.name, required this.color});
 
   @override
-  List<Object?> get props => [name];
+  List<Object?> get props => [name, color];
 }
 
 class UpdateChannelSubmitted extends ChannelEvent {

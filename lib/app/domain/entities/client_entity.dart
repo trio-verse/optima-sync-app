@@ -50,7 +50,7 @@ class ClientEntity {
   }
 
   static String? _nestedName(dynamic value) {
-    if (value is Map<String, dynamic>) {
+    if (value is Map) {
       return value['name']?.toString();
     }
     return null;
@@ -64,22 +64,40 @@ class ClientEntity {
   }
 
   factory ClientEntity.fromJson(Map<String, dynamic> json) {
+    final contact = json['contact_info'] is Map
+        ? Map<String, dynamic>.from(json['contact_info'] as Map)
+        : <String, dynamic>{};
+    final addressMap = json['address'] is Map
+        ? Map<String, dynamic>.from(json['address'] as Map)
+        : null;
+    final city = json['city'] ?? addressMap?['city'];
+
+    String? contactValue(String key) =>
+        _asString(json[key]) ?? _asString(contact[key]);
+
+    final String? address = addressMap != null
+        ? (addressMap.containsKey('raw')
+              ? _asString(addressMap['raw'])
+              : _asString(addressMap['full']))
+        : _asString(json['address']);
+
     return ClientEntity(
       id: json['id']?.toString(),
       name: _asString(json['name']) ?? '',
-      clientType: _asString(json['client_type']) ?? '',
+      clientType:
+          _asString(json['client_type']) ?? _asString(json['type']) ?? '',
       industryId: _toInt(json['industry_id'] ?? json['industry']?['id']) ?? 0,
-      cityId: _toInt(json['city_id'] ?? json['city']?['id']) ?? 0,
-      phone: _asString(json['phone']) ?? '',
-      email: _asString(json['email']),
-      address: _asString(json['address']),
-      whatsapp: _asString(json['whatsapp']),
-      facebook: _asString(json['facebook']),
-      instagram: _asString(json['instagram']),
-      website: _asString(json['website']),
+      cityId: _toInt(json['city_id'] ?? city) ?? 0,
+      phone: contactValue('phone') ?? '',
+      email: contactValue('email'),
+      address: address,
+      whatsapp: contactValue('whatsapp'),
+      facebook: contactValue('facebook'),
+      instagram: contactValue('instagram'),
+      website: contactValue('website'),
       notes: _asString(json['notes']),
       industryName: _nestedName(json['industry']),
-      cityName: _nestedName(json['city']),
+      cityName: _nestedName(city),
     );
   }
 

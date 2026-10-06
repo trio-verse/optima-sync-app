@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_event.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_state.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
 void showDeleteCityDialog({
   required BuildContext context,
@@ -33,10 +34,20 @@ void showDeleteCityDialog({
               final isDeleting = state is CityLoading;
 
               return AlertDialog(
-                title: const Text("Delete City"),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                title: const Text(
+                  "Delete City",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: AppPallete.textPrimary,
+                  ),
+                ),
 
                 content: const Text(
-                  "Are you sure you want to delete this city?",
+                  "Are you sure you want to delete this city? This action cannot be undone.",
+                  style: TextStyle(color: AppPallete.textSecondary),
                 ),
 
                 actions: [
@@ -46,10 +57,20 @@ void showDeleteCityDialog({
                         : () {
                             Navigator.pop(dialogContext);
                           },
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppPallete.textSecondary,
+                    ),
                     child: const Text("Cancel"),
                   ),
 
-                  TextButton(
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFDC2626),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                     onPressed: isDeleting
                         ? null
                         : () {
@@ -61,7 +82,10 @@ void showDeleteCityDialog({
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text("Confirm"),
                   ),

@@ -30,6 +30,10 @@ class ClientRemoteDataSource {
     ).replace(queryParameters: filter.toQueryParameters());
 
     final result = await client.get<ClientListResult>(uri.toString(), (json) {
+      print('========== CLIENT API RESPONSE ==========');
+      print(json);
+      print('=========================================');
+
       final data = (json["data"] as List)
           .map((e) => ClientEntity.fromJson(e))
           .toList();

@@ -4,6 +4,7 @@ import 'package:optima_sync_v2/app/domain/entities/product_entity.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_event.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_state.dart';
+import 'package:optima_sync_v2/app/presentation/product/theme/product_colors.dart';
 
 class EditProductForm extends StatefulWidget {
   final ProductEntity product;
@@ -57,13 +58,52 @@ class _EditProductFormState extends State<EditProductForm> {
     }
   }
 
+  InputDecoration _decoration({
+    required String label,
+    String? hint,
+    Widget? prefixIcon,
+    String? errorText,
+  }) {
+    return InputDecoration(
+      label: Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          color: ProductColors.titleText,
+        ),
+      ),
+      hintText: hint,
+      hintStyle: const TextStyle(color: ProductColors.subtitleText),
+      prefixIcon: prefixIcon,
+      errorText: errorText,
+      filled: true,
+      fillColor: ProductColors.inputFill,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 14,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ProductColors.inputBorder),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ProductColors.primary, width: 1.5),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: ProductColors.danger),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
         left: 20,
         right: 20,
-        top: 20,
+        top: 12,
         bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       ),
       child: BlocListener<ProductBloc, ProductState>(
@@ -84,12 +124,46 @@ class _EditProductFormState extends State<EditProductForm> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Edit Product",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: ProductColors.cardBorder,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
                   ),
 
-                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: ProductColors.statBlueBg,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.edit_outlined,
+                          color: ProductColors.statBlueFg,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        "Edit Product",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: ProductColors.titleText,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
 
                   TextFormField(
                     controller: nameController,
@@ -106,19 +180,13 @@ class _EditProductFormState extends State<EditProductForm> {
 
                       return null;
                     },
-                    decoration: InputDecoration(
-                      label: const Text("Product Name"),
+                    decoration: _decoration(
+                      label: "Product or Service Name",
                       errorText: errorMessage,
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(width: 1),
-                      ),
-                      focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(width: 1, color: Colors.blue),
-                      ),
                     ),
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 16),
 
                   TextFormField(
                     controller: priceController,
@@ -139,19 +207,16 @@ class _EditProductFormState extends State<EditProductForm> {
 
                       return null;
                     },
-                    decoration: const InputDecoration(
-                      label: Text('Price'),
-                      prefixIcon: Icon(Icons.attach_money_outlined),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1, color: Colors.blue),
+                    decoration: _decoration(
+                      label: "Default Price (\$)",
+                      prefixIcon: const Icon(
+                        Icons.attach_money_outlined,
+                        color: ProductColors.subtitleText,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 16),
 
                   TextFormField(
                     controller: descriptionController,
@@ -169,31 +234,64 @@ class _EditProductFormState extends State<EditProductForm> {
 
                       return null;
                     },
-                    decoration: const InputDecoration(
-                      label: Text('Description'),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1, color: Colors.blue),
-                      ),
-                    ),
+                    decoration: _decoration(label: "Description & Details"),
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 20),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: isSubmitting ? null : _submit,
-                      child: isSubmitting
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text("Save"),
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: isSubmitting
+                              ? null
+                              : () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: ProductColors.titleText,
+                            side: const BorderSide(
+                              color: ProductColors.inputBorder,
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Text("Cancel"),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton.icon(
+                          onPressed: isSubmitting ? null : _submit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: ProductColors.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          icon: isSubmitting
+                              ? const SizedBox.shrink()
+                              : const Icon(Icons.check, size: 18),
+                          label: isSubmitting
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  "Save Changes",
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

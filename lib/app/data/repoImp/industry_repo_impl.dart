@@ -1,6 +1,8 @@
+import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/data/sources/remote_data/industry_remote_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/industry_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/industry/industry_repo.dart';
+import 'package:optima_sync_v2/core/errors/failures.dart';
 
 class IndustryRepositoryImpl implements IndustryRepository {
   final IndustryRemoteDataSource remoteDataSource;
@@ -8,26 +10,55 @@ class IndustryRepositoryImpl implements IndustryRepository {
   IndustryRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<IndustryEntity>> getIndustries() {
-    return remoteDataSource.getIndustries();
+  Future<Either<WhateverFailure, List<IndustryEntity>>> getIndustries() async {
+    try {
+      final res = await remoteDataSource.getIndustries();
+      return Right(res);
+    } catch (e) {
+      return Left(.serverError());
+    }
   }
 
   @override
-  Future<IndustryEntity> createIndustry(String newName, String newColor) {
-    return remoteDataSource.createIndustry(newName, newColor);
+  Future<Either<WhateverFailure, IndustryEntity>> createIndustry(
+    String newName,
+    String newColor,
+  ) async {
+    try {
+      final res = await remoteDataSource.createIndustry(newName, newColor);
+      return Right(res);
+    } catch (e) {
+      return Left(.serverError());
+    }
   }
 
   @override
-  Future<IndustryEntity> updateIndustry({
+  Future<Either<WhateverFailure, IndustryEntity>> updateIndustry({
     required int id,
     required String name,
     required String color,
-  }) {
-    return remoteDataSource.updateIndustry(id.toString(), name, color);
+  }) async {
+    try {
+      final res = await remoteDataSource.updateIndustry(
+        id.toString(),
+        name,
+        color,
+      );
+      return Right(res);
+    } catch (e) {
+      return Left(.serverError());
+    }
   }
 
   @override
-  Future<void> deleteIndustry({required int id}) {
-    return remoteDataSource.deleteIndustry(id: id);
+  Future<Either<WhateverFailure, void>> deleteIndustry({
+    required int id,
+  }) async {
+    try {
+      final res = await remoteDataSource.deleteIndustry(id: id);
+      return Right(res);
+    } catch (e) {
+      return Left(.serverError());
+    }
   }
 }

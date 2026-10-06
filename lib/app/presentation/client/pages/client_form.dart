@@ -17,6 +17,8 @@ class ClientForm extends StatefulWidget {
   final String submitLabel;
   final ClientEntity? initial;
   final void Function(ClientEntity client) onSubmit;
+  final bool closeOnSuccess;
+  final ValueChanged<ClientEntity>? onCreated;
 
   const ClientForm({
     super.key,
@@ -24,6 +26,8 @@ class ClientForm extends StatefulWidget {
     required this.submitLabel,
     required this.onSubmit,
     this.initial,
+    this.closeOnSuccess = true,
+    this.onCreated,
   });
 
   @override
@@ -46,6 +50,7 @@ class _ClientFormState extends State<ClientForm> {
   late String clientType;
   int? industryId;
   int? cityId;
+  bool _submissionRequested = false;
 
   static final _phoneRegex = RegExp(r'^\+?[0-9\s\-()]{7,20}$');
   static final _urlRegex = RegExp(
@@ -116,6 +121,7 @@ class _ClientFormState extends State<ClientForm> {
 
     if (!formKey.currentState!.validate()) return;
 
+    _submissionRequested = true;
     widget.onSubmit(
       ClientEntity(
         id: widget.initial?.id,
@@ -158,8 +164,20 @@ class _ClientFormState extends State<ClientForm> {
       ),
       child: BlocListener<ClientBloc, ClientState>(
         listener: (context, state) {
-          if (state is ClientSuccess) {
-            Navigator.pop(context);
+          if (state is ClientFailure) {
+            _submissionRequested = false;
+          }
+
+          if (state is ClientSuccess && _submissionRequested) {
+            _submissionRequested = false;
+            final createdClient = state.createdClient;
+            if (createdClient != null) {
+              widget.onCreated?.call(createdClient);
+            }
+
+            if (widget.closeOnSuccess) {
+              Navigator.pop(context);
+            }
           }
         },
         child: BlocBuilder<ClientBloc, ClientState>(

@@ -1,19 +1,35 @@
 import 'package:equatable/equatable.dart';
-
-enum HomeTab { dashboard, industries, marketing, sales, settings }
+import 'package:optima_sync_v2/app/domain/entities/sales_dashboard_entity.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-class HomeLoaded extends HomeState {
-  final HomeTab currentTab;
+class HomeInitial extends HomeState {
+  const HomeInitial();
+}
 
-  const HomeLoaded({required this.currentTab});
+class HomeLoading extends HomeState {
+  const HomeLoading();
+}
+
+class HomeSuccess extends HomeState {
+  final SalesDashboardEntity dashboard;
+
+  const HomeSuccess({required this.dashboard});
 
   @override
-  List<Object> get props => [currentTab];
+  List<Object?> get props => [dashboard];
+}
+
+class HomeFailure extends HomeState {
+  final String message;
+
+  const HomeFailure({required this.message});
+
+  @override
+  List<Object?> get props => [message];
 }

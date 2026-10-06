@@ -1,17 +1,21 @@
+import 'package:dartz/dartz.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:optima_sync_v2/app/domain/entities/org_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/createOrg/org_repo.dart';
+import 'package:optima_sync_v2/core/errors/failures.dart';
 
 class OrgUsecases {
   final OrgRepository repo;
 
   OrgUsecases({required this.repo});
 
-  Future<String> createOrg(OrgEntity org) {
+  Future<Either<WhateverFailure, String>> createOrg(OrgEntity org) {
     return repo.createOrg(org);
   }
 
-  Future<void> selectOrganization({required String organizationId}) {
+  Future<Either<WhateverFailure, void>> selectOrganization({
+    required String organizationId,
+  }) {
     return repo.selectOrganization(organizationId: organizationId);
   }
 
@@ -19,14 +23,14 @@ class OrgUsecases {
     return repo.saveSelectedOrganization(id);
   }
 
-  Future<void> uploadLogo({
+  Future<Either<WhateverFailure, void>> uploadLogo({
     required String organizationId,
     required XFile image,
   }) {
     return repo.uploadLogo(organizationId: organizationId, image: image);
   }
 
-  Future<bool> checkSelectedOrg() async {
+  Future<bool> checkSelectedOrg() {
     return repo.checkSelectedOrg();
   }
 
@@ -34,11 +38,11 @@ class OrgUsecases {
     return repo.getSelectedOrganizationId();
   }
 
-  Future<List<OrgEntity>> getOrganizations() {
+  Future<Either<WhateverFailure, List<OrgEntity>>> getOrganizations() {
     return repo.getOrganizations();
   }
 
-  Future<void> updateOrg(OrgEntity org) {
+  Future<Either<WhateverFailure, void>> updateOrg(OrgEntity org) {
     return repo.updateOrg(org);
   }
 }

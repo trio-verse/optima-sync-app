@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/channel_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/channel_usecases.dart';
+import 'package:optima_sync_v2/core/errors/failures.dart';
 
 import 'channel_event.dart';
 import 'channel_state.dart';
@@ -19,19 +18,9 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
 
   List<ChannelEntity> _getCurrentChannels() {
     final currentState = state;
-
-    if (currentState is ChannelSuccess) {
-      return currentState.channels;
-    }
-
-    if (currentState is ChannelSubmitting) {
-      return currentState.channels;
-    }
-
-    if (currentState is ChannelFailure) {
-      return currentState.channels ?? const [];
-    }
-
+    if (currentState is ChannelSuccess) return currentState.channels;
+    if (currentState is ChannelSubmitting) return currentState.channels;
+    if (currentState is ChannelFailure) return currentState.channels ?? const [];
     return const [];
   }
 
@@ -41,13 +30,12 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
   ) async {
     emit(ChannelLoading());
 
-    try {
-      final channels = await usecases.getChannels();
+    final result = await usecases.getChannels();
 
-      emit(ChannelSuccess(channels: channels));
-    } catch (e) {
-      emit(ChannelFailure(message: e.toString()));
-    }
+    result.fold(
+      (failure) => emit(ChannelFailure(message: _messageFor(failure))),
+      (channels) => emit(ChannelSuccess(channels: channels)),
+    );
   }
 
   Future<void> _onAddChannelSubmitted(
@@ -55,7 +43,6 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
     Emitter<ChannelState> emit,
   ) async {
     final existingChannels = _getCurrentChannels();
-
     final name = event.name.trim();
 
     if (name.isEmpty) {
@@ -84,16 +71,18 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
 
     emit(ChannelSubmitting(channels: existingChannels));
 
-    try {
-      final newChannel = await usecases.createChannel(
-        name: name,
-        color: _randomColor(),
-      );
+    final result = await usecases.createChannel(
+      name: name,
+      color: event.color,
+    );
 
-      emit(ChannelSuccess(channels: [newChannel, ...existingChannels]));
-    } catch (e) {
-      emit(ChannelFailure(message: e.toString(), channels: existingChannels));
-    }
+    result.fold(
+      (failure) => emit(
+        ChannelFailure(message: _messageFor(failure), channels: existingChannels),
+      ),
+      (newChannel) =>
+          emit(ChannelSuccess(channels: [newChannel, ...existingChannels])),
+    );
   }
 
   Future<void> _onUpdateChannelSubmitted(
@@ -101,7 +90,6 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
     Emitter<ChannelState> emit,
   ) async {
     final existingChannels = _getCurrentChannels();
-
     final name = event.name.trim();
 
     if (name.isEmpty) {
@@ -132,25 +120,24 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
 
     emit(ChannelSubmitting(channels: existingChannels));
 
-    try {
-      final updatedChannel = await usecases.updateChannel(
-        id: event.id,
-        name: name,
-        color: event.color,
-      );
+    final result = await usecases.updateChannel(
+      id: event.id,
+      name: name,
+      color: event.color,
+    );
 
-      final updatedChannels = existingChannels.map((channel) {
-        if (channel.id == event.id) {
-          return updatedChannel;
-        }
-
-        return channel;
-      }).toList();
-
-      emit(ChannelSuccess(channels: updatedChannels));
-    } catch (e) {
-      emit(ChannelFailure(message: e.toString(), channels: existingChannels));
-    }
+    result.fold(
+      (failure) => emit(
+        ChannelFailure(message: _messageFor(failure), channels: existingChannels),
+      ),
+      (updatedChannel) {
+        final updatedChannels = existingChannels.map((channel) {
+          if (channel.id == event.id) return updatedChannel;
+          return channel;
+        }).toList();
+        emit(ChannelSuccess(channels: updatedChannels));
+      },
+    );
   }
 
   Future<void> _onDeleteChannelSubmitted(
@@ -161,24 +148,26 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
 
     emit(ChannelSubmitting(channels: existingChannels));
 
-    try {
-      await usecases.deleteChannel(id: event.id);
+    final result = await usecases.deleteChannel(id: event.id);
 
-      final updatedChannels = existingChannels
-          .where((channel) => channel.id != event.id)
-          .toList();
-
-      emit(ChannelSuccess(channels: updatedChannels));
-    } catch (e) {
-      emit(ChannelFailure(message: e.toString(), channels: existingChannels));
-    }
+    result.fold(
+      (failure) => emit(
+        ChannelFailure(message: _messageFor(failure), channels: existingChannels),
+      ),
+      (_) {
+        final updatedChannels = existingChannels
+            .where((channel) => channel.id != event.id)
+            .toList();
+        emit(ChannelSuccess(channels: updatedChannels));
+      },
+    );
   }
 
-  String _randomColor() {
-    final random = Random();
-
-    final value = random.nextInt(0xFFFFFF).toRadixString(16).padLeft(6, '0');
-
-    return '#${value.toUpperCase()}';
+  String _messageFor(WhateverFailure failure) {
+    return failure.when(
+      serverError: () => 'Server error, please try again',
+      whatoffline: () => 'No internet connection',
+      database: () => 'Something went wrong, please try again',
+    );
   }
 }
