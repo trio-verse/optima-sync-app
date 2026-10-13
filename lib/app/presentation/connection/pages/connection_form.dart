@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/campaign_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/channel_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/connection_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/channel_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/product_entity.dart';
 import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_event.dart';
@@ -15,6 +15,7 @@ import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_state
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_event.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_state.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
 class ConnectionForm extends StatefulWidget {
   final String title;
@@ -98,6 +99,7 @@ class _ConnectionFormState extends State<ConnectionForm> {
         productId: productId!,
 
         stage: stage,
+        createdAt: widget.initial?.createdAt ?? DateTime.now(),
 
         dealValue: widget.initial?.dealValue,
         channelId: channelId,
@@ -115,9 +117,11 @@ class _ConnectionFormState extends State<ConnectionForm> {
       label: Text(label),
       errorText: errorText,
       prefixIcon: icon,
-      enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1)),
+      enabledBorder: const OutlineInputBorder(
+        borderSide: BorderSide(width: 1, color: AppPallete.cardBorder),
+      ),
       focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(width: 1, color: Colors.blue),
+        borderSide: BorderSide(width: 1, color: AppPallete.primary),
       ),
     );
   }

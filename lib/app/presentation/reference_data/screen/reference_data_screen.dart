@@ -42,8 +42,8 @@ class _ReferenceDataScreenState extends State<ReferenceDataScreen> {
     return Scaffold(
       backgroundColor: AppPallete.pageBackground,
       appBar: AppBar(
-        backgroundColor: AppPallete.pageBackground,
-        surfaceTintColor: AppPallete.pageBackground,
+        backgroundColor: AppPallete.cardBackground,
+        surfaceTintColor: AppPallete.cardBackground,
         elevation: 0,
         foregroundColor: AppPallete.textPrimary,
         title: const Text('Reference Data'),

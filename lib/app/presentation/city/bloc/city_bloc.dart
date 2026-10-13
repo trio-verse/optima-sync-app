@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/city_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/city_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/city_usecases.dart';
 import 'package:optima_sync_v2/core/errors/failures.dart';
 
@@ -75,9 +75,8 @@ class CityBloc extends Bloc<CityEvent, CityState> {
       final citiesResult = await usecases.getCities();
 
       citiesResult.fold(
-        (l) => emit(
-          CityFailure(message: _messageFor(l), cities: existingCities),
-        ),
+        (l) =>
+            emit(CityFailure(message: _messageFor(l), cities: existingCities)),
         (r) => emit(CitySuccess(cities: r)),
       );
     } catch (e) {
@@ -130,9 +129,8 @@ class CityBloc extends Bloc<CityEvent, CityState> {
       final citiesResult = await usecases.getCities();
 
       citiesResult.fold(
-        (l) => emit(
-          CityFailure(message: _messageFor(l), cities: existingCities),
-        ),
+        (l) =>
+            emit(CityFailure(message: _messageFor(l), cities: existingCities)),
         (r) => emit(CitySuccess(cities: r)),
       );
     } catch (e) {

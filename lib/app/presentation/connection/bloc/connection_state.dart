@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:optima_sync_v2/app/domain/entities/connection_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 
 abstract class ConnectionState extends Equatable {
   const ConnectionState();

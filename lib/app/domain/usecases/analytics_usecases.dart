@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:optima_sync_v2/app/domain/entities/analytics_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/analytics/analytics_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures.dart';
 
@@ -13,7 +13,7 @@ class AnalyticsUsecases {
   }
 
   Future<Either<WhateverFailure, List<EffectiveCampaignEntity>>>
-      getEffectiveCampaigns() {
+  getEffectiveCampaigns() {
     return repo.getEffectiveCampaigns();
   }
 

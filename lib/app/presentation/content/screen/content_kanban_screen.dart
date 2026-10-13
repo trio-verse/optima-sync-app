@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:optima_sync_v2/app/domain/entities/content_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/presentation/content/bloc/content_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/content/bloc/content_event.dart';
 import 'package:optima_sync_v2/app/presentation/content/bloc/content_state.dart';
@@ -27,6 +28,7 @@ class ContentKanbanScreen extends StatefulWidget {
 }
 
 class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
+  String _selectedStatus = kContentStatuses.first;
   @override
   void initState() {
     super.initState();
@@ -156,25 +158,118 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
             );
           }
 
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: kContentStatuses.map((status) {
-                final columnItems = contents
-                    .where((c) => c.status == status)
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth < AppPallete.mobileBreakpoint) {
+                final visible = contents
+                    .where((content) => content.status == _selectedStatus)
                     .toList();
-
-                return _KanbanColumn(
-                  status: status,
-                  items: columnItems,
-                  campaignId: widget.campaignId,
-                  campaignChannelIds: widget.campaignChannelIds,
-                  onDropped: (content) => _moveToStatus(content, status),
+                return Column(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                      child: Row(
+                        children: kContentStatuses
+                            .map(
+                              (status) => Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: ChoiceChip(
+                                  label: Text(
+                                    '${ContentStatusStyle.label(status)} (${contents.where((content) => content.status == status).length})',
+                                  ),
+                                  selected: _selectedStatus == status,
+                                  selectedColor: AppPallete.primarySoft,
+                                  onSelected: (_) =>
+                                      setState(() => _selectedStatus = status),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                    if (state is ContentSubmitting)
+                      const LinearProgressIndicator(minHeight: 2),
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+                        children: [
+                          if (visible.isEmpty)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 40),
+                              child: Text(
+                                'No content in this status.',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ...visible.map(
+                            (content) => Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                ContentCard(
+                                  campaignId: widget.campaignId,
+                                  content: content,
+                                  campaignChannelIds: widget.campaignChannelIds,
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: PopupMenuButton<String>(
+                                    tooltip: 'Change status',
+                                    onSelected: (status) =>
+                                        _moveToStatus(content, status),
+                                    itemBuilder: (_) => kContentStatuses
+                                        .map(
+                                          (status) => PopupMenuItem(
+                                            value: status,
+                                            child: Text(
+                                              ContentStatusStyle.label(status),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(12),
+                                      child: Text(
+                                        'Change status',
+                                        style: TextStyle(
+                                          color: AppPallete.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 );
-              }).toList(),
-            ),
+              }
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: kContentStatuses.map((status) {
+                    final columnItems = contents
+                        .where((c) => c.status == status)
+                        .toList();
+
+                    return _KanbanColumn(
+                      status: status,
+                      items: columnItems,
+                      campaignId: widget.campaignId,
+                      campaignChannelIds: widget.campaignChannelIds,
+                      onDropped: (content) => _moveToStatus(content, status),
+                    );
+                  }).toList(),
+                ),
+              );
+            },
           );
         },
       ),
@@ -215,10 +310,10 @@ class _KanbanColumn extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isHovering
                     ? color.withOpacity(0.08)
-                    : Colors.grey.shade100,
+                    : AppPallete.inputFill,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: isHovering ? color : Colors.grey.shade300,
+                  color: isHovering ? color : AppPallete.cardBorder,
                   width: isHovering ? 2 : 1,
                 ),
               ),
@@ -273,7 +368,7 @@ class _KanbanColumn extends StatelessWidget {
                               'Drop content here',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey.shade500,
+                                color: AppPallete.textSecondary,
                               ),
                             ),
                           )

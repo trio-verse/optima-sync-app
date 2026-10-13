@@ -24,10 +24,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LogoutRequested>(_onLogout);
   }
 
-  Future<void> _onLogout(
-    LogoutRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+  Future<void> _onLogout(LogoutRequested event, Emitter<AuthState> emit) async {
     emit(LogoutInProgress());
 
     try {
@@ -55,7 +52,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
 
-    final result = await usecases.verifyOtp(email: event.email, code: event.code);
+    final result = await usecases.verifyOtp(
+      email: event.email,
+      code: event.code,
+    );
 
     result.fold(
       (failure) => emit(AuthFailure(message: _messageFor(failure))),

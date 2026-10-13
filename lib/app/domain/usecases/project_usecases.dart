@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_details_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_feature_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_meeting_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_details_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_feature_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_meeting_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/project/project_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures.dart';
 
@@ -58,8 +58,7 @@ class ProjectUsecases {
     String employeeId,
     int totalPoints,
   ) => repo.addProjectEmployee(projectId, employeeId, totalPoints);
-  Future<Either<WhateverFailure, ProjectEmployeeEntity>>
-  updateProjectEmployee(
+  Future<Either<WhateverFailure, ProjectEmployeeEntity>> updateProjectEmployee(
     String projectId,
     String assignmentId,
     int totalPoints,

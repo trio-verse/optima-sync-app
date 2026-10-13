@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
 class CampaignStatusStyle {
   static Color color(String status) {
     switch (status) {
       case 'active':
-        return Colors.green;
+        return AppPallete.success;
       case 'paused':
-        return Colors.orange;
+        return AppPallete.warning;
       case 'completed':
-        return Colors.blue;
+        return AppPallete.primary;
       case 'cancelled':
-        return Colors.red;
+        return AppPallete.danger;
       case 'draft':
       default:
-        return Colors.grey;
+        return AppPallete.textSecondary;
     }
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/connection_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_event.dart';
 
@@ -25,11 +25,7 @@ class EditConnectionForm extends StatelessWidget {
       showStage: false,
       onSubmit: (updated) {
         context.read<ConnectionBloc>().add(
-          UpdateConnectionSubmitted(
-            id: connection.id!,
-            clientId: clientId,
-            connection: updated,
-          ),
+          UpdateConnectionSubmitted(connection: updated),
         );
       },
     );

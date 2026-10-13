@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/analytics/bloc/analytics_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/analytics/bloc/analytics_event.dart';
@@ -86,7 +87,7 @@ class _MarketingAnalyticsScreenState extends State<MarketingAnalyticsScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Text(
                         'No campaign data yet.',
-                        style: TextStyle(color: Colors.grey.shade600),
+                        style: TextStyle(color: AppPallete.textSecondary),
                       ),
                     )
                   else
@@ -95,8 +96,8 @@ class _MarketingAnalyticsScreenState extends State<MarketingAnalyticsScreen> {
                         elevation: 0,
                         margin: const EdgeInsets.only(bottom: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          side: BorderSide(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(color: AppPallete.cardBorder),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(14),

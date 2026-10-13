@@ -17,7 +17,9 @@ class AddConnectionForm extends StatelessWidget {
       submitLabel: "Add",
       onSubmit: (connection) {
         context.read<ConnectionBloc>().add(
-          AddConnectionSubmitted(clientId: clientId, connection: connection),
+          AddConnectionSubmitted(
+            connection: connection.copyWith(clientId: clientId),
+          ),
         );
       },
     );

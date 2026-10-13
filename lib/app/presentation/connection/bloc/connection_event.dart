@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:optima_sync_v2/app/domain/entities/connection_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 
 abstract class ConnectionEvent extends Equatable {
   const ConnectionEvent();
@@ -22,54 +22,22 @@ class LoadAllConnections extends ConnectionEvent {
 }
 
 class AddConnectionSubmitted extends ConnectionEvent {
-  final String clientId;
   final ConnectionEntity connection;
-
-  const AddConnectionSubmitted({
-    required this.clientId,
-    required this.connection,
-  });
-
+  const AddConnectionSubmitted({required this.connection});
   @override
-  List<Object?> get props => [clientId, connection];
+  List<Object?> get props => [connection];
 }
 
 class UpdateConnectionSubmitted extends ConnectionEvent {
-  final String id;
-  final String clientId;
   final ConnectionEntity connection;
-
-  const UpdateConnectionSubmitted({
-    required this.id,
-    required this.clientId,
-    required this.connection,
-  });
-
+  const UpdateConnectionSubmitted({required this.connection});
   @override
-  List<Object?> get props => [id, clientId, connection];
-}
-
-class UpdateConnectionStageSubmitted extends ConnectionEvent {
-  final String id;
-  final String clientId;
-  final String stage;
-
-  const UpdateConnectionStageSubmitted({
-    required this.id,
-    required this.clientId,
-    required this.stage,
-  });
-
-  @override
-  List<Object?> get props => [id, clientId, stage];
+  List<Object?> get props => [connection];
 }
 
 class DeleteConnectionSubmitted extends ConnectionEvent {
   final String id;
-  final String clientId;
-
-  const DeleteConnectionSubmitted({required this.id, required this.clientId});
-
+  const DeleteConnectionSubmitted({required this.id});
   @override
-  List<Object?> get props => [id, clientId];
+  List<Object?> get props => [id];
 }

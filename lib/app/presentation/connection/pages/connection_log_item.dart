@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:optima_sync_v2/app/domain/entities/connection_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_event.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/delete_connection_dialog.dart';
@@ -79,10 +79,8 @@ class ConnectionLogItem extends StatelessWidget {
     if (connection.id == null || connection.clientId == null) return;
 
     bloc.add(
-      UpdateConnectionStageSubmitted(
-        id: connection.id!,
-        clientId: connection.clientId!,
-        stage: selected,
+      UpdateConnectionSubmitted(
+        connection: connection.copyWith(stage: selected),
       ),
     );
   }
@@ -131,7 +129,7 @@ class ConnectionLogItem extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppPallete.cardBackground,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppPallete.cardBorder),
       ),
       child: Column(
@@ -341,7 +339,7 @@ class ConnectionLogItem extends StatelessWidget {
             Text(
               _formatDate(connection.createdAt!),
               style: const TextStyle(
-                fontSize: 11.5,
+                fontSize: 12,
                 color: AppPallete.textSecondary,
               ),
             ),

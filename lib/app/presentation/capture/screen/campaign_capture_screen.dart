@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/capture_settings_entity.dart';
@@ -126,7 +127,7 @@ class _CampaignCaptureScreenState extends State<CampaignCaptureScreen> {
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: Colors.grey.shade300),
+                  side: BorderSide(color: AppPallete.cardBorder),
                 ),
                 child: SwitchListTile(
                   title: const Text('Capture form'),
@@ -153,7 +154,7 @@ class _CampaignCaptureScreenState extends State<CampaignCaptureScreen> {
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: Colors.grey.shade300),
+                  side: BorderSide(color: AppPallete.cardBorder),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -164,7 +165,7 @@ class _CampaignCaptureScreenState extends State<CampaignCaptureScreen> {
                         'Capture link',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade600,
+                          color: AppPallete.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -209,7 +210,7 @@ class _CampaignCaptureScreenState extends State<CampaignCaptureScreen> {
                           'QR code data',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey.shade600,
+                            color: AppPallete.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 6),

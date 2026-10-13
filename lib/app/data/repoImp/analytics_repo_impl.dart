@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/data/sources/remote_data/analytics_remote_data_source.dart';
-import 'package:optima_sync_v2/app/domain/entities/analytics_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/analytics/analytics_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures.dart';
 
@@ -10,7 +10,8 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
   AnalyticsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<WhateverFailure, MarketingDashboardEntity>> getDashboard() async {
+  Future<Either<WhateverFailure, MarketingDashboardEntity>>
+  getDashboard() async {
     try {
       final res = await remoteDataSource.getDashboard();
       return Right(res);
@@ -21,7 +22,7 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
 
   @override
   Future<Either<WhateverFailure, List<EffectiveCampaignEntity>>>
-      getEffectiveCampaigns() async {
+  getEffectiveCampaigns() async {
     try {
       final res = await remoteDataSource.getEffectiveCampaigns();
       return Right(res);

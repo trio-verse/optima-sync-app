@@ -64,15 +64,15 @@ class _AddProductFormState extends State<AddProductForm> {
         vertical: 14,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: ProductColors.inputBorder),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: ProductColors.primary, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         borderSide: const BorderSide(color: ProductColors.danger),
       ),
     );
@@ -80,7 +80,7 @@ class _AddProductFormState extends State<AddProductForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(child: SafeArea(top: false, child: Padding(
       padding: EdgeInsets.only(
         left: 20,
         right: 20,
@@ -105,17 +105,7 @@ class _AddProductFormState extends State<AddProductForm> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: ProductColors.cardBorder,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ),
+
 
                   Row(
                     children: [
@@ -239,7 +229,7 @@ class _AddProductFormState extends State<AddProductForm> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           child: const Text("Cancel"),
@@ -256,7 +246,7 @@ class _AddProductFormState extends State<AddProductForm> {
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           icon: isSubmitting
@@ -285,6 +275,6 @@ class _AddProductFormState extends State<AddProductForm> {
           },
         ),
       ),
-    );
+    )));
   }
 }

@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
 class ContentStatusStyle {
   static Color color(String status) {
     switch (status) {
       case 'in_review':
-        return Colors.orange;
+        return AppPallete.warning;
       case 'approved':
-        return Colors.blue;
+        return AppPallete.primary;
       case 'rejected':
-        return Colors.red;
+        return AppPallete.danger;
       case 'published':
-        return Colors.green;
+        return AppPallete.success;
       case 'draft':
       default:
-        return Colors.grey;
+        return AppPallete.textSecondary;
     }
   }
 

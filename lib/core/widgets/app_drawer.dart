@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/app/presentation/task/screen/task_manager_screen.dart';
+import 'package:optima_sync_v2/app/presentation/task/bloc/task_bloc.dart';
+import 'package:optima_sync_v2/service_locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_event.dart';
@@ -101,9 +104,36 @@ class AppDrawer extends StatelessWidget {
                 children: [
                   _DrawerItem(
                     icon: Icons.home_outlined,
-                    label: 'Home',
+                    label: 'Dashboard',
                     selected: selectedItem == 'Home',
                     onTap: () => _navigate(context, const HomeScreen(), 'Home'),
+                  ),
+                  _DrawerItem(
+                    icon: Icons.folder_copy_outlined,
+                    label: 'Projects',
+                    selected: selectedItem == 'Projects',
+                    onTap: () =>
+                        _navigate(context, const ProjectScreen(), 'Projects'),
+                  ),
+                  _DrawerItem(
+                    icon: Icons.task_alt,
+                    label: 'Task Manager',
+                    selected: selectedItem == 'Task Manager',
+                    onTap: () => _navigate(
+                      context,
+                      BlocProvider(
+                        create: (_) => TaskBloc(usecases: sl(), memberUsecases: sl()),
+                        child: const TaskManagerScreen(),
+                      ),
+                      'Task Manager',
+                    ),
+                  ),
+                  _DrawerItem(
+                    icon: Icons.badge_outlined,
+                    label: 'HR',
+                    selected: selectedItem == 'Employees',
+                    onTap: () =>
+                        _navigate(context, const EmployeeScreen(), 'Employees'),
                   ),
                   _DrawerItem(
                     icon: Icons.bar_chart_rounded,
@@ -147,13 +177,6 @@ class AppDrawer extends StatelessWidget {
                         _navigate(context, const ClientScreen(), 'Clients'),
                   ),
                   _DrawerItem(
-                    icon: Icons.badge_outlined,
-                    label: 'Employees',
-                    selected: selectedItem == 'Employees',
-                    onTap: () =>
-                        _navigate(context, const EmployeeScreen(), 'Employees'),
-                  ),
-                  _DrawerItem(
                     icon: Icons.storage_outlined,
                     label: 'Reference Data',
                     selected: selectedItem == 'Reference Data',
@@ -162,13 +185,6 @@ class AppDrawer extends StatelessWidget {
                       const ReferenceDataScreen(),
                       'Reference Data',
                     ),
-                  ),
-                  _DrawerItem(
-                    icon: Icons.folder_copy_outlined,
-                    label: 'Projects',
-                    selected: selectedItem == 'Projects',
-                    onTap: () =>
-                        _navigate(context, const ProjectScreen(), 'Projects'),
                   ),
                 ],
               ),
@@ -195,7 +211,7 @@ class AppDrawer extends StatelessWidget {
                   border: Border.all(color: const Color(0xFFFFDADA)),
                 ),
                 child: ListTile(
-                  dense: true,
+                  dense: false,
                   leading: const Icon(
                     Icons.logout_rounded,
                     color: Colors.redAccent,
@@ -206,7 +222,7 @@ class AppDrawer extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.redAccent,
                       fontWeight: FontWeight.w600,
-                      fontSize: 12.5,
+                      fontSize: 14,
                     ),
                   ),
                   onTap: () => _logout(context),
@@ -298,7 +314,7 @@ class _DrawerItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
-        dense: true,
+        dense: false,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         leading: Icon(
           icon,
@@ -308,7 +324,7 @@ class _DrawerItem extends StatelessWidget {
         title: Text(
           label,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             color: selected ? AppPallete.salesPrimary : AppPallete.textPrimary,
           ),

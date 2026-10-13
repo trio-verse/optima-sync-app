@@ -1,40 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
 class ProjectColors {
   ProjectColors._();
 
-  static const Color background = Color(0xFFF7F6FF);
-  static const Color card = Colors.white;
+  static const Color background = AppPallete.pageBackground;
+  static const Color card = AppPallete.cardBackground;
 
-  static const Color primary = Color(0xFF4B3BC2);
-  static const Color primarySoft = Color(0xFFE9E7FB);
-  static const Color tint = Color(0xFFF1F0FD);
-  static const Color line = Color(0xFFE6E4F5);
+  static const Color primary = AppPallete.primary;
+  static const Color primarySoft = AppPallete.primarySoft;
+  static const Color tint = AppPallete.inputFill;
+  static const Color line = AppPallete.cardBorder;
 
-  static const Color teal = Color(0xFF0B6B75);
-  static const Color cyanSoft = Color(0xFFB9F0F8);
+  static const Color teal = AppPallete.primary;
+  static const Color cyanSoft = AppPallete.primarySoft;
 
-  static const Color title = Color(0xFF15152E);
-  static const Color body = Color(0xFF45456A);
-  static const Color muted = Color(0xFF8686A3);
+  static const Color title = AppPallete.textPrimary;
+  static const Color body = AppPallete.textPrimary;
+  static const Color muted = AppPallete.textSecondary;
 
-  static const Color danger = Color(0xFFA11D14);
-  static const Color dangerSoft = Color(0xFFFFE3E0);
+  static const Color danger = AppPallete.danger;
+  static const Color dangerSoft = AppPallete.dangerSoft;
 
-  static const Color amber = Color(0xFFB45309);
-  static const Color amberSoft = Color(0xFFFEF3C7);
-  static const Color green = Color(0xFF047857);
-  static const Color greenSoft = Color(0xFFD1FAE5);
-  static const Color orange = Color(0xFFC2410C);
-  static const Color orangeSoft = Color(0xFFFFEDD5);
+  static const Color amber = AppPallete.warning;
+  static const Color amberSoft = AppPallete.warningSoft;
+  static const Color green = AppPallete.success;
+  static const Color greenSoft = AppPallete.successSoft;
+  static const Color orange = AppPallete.warning;
+  static const Color orangeSoft = AppPallete.warningSoft;
 
   static const List<Color> chartPalette = [
-    Color(0xFF4B3BC2),
-    Color(0xFF0B6B75),
-    Color(0xFF8B5CF6),
-    Color(0xFFF59E0B),
-    Color(0xFF10B981),
-    Color(0xFFEC4899),
+    AppPallete.primary,
+    AppPallete.success,
+    AppPallete.salesPurple,
+    AppPallete.warning,
+    AppPallete.danger,
+    AppPallete.textSecondary,
   ];
 
   static List<BoxShadow> get shadow => [
@@ -45,13 +46,7 @@ class ProjectColors {
     ),
   ];
 
-  static List<BoxShadow> get buttonShadow => [
-    BoxShadow(
-      color: primary.withValues(alpha: 0.28),
-      blurRadius: 16,
-      offset: const Offset(0, 8),
-    ),
-  ];
+  static List<BoxShadow> get buttonShadow => const [];
 
   static String statusLabel(String status) {
     if (status == 'deliverd') return 'Delivered';

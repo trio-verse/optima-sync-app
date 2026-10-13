@@ -17,7 +17,11 @@ class ProductUsecases {
     required double price,
     required String description,
   }) {
-    return repo.createProduct(name: name, price: price, description: description);
+    return repo.createProduct(
+      name: name,
+      price: price,
+      description: description,
+    );
   }
 
   Future<Either<WhateverFailure, ProductEntity>> updateProduct({

@@ -1,8 +1,7 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
-import 'package:optima_sync_v2/app/domain/entities/campaign_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/core/constants/api_constant.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
-
 
 Map<String, dynamic> _asSingleObject(dynamic data) {
   if (data is List) {

@@ -46,7 +46,7 @@ class _SelectOrgScreenState extends State<SelectOrgScreen> {
       child: Scaffold(
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -55,14 +55,14 @@ class _SelectOrgScreenState extends State<SelectOrgScreen> {
                   onPressed: () => Navigator.pop(context),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
 
                 const Text(
                   "Select an organization to continue",
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
 
                 Expanded(
                   child:

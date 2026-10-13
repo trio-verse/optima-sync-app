@@ -1,7 +1,7 @@
 import 'package:optima_sync_v2/app/domain/entities/employee_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_feature_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_meeting_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_feature_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_meeting_entity.dart';
 
 class ProjectCostEntity {
   final String id;
@@ -107,7 +107,8 @@ class ProjectEmployeeEntity {
     final employeeJson = json['employee'];
     return ProjectEmployeeEntity(
       id: '${json['id'] ?? ''}',
-      employeeId: '${json['employee_id'] ?? (employeeJson is Map ? employeeJson['id'] : '')}',
+      employeeId:
+          '${json['employee_id'] ?? (employeeJson is Map ? employeeJson['id'] : '')}',
       employee: employeeJson is Map
           ? EmployeeEntity.fromJson(Map<String, dynamic>.from(employeeJson))
           : null,

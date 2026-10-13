@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:excel/excel.dart';
 import 'package:file_saver/file_saver.dart';
-import 'package:optima_sync_v2/app/domain/entities/analytics_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/campaign_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/campaign_usecases.dart';
 
 class MarketingReportExporter {

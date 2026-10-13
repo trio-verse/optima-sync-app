@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
 class DashedBorderContainer extends StatelessWidget {
   final Widget child;
@@ -12,7 +13,7 @@ class DashedBorderContainer extends StatelessWidget {
     super.key,
     required this.child,
     this.borderRadius = 16,
-    this.color = const Color(0xFFDCDEE3),
+    this.color = AppPallete.cardBorder,
     this.strokeWidth = 1.2,
     this.dashWidth = 6,
     this.dashGap = 4,

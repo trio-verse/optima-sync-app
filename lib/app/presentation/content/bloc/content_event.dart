@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:optima_sync_v2/app/domain/entities/content_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 
 abstract class ContentEvent extends Equatable {
   const ContentEvent();

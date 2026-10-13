@@ -1,5 +1,5 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_feature_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_feature_entity.dart';
 import 'package:optima_sync_v2/core/constants/api_constant.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 

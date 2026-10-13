@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:optima_sync_v2/app/domain/entities/connection_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_event.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_state.dart';
@@ -98,15 +98,15 @@ class _AllConnectionsLogScreenState extends State<AllConnectionsLogScreen> {
       body: BlocConsumer<ConnectionBloc, ConnectionState>(
         listener: (context, state) {
           if (state is ConnectionFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
 
           if (state is ConnectionSuccess && state.message != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message!)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message!)));
           }
         },
         builder: (context, state) {
@@ -210,7 +210,7 @@ class _HeaderCard extends StatelessWidget {
               Text(
                 'Manage and track all interactions and stages across all clients in one place',
                 style: TextStyle(
-                  fontSize: 11.5,
+                  fontSize: 12,
                   color: AppPallete.textSecondary,
                   height: 1.35,
                 ),
@@ -227,9 +227,7 @@ class _HeaderCard extends StatelessWidget {
         backgroundColor: AppPallete.salesPrimary,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       icon: const Icon(Icons.add_rounded, size: 18),
       label: const Text('Add Connection'),
@@ -396,13 +394,7 @@ class _ToolbarCard extends StatelessWidget {
             );
           }
 
-          return Column(
-            children: [
-              search,
-              const SizedBox(height: 10),
-              stage,
-            ],
-          );
+          return Column(children: [search, const SizedBox(height: 10), stage]);
         },
       ),
     );
@@ -462,10 +454,7 @@ class _EmptyState extends StatelessWidget {
   final bool hasAnyData;
   final VoidCallback onAddConnection;
 
-  const _EmptyState({
-    required this.hasAnyData,
-    required this.onAddConnection,
-  });
+  const _EmptyState({required this.hasAnyData, required this.onAddConnection});
 
   @override
   Widget build(BuildContext context) {

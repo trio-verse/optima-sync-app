@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/theme.dart';
 import 'package:optima_sync_v2/app/presentation/project/theme/project_colors.dart';
 
 const List<String> _kMonths = [
@@ -68,8 +69,8 @@ class ProjectSurface extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(16),
     this.color = ProjectColors.card,
-    this.radius = 22,
-    this.shadow = true,
+    this.radius = 16,
+    this.shadow = false,
     this.onTap,
   });
 
@@ -79,6 +80,7 @@ class ProjectSurface extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: borderRadius,
+        border: Border.all(color: ProjectColors.line),
         boxShadow: shadow ? ProjectColors.shadow : null,
       ),
       child: Material(
@@ -143,7 +145,9 @@ class ProjectPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 220),
+      child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: background,
@@ -156,7 +160,7 @@ class ProjectPill extends StatelessWidget {
             Icon(icon, size: fontSize + 3, color: foreground),
             const SizedBox(width: 4),
           ],
-          Text(
+          Flexible(child: Text(
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -165,8 +169,9 @@ class ProjectPill extends StatelessWidget {
               fontSize: fontSize,
               fontWeight: FontWeight.w700,
             ),
-          ),
+          )),
         ],
+      ),
       ),
     );
   }
@@ -190,7 +195,7 @@ class ProjectStatusBadge extends StatelessWidget {
       label: uppercase ? label.toUpperCase() : label,
       background: style.background,
       foreground: style.foreground,
-      fontSize: 11,
+      fontSize: 12,
     );
   }
 }
@@ -309,7 +314,7 @@ class ProjectButton extends StatelessWidget {
         elevation: 0,
         minimumSize: Size(0, height),
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
       ),
       child: Row(
@@ -319,7 +324,7 @@ class ProjectButton extends StatelessWidget {
             : MainAxisAlignment.center,
         children: [
           if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: 8)],
-          if (hasTrailing) Expanded(child: text) else text,
+          if (hasTrailing) Expanded(child: text) else Flexible(child: text),
           if (hasTrailing) ...[
             const SizedBox(width: 8),
             Icon(trailingIcon, size: 20),
@@ -360,7 +365,7 @@ class ProjectSquareButton extends StatelessWidget {
     this.tooltip,
     this.background = ProjectColors.primarySoft,
     this.foreground = ProjectColors.primary,
-    this.size = 46,
+    this.size = 48,
     this.circle = false,
   });
 
@@ -389,7 +394,7 @@ class ProjectSquareButton extends StatelessWidget {
 InputDecoration projectInputDecoration(String label, {String? hint}) {
   OutlineInputBorder border(Color color, [double width = 1]) =>
       OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(color: color, width: width),
       );
 
@@ -404,9 +409,9 @@ InputDecoration projectInputDecoration(String label, {String? hint}) {
       fontWeight: FontWeight.w600,
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-    border: border(Colors.transparent),
-    enabledBorder: border(Colors.transparent),
-    focusedBorder: border(ProjectColors.primary, 1.5),
+    border: AppTheme.inputBorder,
+    enabledBorder: AppTheme.inputBorder,
+    focusedBorder: AppTheme.focusedInputBorder,
     errorBorder: border(ProjectColors.danger),
     focusedErrorBorder: border(ProjectColors.danger, 1.5),
   );

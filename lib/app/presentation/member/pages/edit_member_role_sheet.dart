@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/member_entity.dart';
 import 'package:optima_sync_v2/app/presentation/member/bloc/member_bloc.dart';
@@ -35,7 +36,7 @@ class _EditMemberRoleSheetState extends State<EditMemberRoleSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<MemberBloc, MemberState>(
+    return SingleChildScrollView(child: SafeArea(top: false, child: BlocListener<MemberBloc, MemberState>(
       listener: (context, state) {
         if (state is MemberSuccess) {
           Navigator.of(context).pop();
@@ -65,7 +66,7 @@ class _EditMemberRoleSheetState extends State<EditMemberRoleSheet> {
             const SizedBox(height: 4),
             Text(
               widget.member.displayName,
-              style: TextStyle(color: Colors.grey.shade600),
+              style: TextStyle(color: AppPallete.textSecondary),
             ),
 
             const SizedBox(height: 20),
@@ -75,7 +76,7 @@ class _EditMemberRoleSheetState extends State<EditMemberRoleSheet> {
               decoration: InputDecoration(
                 labelText: 'Role',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
               items: kMemberRoles
@@ -106,7 +107,7 @@ class _EditMemberRoleSheetState extends State<EditMemberRoleSheet> {
                   height: 48,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2563EB),
+                      backgroundColor: AppPallete.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -130,6 +131,6 @@ class _EditMemberRoleSheetState extends State<EditMemberRoleSheet> {
           ],
         ),
       ),
-    );
+    )));
   }
 }

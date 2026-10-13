@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/connection_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/connection_usecases.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
 
+import 'package:optima_sync_v2/core/errors/connection/connection_errors.dart';
 import 'connection_event.dart';
 import 'connection_state.dart';
 
@@ -17,7 +17,7 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     on<LoadAllConnections>(_onLoadAllConnections);
     on<AddConnectionSubmitted>(_onAddConnectionSubmitted);
     on<UpdateConnectionSubmitted>(_onUpdateConnectionSubmitted);
-    on<UpdateConnectionStageSubmitted>(_onUpdateConnectionStageSubmitted);
+
     on<DeleteConnectionSubmitted>(_onDeleteConnectionSubmitted);
   }
 
@@ -39,11 +39,15 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
 
   List<ConnectionEntity> _currentConnections() {
     final currentState = state;
-    if (currentState is ConnectionSuccess) return currentState.connections;
-    if (currentState is ConnectionSubmitting) return currentState.connections;
-    if (currentState is ConnectionFailure) {
-      return currentState.connections ?? const [];
+
+    if (currentState is ConnectionSuccess) {
+      return currentState.connections;
     }
+
+    if (currentState is ConnectionSubmitting) {
+      return currentState.connections;
+    }
+
     return const [];
   }
 
@@ -101,10 +105,7 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
       return;
     }
 
-    final createResult = await usecases.createConnection(
-      clientId: event.clientId,
-      connection: event.connection,
-    );
+    final createResult = await usecases.createConnection(event.connection);
 
     await createResult.fold(
       (failure) async => emit(
@@ -143,11 +144,7 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
       return;
     }
 
-    final updateResult = await usecases.updateConnection(
-      id: event.id,
-      connection: event.connection,
-    );
-
+    final updateResult = await usecases.updateConnection(event.connection);
     await updateResult.fold(
       (failure) async => emit(
         ConnectionFailure(message: _messageFor(failure), connections: existing),
@@ -164,47 +161,6 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
           ConnectionSuccess(
             connections: connections,
             message: 'Connection updated successfully',
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _onUpdateConnectionStageSubmitted(
-    UpdateConnectionStageSubmitted event,
-    Emitter<ConnectionState> emit,
-  ) async {
-    final existing = _currentConnections();
-
-    emit(ConnectionSubmitting(connections: existing));
-
-    final current = existing.firstWhere(
-      (c) => c.id == event.id,
-      orElse: () => ConnectionEntity(productId: '', stage: event.stage),
-    );
-
-    final result = await usecases.updateConnectionStage(
-      id: event.id,
-      stage: event.stage,
-      current: current,
-    );
-
-    await result.fold(
-      (failure) async => emit(
-        ConnectionFailure(message: _messageFor(failure), connections: existing),
-      ),
-      (updated) async {
-        final connections = await _refreshCurrentList(
-          orElse: [
-            for (final c in existing)
-              if (c.id == updated.id) updated else c,
-          ],
-        );
-
-        emit(
-          ConnectionSuccess(
-            connections: connections,
-            message: 'Stage updated successfully',
           ),
         );
       },
@@ -239,10 +195,10 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     );
   }
 
-  String _messageFor(WhateverFailure failure) {
-    return failure.when(
+  String _messageFor(ConnectionError error) {
+    return error.when(
       serverError: () => 'Server error, please try again',
-      whatoffline: () => 'No internet connection',
+      connectionOffline: () => 'No internet connection',
       database: () => 'Something went wrong, please try again',
     );
   }

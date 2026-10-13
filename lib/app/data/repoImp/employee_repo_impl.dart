@@ -35,9 +35,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     EmployeeInput input,
   ) async {
     try {
-      return Right(
-        await remoteDataSource.updateEmployee(employeeId, input),
-      );
+      return Right(await remoteDataSource.updateEmployee(employeeId, input));
     } catch (_) {
       return Left(WhateverFailure.serverError());
     }

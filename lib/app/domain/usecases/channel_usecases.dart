@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:optima_sync_v2/app/domain/entities/channel_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/channel_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/channel/channel_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures.dart';
 

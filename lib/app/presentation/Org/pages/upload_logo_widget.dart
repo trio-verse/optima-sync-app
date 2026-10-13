@@ -28,7 +28,9 @@ class UploadLogoWidget extends StatelessWidget {
       },
       child: BlocBuilder<UploadLogoOrgBloc, UploadOrgLogoState>(
         builder: (context, state) {
-          return Column(
+          return SafeArea(child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
@@ -73,7 +75,7 @@ class UploadLogoWidget extends StatelessWidget {
                 child: Text("skip"),
               ),
             ],
-          );
+          )));
         },
       ),
     );

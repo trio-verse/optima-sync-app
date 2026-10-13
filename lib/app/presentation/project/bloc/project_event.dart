@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
 
 abstract class ProjectEvent extends Equatable {
   const ProjectEvent();

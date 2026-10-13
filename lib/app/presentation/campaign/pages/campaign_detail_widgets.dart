@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:optima_sync_v2/app/domain/entities/content_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/presentation/content/pages/content_card.dart';
 import 'package:optima_sync_v2/app/presentation/content/pages/content_status_style.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
@@ -13,8 +13,8 @@ const List<String> kCampaignDetailContentStatuses = [
   'rejected',
 ];
 
-const Color kDetailIndigo = Color(0xFF4F46E5);
-const Color kDetailIndigoSoft = Color(0xFFEEF2FF);
+const Color kDetailIndigo = AppPallete.primary;
+const Color kDetailIndigoSoft = AppPallete.primarySoft;
 const Color kDetailGreenSoft = Color(0xFFE7F8F1);
 const Color kDetailOrangeSoft = Color(0xFFFFF4DB);
 const Color kDetailBlueSoft = AppPallete.salesPrimarySoft;
@@ -128,7 +128,7 @@ class DetailInfoItem extends StatelessWidget {
               Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 11,
+                  fontSize: 12,
                   color: AppPallete.textSecondary,
                 ),
               ),
@@ -203,7 +203,7 @@ class _RingPainter extends CustomPainter {
     final track = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = stroke
-      ..color = const Color(0xFFF1F3F6);
+      ..color = AppPallete.inputFill;
     canvas.drawCircle(center, radius, track);
 
     final sweep = 2 * math.pi * (percent / 100);
@@ -259,7 +259,7 @@ class MetricCardShell extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 10.5,
+                    fontSize: 12,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.6,
                     color: AppPallete.textSecondary,
@@ -300,7 +300,7 @@ class MetricFooterRow extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 10.5,
+                fontSize: 12,
                 color: AppPallete.textSecondary,
               ),
             ),
@@ -309,7 +309,7 @@ class MetricFooterRow extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.w800,
               color: AppPallete.textPrimary,
             ),
@@ -353,7 +353,7 @@ class DetailPill extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: FontWeight.w700,
                 color: color,
               ),
@@ -400,7 +400,7 @@ class DetailSectionTitle extends StatelessWidget {
           Text(
             trailing!,
             style: const TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               color: AppPallete.textSecondary,
             ),
           ),
@@ -439,7 +439,7 @@ class DetailProgressRow extends StatelessWidget {
                   label,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 11.5,
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: AppPallete.textPrimary,
                   ),
@@ -448,7 +448,7 @@ class DetailProgressRow extends StatelessWidget {
               Text(
                 '$count (${(fraction * 100).round()}%)',
                 style: const TextStyle(
-                  fontSize: 11.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: AppPallete.textPrimary,
                 ),
@@ -461,7 +461,7 @@ class DetailProgressRow extends StatelessWidget {
             child: LinearProgressIndicator(
               value: fraction,
               minHeight: 6,
-              backgroundColor: const Color(0xFFF1F3F6),
+              backgroundColor: AppPallete.inputFill,
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ),
@@ -512,13 +512,13 @@ class PipelineColumn extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F3F6),
+                      color: AppPallete.inputFill,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       '${items.length}',
                       style: const TextStyle(
-                        fontSize: 11,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         color: AppPallete.textPrimary,
                       ),

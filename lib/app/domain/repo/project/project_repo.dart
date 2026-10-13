@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_details_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_feature_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_meeting_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_details_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_feature_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_meeting_entity.dart';
 import 'package:optima_sync_v2/core/errors/failures.dart';
 
 abstract class ProjectRepository {
@@ -52,8 +52,7 @@ abstract class ProjectRepository {
     String employeeId,
     int totalPoints,
   );
-  Future<Either<WhateverFailure, ProjectEmployeeEntity>>
-  updateProjectEmployee(
+  Future<Either<WhateverFailure, ProjectEmployeeEntity>> updateProjectEmployee(
     String projectId,
     String assignmentId,
     int totalPoints,

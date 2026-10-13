@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_entity.dart';
+import 'package:optima_sync_v2/core/widgets/app_mobile_widgets.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
 import 'package:optima_sync_v2/app/presentation/project/theme/project_colors.dart';
 import 'package:optima_sync_v2/app/presentation/project/widgets/project_widgets.dart';
 
@@ -148,7 +149,7 @@ class _ProjectFormDialogState extends State<ProjectFormDialog> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.isEdit;
-    return Dialog(
+    return AppMobileDialog(
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -221,27 +222,22 @@ class _ProjectFormDialogState extends State<ProjectFormDialog> {
                       value == null ? 'Select a client' : null,
                 ),
                 const SizedBox(height: 12),
-                Row(
+                AppFieldRow(
                   children: [
-                    Expanded(
-                      child: ProjectDateField(
-                        label: 'Start Date',
-                        value: _date(_startDate),
-                        onTap: () => _pickDate(
-                          (value) => setState(() => _startDate = value),
-                          _startDate,
-                        ),
+                    ProjectDateField(
+                      label: 'Start Date',
+                      value: _date(_startDate),
+                      onTap: () => _pickDate(
+                        (value) => setState(() => _startDate = value),
+                        _startDate,
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ProjectDateField(
-                        label: 'End Date',
-                        value: _date(_endDate),
-                        onTap: () => _pickDate(
-                          (value) => setState(() => _endDate = value),
-                          _endDate,
-                        ),
+                    ProjectDateField(
+                      label: 'End Date',
+                      value: _date(_endDate),
+                      onTap: () => _pickDate(
+                        (value) => setState(() => _endDate = value),
+                        _endDate,
                       ),
                     ),
                   ],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/channel_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/content_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/channel_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_event.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_state.dart';
@@ -98,9 +99,11 @@ class _ContentFormState extends State<ContentForm> {
       label: Text(label),
       errorText: errorText,
       prefixIcon: icon,
-      enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1)),
+      enabledBorder: const OutlineInputBorder(
+        borderSide: BorderSide(width: 1, color: AppPallete.cardBorder),
+      ),
       focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(width: 1, color: Colors.blue),
+        borderSide: BorderSide(width: 1, color: AppPallete.primary),
       ),
     );
   }

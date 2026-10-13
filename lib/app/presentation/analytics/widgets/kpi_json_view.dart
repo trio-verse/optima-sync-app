@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/widgets/app_mobile_widgets.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
 class KpiJsonView extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -33,7 +35,7 @@ class KpiJsonView extends StatelessWidget {
         child: Center(
           child: Text(
             'No data available',
-            style: TextStyle(color: Colors.grey.shade600),
+            style: TextStyle(color: AppPallete.textSecondary),
           ),
         ),
       );
@@ -46,49 +48,14 @@ class KpiJsonView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (simpleEntries.isNotEmpty)
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 2.2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            children: simpleEntries.map((entry) {
-              return Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _labelize(entry.key),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _formatValue(entry.value),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
+          AppMetricGrid(children: simpleEntries.map((entry) => AppSurface(
+            padding: const EdgeInsets.all(14),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(_labelize(entry.key), style: const TextStyle(fontSize: 13, color: AppPallete.textSecondary)),
+              const SizedBox(height: 8),
+              Text(_formatValue(entry.value), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+            ]),
+          )).toList()),
         for (final entry in nestedEntries) ...[
           const SizedBox(height: 16),
           Text(

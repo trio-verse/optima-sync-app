@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/check_selected_org/cubit/check_selected_org_cubit.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_bloc.dart';
@@ -72,7 +73,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "OptimaSync1",
-      // theme: AppTheme.lightModeTheme,
+      theme: AppTheme.lightModeTheme,
+      builder: (context, child) => SafeArea(top: false, child: child ?? const SizedBox.shrink()),
       home: SplashScreen(),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/widgets/app_mobile_widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
 import 'package:optima_sync_v2/app/presentation/project/bloc/project_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/project/bloc/project_event.dart';
 import 'package:optima_sync_v2/app/presentation/project/bloc/project_state.dart';
@@ -200,7 +201,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
       backgroundColor: ProjectColors.background,
       drawer: const AppDrawer(selectedItem: 'Projects'),
       appBar: AppBar(
-        backgroundColor: ProjectColors.background,
+        backgroundColor: ProjectColors.card,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         elevation: 0,
@@ -209,7 +210,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
           'Projects',
           style: TextStyle(
             color: ProjectColors.title,
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -252,7 +253,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
                 ProjectButton(
                   label: 'Create Project',
                   icon: Icons.add_circle_outline,
-                  height: 58,
+                  height: 48,
                   expand: true,
                   onPressed: () => _openCreate(loaded.clients),
                 ),
@@ -314,183 +315,39 @@ class _ProjectStats extends StatelessWidget {
         .where((p) => p.status == 'new' || p.status == 'under_review')
         .length;
     final completed = projects.where((p) => p.status == 'completed').length;
-
     double share(int value) => total == 0 ? 0 : value / total;
     String percent(int value) => '${(share(value) * 100).round()}%';
 
-    return Column(
+    return AppMetricGrid(
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: _StatCard(
-                icon: Icons.folder_outlined,
-                iconColor: ProjectColors.primary,
-                iconBackground: ProjectColors.primarySoft,
-                tag: 'All',
-                value: total,
-                label: 'Total Projects',
-                progress: total == 0 ? 0 : 1,
-                barColor: ProjectColors.primary,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _StatCard(
-                icon: Icons.timelapse_rounded,
-                iconColor: ProjectColors.primary,
-                iconBackground: ProjectColors.primarySoft,
-                tag: 'WIP',
-                value: inProgress,
-                caption: percent(inProgress),
-                label: 'In Progress',
-                progress: share(inProgress),
-                barColor: ProjectColors.primary,
-              ),
-            ),
-          ],
+        AppMetricTile(
+          label: 'Total Projects',
+          value: '$total',
+          icon: Icons.folder_outlined,
+          progress: total == 0 ? 0 : 1,
         ),
-        const SizedBox(height: 12),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: _StatCard(
-                icon: Icons.visibility_outlined,
-                iconColor: ProjectColors.teal,
-                iconBackground: ProjectColors.cyanSoft,
-                tag: 'Review',
-                showDot: pending > 0,
-                value: pending,
-                caption: percent(pending),
-                label: 'Pending Review',
-                progress: share(pending),
-                barColor: ProjectColors.teal,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _StatCard(
-                icon: Icons.verified_outlined,
-                iconColor: ProjectColors.muted,
-                iconBackground: ProjectColors.tint,
-                tag: 'Done',
-                value: completed,
-                caption: percent(completed),
-                label: 'Completed',
-                progress: share(completed),
-                barColor: ProjectColors.primary,
-              ),
-            ),
-          ],
+        AppMetricTile(
+          label: 'In Progress',
+          value: '$inProgress',
+          icon: Icons.timelapse_rounded,
+          caption: percent(inProgress),
+          progress: share(inProgress),
+        ),
+        AppMetricTile(
+          label: 'Pending Review',
+          value: '$pending',
+          icon: Icons.visibility_outlined,
+          caption: percent(pending),
+          progress: share(pending),
+        ),
+        AppMetricTile(
+          label: 'Completed',
+          value: '$completed',
+          icon: Icons.verified_outlined,
+          caption: percent(completed),
+          progress: share(completed),
         ),
       ],
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBackground;
-  final String tag;
-  final bool showDot;
-  final int value;
-  final String? caption;
-  final String label;
-  final double progress;
-  final Color barColor;
-
-  const _StatCard({
-    required this.icon,
-    required this.iconColor,
-    required this.iconBackground,
-    required this.tag,
-    required this.value,
-    required this.label,
-    required this.progress,
-    required this.barColor,
-    this.caption,
-    this.showDot = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ProjectSurface(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              ProjectIconTile(
-                icon: icon,
-                color: iconColor,
-                background: iconBackground,
-                size: 42,
-                radius: 13,
-              ),
-              const Spacer(),
-              if (showDot)
-                Container(
-                  width: 9,
-                  height: 9,
-                  decoration: const BoxDecoration(
-                    color: ProjectColors.teal,
-                    shape: BoxShape.circle,
-                  ),
-                )
-              else
-                ProjectPill(
-                  label: tag,
-                  background: ProjectColors.tint,
-                  foreground: ProjectColors.muted,
-                  fontSize: 11,
-                ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                '$value',
-                style: const TextStyle(
-                  color: ProjectColors.title,
-                  fontSize: 32,
-                  fontWeight: FontWeight.w800,
-                  height: 1,
-                ),
-              ),
-              if (caption != null) ...[
-                const SizedBox(width: 6),
-                Text(
-                  caption!,
-                  style: const TextStyle(
-                    color: ProjectColors.teal,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: ProjectColors.body,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 14),
-          ProjectProgressBar(value: progress, color: barColor, height: 4),
-        ],
-      ),
     );
   }
 }
@@ -546,7 +403,7 @@ class _SearchRow extends StatelessWidget {
                 fillColor: Colors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide.none,
                 ),
               ),
@@ -662,69 +519,68 @@ class _PipelineHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return AppFieldRow(
       children: [
-        Expanded(
-          child: Row(
-            children: [
-              const Flexible(
-                child: Text(
-                  'Active Pipeline',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: ProjectColors.title,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            const Text(
+              'Active Pipeline',
+              style: TextStyle(
+                color: ProjectColors.title,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
               ),
-              const SizedBox(width: 8),
-              ProjectPill(label: '$count Available', fontSize: 11),
-            ],
-          ),
+            ),
+            ProjectPill(label: '$count Available', fontSize: 12),
+          ],
         ),
-        PopupMenuButton<_ProjectSort>(
-          initialValue: sort,
-          onSelected: onSort,
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          itemBuilder: (_) => _ProjectSort.values
-              .map(
-                (value) => PopupMenuItem(
-                  value: value,
-                  child: Text(
-                    value.label,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+        Align(
+          alignment: Alignment.centerRight,
+          child: PopupMenuButton<_ProjectSort>(
+            initialValue: sort,
+            onSelected: onSort,
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            itemBuilder: (_) => _ProjectSort.values
+                .map(
+                  (value) => PopupMenuItem(
+                    value: value,
+                    child: Text(
+                      value.label,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
                   ),
-                ),
-              )
-              .toList(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Sort: ',
-                  style: TextStyle(color: ProjectColors.muted, fontSize: 13),
-                ),
-                Text(
-                  sort.label,
-                  style: const TextStyle(
+                )
+                .toList(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Sort: ',
+                    style: TextStyle(color: ProjectColors.muted, fontSize: 13),
+                  ),
+                  Text(
+                    sort.label,
+                    style: const TextStyle(
+                      color: ProjectColors.body,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const Icon(
+                    Icons.arrow_drop_down,
+                    size: 20,
                     color: ProjectColors.body,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
                   ),
-                ),
-                const Icon(
-                  Icons.arrow_drop_down,
-                  size: 20,
-                  color: ProjectColors.body,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/city_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/city_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/client_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/industry_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/industry_entity.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_event.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_state.dart';
@@ -146,9 +147,11 @@ class _ClientFormState extends State<ClientForm> {
       label: Text(label),
       hintText: hint,
       prefixIcon: icon,
-      enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1)),
+      enabledBorder: const OutlineInputBorder(
+        borderSide: BorderSide(width: 1, color: AppPallete.cardBorder),
+      ),
       focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(width: 1, color: Colors.blue),
+        borderSide: BorderSide(width: 1, color: AppPallete.primary),
       ),
     );
   }
