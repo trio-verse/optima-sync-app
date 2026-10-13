@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:optima_sync_v2/app/domain/entities/content_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/presentation/content/bloc/content_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/content/pages/content_permissions.dart';
 import 'package:optima_sync_v2/app/presentation/content/pages/delete_content_dialog.dart';
@@ -58,8 +59,8 @@ class ContentCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: AppPallete.cardBorder),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -109,7 +110,7 @@ class ContentCard extends StatelessWidget {
                 child: Text(
                   content.type.isEmpty ? 'Untyped' : content.type,
                   style: const TextStyle(
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -122,7 +123,7 @@ class ContentCard extends StatelessWidget {
                     Icon(
                       Icons.podcasts_outlined,
                       size: 13,
-                      color: Colors.grey.shade600,
+                      color: AppPallete.textSecondary,
                     ),
                     const SizedBox(width: 4),
                     Expanded(
@@ -130,7 +131,7 @@ class ContentCard extends StatelessWidget {
                         content.channelName!,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade700,
+                          color: AppPallete.textSecondary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -147,13 +148,13 @@ class ContentCard extends StatelessWidget {
                     Icon(
                       Icons.attach_money_outlined,
                       size: 13,
-                      color: Colors.grey.shade600,
+                      color: AppPallete.textSecondary,
                     ),
                     Text(
                       content.cost!.toStringAsFixed(2),
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade700,
+                        color: AppPallete.textSecondary,
                       ),
                     ),
                     if (canSeeCostBadge) ...[
@@ -174,7 +175,7 @@ class ContentCard extends StatelessWidget {
                         child: Text(
                           content.isCostConfirmed ? 'Confirmed' : 'Unconfirmed',
                           style: TextStyle(
-                            fontSize: 10,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: content.isCostConfirmed
                                 ? Colors.green

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/widgets/app_mobile_widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/employee_entity.dart';
 import 'package:optima_sync_v2/app/presentation/employee/bloc/employee_bloc.dart';
@@ -204,7 +205,7 @@ class _EmployeeCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppPallete.cardBackground,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppPallete.cardBorder),
       ),
       child: Column(
@@ -291,7 +292,7 @@ class _Info extends StatelessWidget {
             label.toUpperCase(),
             style: const TextStyle(
               color: AppPallete.textSecondary,
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -375,7 +376,7 @@ class _EmployeeFormDialogState extends State<EmployeeFormDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    return AppMobileDialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: BlocConsumer<EmployeeBloc, EmployeeState>(

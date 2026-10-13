@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:optima_sync_v2/app/domain/entities/industry_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/industry_entity.dart';
 import 'package:optima_sync_v2/app/presentation/industry/bloc/industry_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/industry/bloc/industry_event.dart';
 import 'package:optima_sync_v2/app/presentation/industry/bloc/industry_state.dart';
@@ -82,7 +82,7 @@ class _IndustryListItemState extends State<IndustryListItem> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFDC2626),
+                backgroundColor: AppPallete.danger,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -226,7 +226,7 @@ class _IndustryListItemState extends State<IndustryListItem> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: AppPallete.cardBackground,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppPallete.cardBorder),
         ),
         child: Row(
@@ -271,7 +271,7 @@ class _IndustryListItemState extends State<IndustryListItem> {
             const SizedBox(width: 8),
             _RoundIconButton(
               icon: Icons.delete_outline,
-              iconColor: const Color(0xFFDC2626),
+              iconColor: AppPallete.danger,
               onTap: actionsDisabled ? null : _deleteIndustry,
             ),
           ],
@@ -287,7 +287,7 @@ class _IndustryListItemState extends State<IndustryListItem> {
       decoration: BoxDecoration(
         color: AppPallete.cardBackground,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppPallete.industryPrimary, width: 1.2),
+        border: Border.all(color: AppPallete.primary, width: 1.2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,13 +324,13 @@ class _IndustryListItemState extends State<IndustryListItem> {
                 vertical: 12,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(
-                  color: AppPallete.industryPrimary,
+                  color: AppPallete.primary,
                   width: 1.4,
                 ),
               ),
@@ -414,7 +414,7 @@ class _IndustryListItemState extends State<IndustryListItem> {
 
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppPallete.industryPrimary,
+                  backgroundColor: AppPallete.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -457,8 +457,8 @@ class _RoundIconButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
-        width: 34,
-        height: 34,
+        width: 48,
+        height: 48,
         alignment: Alignment.center,
         decoration: const BoxDecoration(
           color: AppPallete.inputFill,

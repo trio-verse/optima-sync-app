@@ -8,7 +8,9 @@ class PublicCaptureUsecases {
 
   PublicCaptureUsecases({required this.repo});
 
-  Future<Either<WhateverFailure, PublicCaptureFormEntity>> getForm(String token) {
+  Future<Either<WhateverFailure, PublicCaptureFormEntity>> getForm(
+    String token,
+  ) {
     return repo.getForm(token);
   }
 

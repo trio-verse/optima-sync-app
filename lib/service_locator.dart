@@ -1,4 +1,8 @@
 import 'package:get_it/get_it.dart';
+import 'package:optima_sync_v2/app/data/repoImp/task_repo_impl.dart';
+import 'package:optima_sync_v2/app/data/sources/remote_data/task_remote_data_source.dart';
+import 'package:optima_sync_v2/app/domain/repo/task/task_repo.dart';
+import 'package:optima_sync_v2/app/domain/usecases/task_usecases.dart';
 import 'package:optima_sync_v2/app/data/repoImp/analytics_repo_impl.dart';
 import 'package:optima_sync_v2/app/data/repoImp/auth_repo_impl.dart';
 import 'package:optima_sync_v2/app/data/repoImp/campaign_repo_impl.dart';
@@ -72,6 +76,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  print("app started");
   final client = http.Client();
 
   final storage = await SharedPreferences.getInstance();
@@ -125,6 +130,12 @@ Future<void> init() async {
     () => ProjectRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
   );
   // Repository
+  sl.registerLazySingleton(
+    () => TaskRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
+  );
+  sl.registerLazySingleton<TaskRepository>(
+    () => TaskRepositoryImpl(remoteDataSource: sl()),
+  );
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
   );
@@ -175,6 +186,7 @@ Future<void> init() async {
     () => ProjectRepositoryImpl(remoteDataSource: sl()),
   );
   // Usecases
+  sl.registerLazySingleton(() => TaskUsecases(repo: sl()));
   sl.registerLazySingleton(() => AuthUsecases(repo: sl()));
   sl.registerLazySingleton(() => OrgUsecases(repo: sl()));
   sl.registerLazySingleton(() => CityUsecases(repo: sl()));

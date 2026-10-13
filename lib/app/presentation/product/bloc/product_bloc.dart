@@ -123,8 +123,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     result.fold(
       (failure) => emit(ProductFailure(message: _messageFor(failure))),
       (_) {
-        final updatedProducts =
-            currentState.products.where((product) => product.id != event.id).toList();
+        final updatedProducts = currentState.products
+            .where((product) => product.id != event.id)
+            .toList();
         emit(ProductSuccess(products: updatedProducts));
       },
     );

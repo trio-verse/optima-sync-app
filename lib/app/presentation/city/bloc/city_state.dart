@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:optima_sync_v2/app/domain/entities/city_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/city_entity.dart';
 
 abstract class CityState extends Equatable {
   const CityState();

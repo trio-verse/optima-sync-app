@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
 class MemberRoleStyle {
   static Color background(String role) {
     switch (role.toLowerCase()) {
       case 'admin':
-        return const Color(0xFFEDE9FE);
+        return AppPallete.primarySoft;
       case 'member':
       default:
-        return const Color(0xFFF3F4F6);
+        return AppPallete.pageBackground;
     }
   }
 
   static Color foreground(String role) {
     switch (role.toLowerCase()) {
       case 'admin':
-        return const Color(0xFF6D28D9);
+        return AppPallete.primary;
       case 'member':
       default:
-        return const Color(0xFF374151);
+        return AppPallete.textPrimary;
     }
   }
 

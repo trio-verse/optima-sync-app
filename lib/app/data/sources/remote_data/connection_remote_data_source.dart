@@ -1,5 +1,5 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
-import 'package:optima_sync_v2/app/domain/entities/connection_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/core/constants/api_constant.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
@@ -39,8 +39,7 @@ class ConnectionRemoteDataSource {
     final list = data is List ? data : (data == null ? [] : [data]);
 
     final connections = list
-        .whereType<Map>()
-        .map((e) => ConnectionEntity.fromJson(Map<String, dynamic>.from(e)))
+        .map((e) => ConnectionEntity.fromJson(e as Map<String, dynamic>))
         .toList();
 
     _sortNewestFirst(connections);
@@ -69,9 +68,9 @@ class ConnectionRemoteDataSource {
       final aDate = a.createdAt;
       final bDate = b.createdAt;
 
-      if (aDate == null && bDate == null) return 0;
-      if (aDate == null) return 1;
-      if (bDate == null) return -1;
+      // if (aDate == null && bDate == null) return 0;
+      // if (aDate == null) return 1;
+      // if (bDate == null) return -1;
 
       return bDate.compareTo(aDate);
     });
@@ -160,112 +159,33 @@ class ConnectionRemoteDataSource {
 
     return allConnections;
   }
-  // Future<ConnectionEntity> getConnection(String connectionId) async {
-  //   final organizationId = await _requireOrganizationId();
 
-  //   final result = await client.get<ConnectionEntity>(
-  //     '${ApiConstants.baseUrl}/api/v1/connections/$connectionId',
-  //     (json) {
-  //       final data = json['data'];
-  //       return ConnectionEntity.fromJson(Map<String, dynamic>.from(data));
-  //     },
-  //     organizationId: organizationId,
-  //   );
-
-  //   return result!;
-  // }
-
-  Future<ConnectionEntity> createConnection({
-    required String clientId,
-    required ConnectionEntity connection,
-  }) async {
+  Future<ConnectionEntity> createConnection(ConnectionEntity connection) async {
     final organizationId = await _requireOrganizationId();
-
-    ConnectionEntity? fallback;
 
     final result = await client.post<ConnectionEntity>(
-      '${ApiConstants.baseUrl}/api/v1/clients/$clientId/connections',
+      '${ApiConstants.baseUrl}/api/v1/clients/${connection.clientId}/connections',
       connection.toJson(),
-      (json) {
-        final data = json['data'];
-
-        if (data is Map && data.isNotEmpty) {
-          return ConnectionEntity.fromJson(Map<String, dynamic>.from(data));
-        }
-
-        if (data is List && data.isNotEmpty) {
-          return ConnectionEntity.fromJson(
-            Map<String, dynamic>.from(data.first as Map),
-          );
-        }
-
-        fallback = connection.copyWith(clientId: clientId);
-        return fallback!;
-      },
+      (json) => ConnectionEntity.fromJson(
+        Map<String, dynamic>.from(json['data'] as Map),
+      ),
       organizationId: organizationId,
     );
-
-    return result ?? fallback!;
+    return result!;
   }
 
-  Future<ConnectionEntity> updateConnection({
-    required String id,
-    required ConnectionEntity connection,
-  }) async {
+  Future<ConnectionEntity> updateConnection(ConnectionEntity connection) async {
     final organizationId = await _requireOrganizationId();
 
-    final localFallback = connection.copyWith(id: id);
-    final payload = connection.toJson()..remove('stage');
-
     final result = await client.patch<ConnectionEntity>(
-      '${ApiConstants.baseUrl}/api/v1/connections/$id',
-      payload,
-      (json) {
-        final data = json['data'];
-
-        if (data is Map && data.isNotEmpty) {
-          return ConnectionEntity.fromJson(Map<String, dynamic>.from(data));
-        }
-
-        if (data is List && data.isNotEmpty) {
-          return ConnectionEntity.fromJson(
-            Map<String, dynamic>.from(data.first as Map),
-          );
-        }
-
-        return localFallback;
-      },
+      '${ApiConstants.baseUrl}/api/v1/connections/${connection.id}',
+      connection.toJson(),
+      (json) => ConnectionEntity.fromJson(
+        Map<String, dynamic>.from(json['data'] as Map),
+      ),
       organizationId: organizationId,
     );
-
-    return result ?? localFallback;
-  }
-
-  Future<ConnectionEntity> updateConnectionStage({
-    required String id,
-    required String stage,
-    required ConnectionEntity current,
-  }) async {
-    final organizationId = await _requireOrganizationId();
-
-    final localFallback = current.copyWith(id: id, stage: stage);
-
-    final result = await client.patch<ConnectionEntity>(
-      '${ApiConstants.baseUrl}/api/v1/connections/$id/stage',
-      {'stage': stage},
-      (json) {
-        final data = json['data'];
-
-        if (data is Map && data.isNotEmpty) {
-          return ConnectionEntity.fromJson(Map<String, dynamic>.from(data));
-        }
-
-        return localFallback;
-      },
-      organizationId: organizationId,
-    );
-
-    return result ?? localFallback;
+    return result!;
   }
 
   Future<void> deleteConnection(String id) async {

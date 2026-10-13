@@ -36,7 +36,10 @@ class PublicCaptureBloc extends Bloc<PublicCaptureEvent, PublicCaptureState> {
       emit(PublicCaptureSubmitting(form: currentState.form));
     }
 
-    final result = await usecases.submitForm(token: event.token, data: event.data);
+    final result = await usecases.submitForm(
+      token: event.token,
+      data: event.data,
+    );
 
     result.fold(
       (failure) => emit(PublicCaptureFailure(message: _messageFor(failure))),

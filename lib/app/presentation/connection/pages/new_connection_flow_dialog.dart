@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/widgets/app_mobile_widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/client_entity.dart';
 import 'package:optima_sync_v2/app/presentation/client/bloc/client_bloc.dart';
@@ -55,7 +56,7 @@ class _NewConnectionFlowDialogState extends State<NewConnectionFlowDialog> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height * 0.84;
 
-    return Dialog(
+    return AppMobileDialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 20),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
       clipBehavior: Clip.antiAlias,
@@ -341,7 +342,7 @@ class _NewConnectionFlowDialogState extends State<NewConnectionFlowDialog> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
-                                  fontSize: 11,
+                                  fontSize: 12,
                                   color: AppPallete.textSecondary,
                                 ),
                               ),
@@ -443,8 +444,7 @@ class _NewConnectionFlowDialogState extends State<NewConnectionFlowDialog> {
             onSubmit: (connection) {
               context.read<ConnectionBloc>().add(
                 AddConnectionSubmitted(
-                  clientId: selectedClient.id!,
-                  connection: connection,
+                  connection: connection.copyWith(clientId: selectedClient.id!),
                 ),
               );
             },
@@ -456,9 +456,9 @@ class _NewConnectionFlowDialogState extends State<NewConnectionFlowDialog> {
 }
 
 const _tableHeader = TextStyle(
-  fontSize: 10.5,
+  fontSize: 12,
   fontWeight: FontWeight.w700,
-  color: Color(0xFF5F6878),
+  color: AppPallete.textSecondary,
 );
 
 class _DialogHeader extends StatelessWidget {
@@ -500,7 +500,7 @@ class _DialogHeader extends StatelessWidget {
                   'Select or create a client',
                   style: TextStyle(
                     color: AppPallete.textSecondary,
-                    fontSize: 11,
+                    fontSize: 12,
                   ),
                 ),
               ],
@@ -535,7 +535,7 @@ class _StepPill extends StatelessWidget {
         style: TextStyle(
           color: selected ? Colors.white : AppPallete.textSecondary,
           fontWeight: FontWeight.w700,
-          fontSize: 10,
+          fontSize: 12,
         ),
       ),
     );
@@ -582,7 +582,7 @@ class _SegmentButton extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                fontSize: 11.5,
+                fontSize: 12,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 color: selected
                     ? AppPallete.textPrimary

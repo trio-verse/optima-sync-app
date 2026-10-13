@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/widgets/app_drawer.dart';
+import 'package:optima_sync_v2/core/widgets/app_mobile_widgets.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/member_entity.dart';
 import 'package:optima_sync_v2/app/presentation/member/bloc/member_bloc.dart';
@@ -89,8 +92,9 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F4F6),
+      backgroundColor: AppPallete.pageBackground,
       appBar: AppBar(title: const Text('Team Members')),
+      drawer: const AppDrawer(selectedItem: 'Member'),
       body: BlocConsumer<MemberBloc, MemberState>(
         listenWhen: (previous, current) {
           final wasSubmittingNewMember =
@@ -165,67 +169,7 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
                 _HeaderCard(),
                 const SizedBox(height: 12),
 
-                _StatCard(
-                  iconBackground: const Color(0xFFEEF2FF),
-                  icon: Icons.groups_outlined,
-                  iconColor: const Color(0xFF4F46E5),
-                  label: 'TOTAL MEMBERS',
-                  child: Text(
-                    '${members.length}',
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                _StatCard(
-                  iconBackground: const Color(0xFFD1FAE5),
-                  icon: Icons.person_outline,
-                  iconColor: const Color(0xFF059669),
-                  label: 'ACCOUNT ACCESS',
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD1FAE5),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.circle, size: 8, color: Color(0xFF059669)),
-                        SizedBox(width: 6),
-                        Text(
-                          'Active & Verified',
-                          style: TextStyle(
-                            color: Color(0xFF059669),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                _StatCard(
-                  iconBackground: const Color(0xFFF5F3FF),
-                  icon: Icons.shield_outlined,
-                  iconColor: const Color(0xFF7C3AED),
-                  label: 'ROLE MANAGEMENT',
-                  child: const Text(
-                    'Role-Based Access',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                _MemberSummary(total: members.length),
                 const SizedBox(height: 12),
 
                 _AddMemberCard(
@@ -265,7 +209,7 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
                     ),
@@ -280,6 +224,8 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
                   ),
                   child: Column(
                     children: [
+                      if (MediaQuery.sizeOf(context).width >= 600 &&
+                          MediaQuery.textScalerOf(context).scale(14) <= 20) ...[
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
                         child: Row(
@@ -298,6 +244,7 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
                       ),
                       const Divider(height: 1),
 
+                      ],
                       if (members.isEmpty)
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 32),
@@ -362,10 +309,10 @@ class _TableHeaderLabel extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.5,
-        color: Colors.grey.shade500,
+        color: AppPallete.textSecondary,
       ),
     );
   }
@@ -391,7 +338,7 @@ class _HeaderCard extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
+                colors: [AppPallete.primary, AppPallete.primary],
               ),
               borderRadius: BorderRadius.circular(14),
             ),
@@ -409,17 +356,17 @@ class _HeaderCard extends StatelessWidget {
               children: [
                 const Row(
                   children: [
-                    Text(
+                    Expanded(child: Text(
                       'Team Members',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
+                    )),
                     SizedBox(width: 6),
                     Icon(
                       Icons.auto_awesome,
-                      color: Color(0xFFF97316),
+                      color: AppPallete.primary,
                       size: 18,
                     ),
                   ],
@@ -427,7 +374,7 @@ class _HeaderCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'Manage team members, roles, and access permissions.',
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                  style: TextStyle(color: AppPallete.textSecondary, fontSize: 13),
                 ),
               ],
             ),
@@ -438,55 +385,27 @@ class _HeaderCard extends StatelessWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final Color iconBackground;
-  final IconData icon;
-  final Color iconColor;
-  final String label;
-  final Widget child;
-
-  const _StatCard({
-    required this.iconBackground,
-    required this.icon,
-    required this.iconColor,
-    required this.label,
-    required this.child,
-  });
+class _MemberSummary extends StatelessWidget {
+  final int total;
+  const _MemberSummary({required this.total});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _TableHeaderLabel(label),
-                const SizedBox(height: 8),
-                child,
-              ],
-            ),
-          ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: iconBackground,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: iconColor, size: 20),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => AppSurface(child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(children: [
+        const Icon(Icons.groups_outlined, color: AppPallete.primary),
+        const SizedBox(width: 10),
+        const Expanded(child: Text('Total Members', style: TextStyle(fontWeight: FontWeight.w700))),
+        Text('$total', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+      ]),
+      const Divider(height: 24),
+      const Wrap(spacing: 14, runSpacing: 8, children: [
+        Text('Active & Verified', style: TextStyle(fontSize: 12, color: AppPallete.success)),
+        Text('Role-Based Access', style: TextStyle(fontSize: 12, color: AppPallete.primary)),
+      ]),
+    ],
+  ));
 }
 
 class _AddMemberCard extends StatelessWidget {
@@ -529,12 +448,12 @@ class _AddMemberCard extends StatelessWidget {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFDBEAFE),
+                    color: AppPallete.primarySoft,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
                     Icons.add,
-                    color: Color(0xFF2563EB),
+                    color: AppPallete.primary,
                     size: 20,
                   ),
                 ),
@@ -554,7 +473,7 @@ class _AddMemberCard extends StatelessWidget {
                       Text(
                         'Enter member email and select their role.',
                         style: TextStyle(
-                          color: Colors.grey.shade600,
+                          color: AppPallete.textSecondary,
                           fontSize: 13,
                         ),
                       ),
@@ -591,18 +510,18 @@ class _AddMemberCard extends StatelessWidget {
                 hintText: 'example@company.com',
                 errorText: errorMessage,
                 filled: true,
-                fillColor: const Color(0xFFF9FAFB),
+                fillColor: AppPallete.inputFill,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: AppPallete.cardBorder),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: AppPallete.cardBorder),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF2563EB)),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: AppPallete.primary),
                 ),
               ),
             ),
@@ -624,18 +543,18 @@ class _AddMemberCard extends StatelessWidget {
                   .toList(),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xFFF9FAFB),
+                fillColor: AppPallete.inputFill,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: AppPallete.cardBorder),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: AppPallete.cardBorder),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF2563EB)),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: AppPallete.primary),
                 ),
               ),
             ),
@@ -647,7 +566,7 @@ class _AddMemberCard extends StatelessWidget {
               height: 48,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
+                  backgroundColor: AppPallete.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

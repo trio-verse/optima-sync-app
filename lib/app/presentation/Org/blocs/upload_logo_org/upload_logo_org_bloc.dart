@@ -10,7 +10,7 @@ class UploadLogoOrgBloc extends Bloc<UploadOrgLogoEvent, UploadOrgLogoState> {
   final OrgUsecases uploadLogoUseCase;
 
   UploadLogoOrgBloc({required this.uploadLogoUseCase})
-      : super(UploadOrgLogoInitial()) {
+    : super(UploadOrgLogoInitial()) {
     on<PickAndUploadLogoEvent>(_pickAndUpload);
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:optima_sync_v2/app/domain/entities/city_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/city_entity.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/city/pages/delete_city_dialog.dart';
 import 'package:optima_sync_v2/app/presentation/city/pages/edit_city_form.dart';
@@ -77,7 +77,7 @@ class CityListItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: AppPallete.cardBackground,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppPallete.cardBorder),
       ),
       child: Row(
@@ -122,7 +122,7 @@ class CityListItem extends StatelessWidget {
           const SizedBox(width: 8),
           _RoundIconButton(
             icon: Icons.delete_outline,
-            iconColor: const Color(0xFFDC2626),
+            iconColor: AppPallete.danger,
             onTap: () => _deleteCity(context),
           ),
         ],
@@ -144,8 +144,8 @@ class _RoundIconButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
-        width: 34,
-        height: 34,
+        width: 48,
+        height: 48,
         alignment: Alignment.center,
         decoration: const BoxDecoration(
           color: AppPallete.inputFill,

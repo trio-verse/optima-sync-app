@@ -48,13 +48,17 @@ class CaptureBloc extends Bloc<CaptureEvent, CaptureState> {
       (failure) => emit(
         CaptureFailure(
           message: _messageFor(failure),
-          settings: currentState is CaptureSuccess ? currentState.settings : null,
+          settings: currentState is CaptureSuccess
+              ? currentState.settings
+              : null,
         ),
       ),
       (settings) => emit(
         CaptureSuccess(
           settings: settings,
-          message: event.enabled ? 'Capture form enabled' : 'Capture form disabled',
+          message: event.enabled
+              ? 'Capture form enabled'
+              : 'Capture form disabled',
         ),
       ),
     );
@@ -77,10 +81,13 @@ class CaptureBloc extends Bloc<CaptureEvent, CaptureState> {
       (failure) => emit(
         CaptureFailure(
           message: _messageFor(failure),
-          settings: currentState is CaptureSuccess ? currentState.settings : null,
+          settings: currentState is CaptureSuccess
+              ? currentState.settings
+              : null,
         ),
       ),
-      (settings) => emit(CaptureSuccess(settings: settings, message: 'Link regenerated')),
+      (settings) =>
+          emit(CaptureSuccess(settings: settings, message: 'Link regenerated')),
     );
   }
 

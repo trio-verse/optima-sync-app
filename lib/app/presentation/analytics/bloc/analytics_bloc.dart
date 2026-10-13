@@ -22,8 +22,7 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
     final dashboardResult = await usecases.getDashboard();
 
     await dashboardResult.fold(
-      (failure) async =>
-          emit(AnalyticsFailure(message: _messageFor(failure))),
+      (failure) async => emit(AnalyticsFailure(message: _messageFor(failure))),
       (dashboard) async {
         final campaignsResult = await usecases.getEffectiveCampaigns();
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/connection_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/sales_dashboard_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/sales_dashboard_entity.dart';
 import 'package:optima_sync_v2/app/presentation/connection/screen/all_connections_log_screen.dart';
 import 'package:optima_sync_v2/app/presentation/home/bloc/home_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/home/bloc/home_event.dart';
@@ -295,7 +295,7 @@ class _WinRateCard extends StatelessWidget {
                     const Text(
                       'WIN RATE',
                       style: TextStyle(
-                        fontSize: 8,
+                        fontSize: 12,
                         letterSpacing: .8,
                         color: AppPallete.textSecondary,
                         fontWeight: FontWeight.w700,
@@ -323,7 +323,7 @@ class _WinRateCard extends StatelessWidget {
                   'connections closed as Won',
                   style: TextStyle(
                     color: AppPallete.textSecondary,
-                    fontSize: 11,
+                    fontSize: 12,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -449,7 +449,7 @@ class _MetricCard extends StatelessWidget {
                 Text(
                   data.label,
                   style: const TextStyle(
-                    fontSize: 10.5,
+                    fontSize: 12,
                     color: AppPallete.textSecondary,
                   ),
                 ),
@@ -560,7 +560,7 @@ class _ProductRow extends StatelessWidget {
           foregroundColor: Colors.white,
           child: Text(
             '$index',
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
           ),
         ),
         const SizedBox(width: 10),
@@ -583,7 +583,7 @@ class _ProductRow extends StatelessWidget {
                   Text(
                     '${product.deals} deals · ${product.clients} clients',
                     style: const TextStyle(
-                      fontSize: 9.5,
+                      fontSize: 12,
                       color: AppPallete.textSecondary,
                     ),
                   ),
@@ -752,7 +752,7 @@ class _RecentConnectionRow extends StatelessWidget {
                       ConnectionStage.label(connection.stage),
                       style: TextStyle(
                         color: stageColor,
-                        fontSize: 9,
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -764,7 +764,7 @@ class _RecentConnectionRow extends StatelessWidget {
                 connection.productName ?? 'Product',
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 10.5,
+                  fontSize: 12,
                   color: AppPallete.textSecondary,
                 ),
               ),
@@ -774,10 +774,7 @@ class _RecentConnectionRow extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           _dateLabel(connection.createdAt),
-          style: const TextStyle(
-            fontSize: 9.5,
-            color: AppPallete.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 12, color: AppPallete.textSecondary),
         ),
       ],
     );
@@ -812,7 +809,7 @@ class _ProgressRow extends StatelessWidget {
               child: Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -820,7 +817,7 @@ class _ProgressRow extends StatelessWidget {
             Text(
               '$count · $percent%',
               style: const TextStyle(
-                fontSize: 9.5,
+                fontSize: 12,
                 color: AppPallete.textSecondary,
               ),
             ),
@@ -874,7 +871,7 @@ class _SectionHeader extends StatelessWidget {
                 eyebrow,
                 style: const TextStyle(
                   color: AppPallete.salesPrimary,
-                  fontSize: 8,
+                  fontSize: 12,
                   letterSpacing: .9,
                   fontWeight: FontWeight.w800,
                 ),

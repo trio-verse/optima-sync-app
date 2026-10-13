@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/widgets/app_drawer.dart';
+import 'package:optima_sync_v2/core/widgets/app_mobile_widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_event.dart';
@@ -57,6 +59,8 @@ class _ProductScreenState extends State<ProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ProductColors.background,
+      drawer: const AppDrawer(selectedItem: 'Product'),
+      appBar: AppBar(title: const Text('Products & Services')),
       body: SafeArea(
         child: BlocBuilder<ProductBloc, ProductState>(
           builder: (context, state) {
@@ -82,7 +86,7 @@ class _ProductScreenState extends State<ProductScreen> {
                           backgroundColor: ProductColors.primary,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         onPressed: () {
@@ -167,7 +171,7 @@ class _HeaderCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: ProductColors.cardBackground,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: ProductColors.cardBorder),
         boxShadow: [ProductColors.cardShadow],
       ),
@@ -243,7 +247,7 @@ class _HeaderCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
               icon: const Icon(Icons.add, size: 20),
@@ -262,112 +266,13 @@ class _HeaderCard extends StatelessWidget {
 class _StatsRow extends StatelessWidget {
   final int totalProducts;
   final double totalPrices;
-
   const _StatsRow({required this.totalProducts, required this.totalPrices});
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _StatCard(
-            label: "TOTAL PRODUCTS",
-            value: "$totalProducts",
-            icon: Icons.layers_outlined,
-            iconBg: ProductColors.statBlueBg,
-            iconFg: ProductColors.statBlueFg,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _StatCard(
-            label: "TOTAL PRICES",
-            value: "\$${totalPrices.toStringAsFixed(2)}",
-            icon: Icons.attach_money,
-            iconBg: ProductColors.statGreenBg,
-            iconFg: ProductColors.statGreenFg,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _StatCard(
-            label: "STATUS",
-            value: "Active",
-            valueColor: ProductColors.statGreenFg,
-            icon: Icons.show_chart,
-            iconBg: ProductColors.statPurpleBg,
-            iconFg: ProductColors.statPurpleFg,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final Color? valueColor;
-  final IconData icon;
-  final Color iconBg;
-  final Color iconFg;
-
-  const _StatCard({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.iconBg,
-    required this.iconFg,
-    this.valueColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: ProductColors.cardBackground,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: ProductColors.cardBorder),
-        boxShadow: [ProductColors.cardShadow],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: iconFg, size: 18),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: ProductColors.subtitleText,
-              letterSpacing: 0.3,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: valueColor ?? ProductColors.titleText,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => AppMetricGrid(children: [
+    AppMetricTile(label: 'Total Products', value: '$totalProducts', icon: Icons.layers_outlined),
+    AppMetricTile(label: 'Total Prices', value: '\$${totalPrices.toStringAsFixed(2)}', icon: Icons.attach_money),
+  ]);
 }
 
 class _SearchField extends StatelessWidget {
@@ -390,15 +295,15 @@ class _SearchField extends StatelessWidget {
         fillColor: ProductColors.cardBackground,
         contentPadding: const EdgeInsets.symmetric(vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: ProductColors.inputBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: ProductColors.inputBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: ProductColors.primary),
         ),
       ),

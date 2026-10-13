@@ -10,7 +10,7 @@ class CreateAndUpdateOrgBloc
   final OrgUsecases usecases;
 
   CreateAndUpdateOrgBloc({required this.usecases})
-      : super(CreateAndUpdateOrgInitial()) {
+    : super(CreateAndUpdateOrgInitial()) {
     on<CreateAndUpdateOrgSubmitted>(_createAndUpdateOrganization);
   }
 
@@ -35,7 +35,8 @@ class CreateAndUpdateOrgBloc
       final updateResult = await usecases.updateOrg(event.org);
 
       updateResult.fold(
-        (failure) => emit(CreateAndUpdateOrgFailure(message: _messageFor(failure))),
+        (failure) =>
+            emit(CreateAndUpdateOrgFailure(message: _messageFor(failure))),
         (_) => emit(CreateAndUpdateOrgSuccess(organizationId: event.org.id!)),
       );
     }

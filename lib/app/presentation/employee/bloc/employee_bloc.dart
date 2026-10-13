@@ -30,10 +30,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
     );
   }
 
-  Future<void> _load(
-    LoadEmployees event,
-    Emitter<EmployeeState> emit,
-  ) async {
+  Future<void> _load(LoadEmployees event, Emitter<EmployeeState> emit) async {
     emit(EmployeeLoading());
     final result = await usecases.getEmployees();
     result.fold(
@@ -52,10 +49,10 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
     result.fold(
       (failure) => emit(EmployeeFailure(_message(failure), employees: current)),
       (employee) => emit(
-        EmployeeLoaded(
-          [employee, ...current],
-          message: 'Employee added successfully.',
-        ),
+        EmployeeLoaded([
+          employee,
+          ...current,
+        ], message: 'Employee added successfully.'),
       ),
     );
   }

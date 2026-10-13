@@ -55,10 +55,7 @@ void showDeleteConnectionDialog({
                         ? null
                         : () {
                             context.read<ConnectionBloc>().add(
-                              DeleteConnectionSubmitted(
-                                id: connectionId,
-                                clientId: clientId,
-                              ),
+                              DeleteConnectionSubmitted(id: connectionId),
                             );
                           },
                     child: isDeleting

@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/campaign_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/campaign_usecases.dart';
 import 'package:optima_sync_v2/core/errors/failures.dart';
 
@@ -71,7 +71,6 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         final refreshResult = await usecases.getCampaigns();
 
         final campaigns = refreshResult.fold((_) {
-        
           return [
             for (final c in previousCampaigns)
               if (c.id == updated.id) updated else c,

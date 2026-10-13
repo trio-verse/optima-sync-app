@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/theme.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/Org/screens/select_org_screen.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_bloc.dart';
@@ -21,23 +23,27 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.sizeOf(context);
     return Scaffold(
-      body: Center(
+      body: SafeArea(child: Center(child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480),
         child: Container(
-          width: screenSize.width * .75,
-          padding: .all(16),
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white60,
-            borderRadius: .circular(15),
+            color: AppPallete.cardBackground,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppPallete.cardBorder),
           ),
           child: Column(
             mainAxisSize: .min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: 15,
             children: [
               Text(
                 'Sign Up',
-                style: TextStyle(fontSize: 30, fontWeight: .bold),
+                style: TextStyle(fontSize: 24, fontWeight: .bold),
               ),
 
               Text(
@@ -45,16 +51,14 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
               TextField(
                 controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
                   label: Text('Email'),
                   hint: Text('john.doe@gmail.com'),
                   suffixIcon: Icon(Icons.email),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1, color: Colors.blue),
-                  ),
+                  enabledBorder: AppTheme.inputBorder,
+                  focusedBorder: AppTheme.focusedInputBorder,
                 ),
               ),
 
@@ -67,12 +71,8 @@ class _AuthScreenState extends State<AuthScreen> {
                         label: Text('OTP'),
                         hint: Text('xxx-xxx'),
                         suffixIcon: Icon(Icons.password),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: Colors.blue),
-                        ),
+                        enabledBorder: AppTheme.inputBorder,
+                        focusedBorder: AppTheme.focusedInputBorder,
                       ),
                     );
                   }
@@ -84,7 +84,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   if (state is SignUpSuccess) {
                     return ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: AppPallete.primary,
                       ),
                       onPressed: () {
                         print(isCodeSent);
@@ -117,7 +117,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
                   return ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: AppPallete.primary,
                     ),
                     onPressed: () {
                       print(' SEND BUTTON PRESSED');
@@ -159,7 +159,7 @@ class _AuthScreenState extends State<AuthScreen> {
             ],
           ),
         ),
-      ),
+      )))),
     );
   }
 }

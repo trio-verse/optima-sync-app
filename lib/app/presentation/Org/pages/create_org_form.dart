@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/theme.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/org_entity.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/upload_logo_org/upload_logo_org_bloc.dart';
@@ -53,9 +55,10 @@ class _CreateAndUpdateOrgFormState extends State<CreateAndUpdateOrgForm> {
   String selectedCode = "🇯🇴 +962";
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: Center(
+    return SafeArea(child: SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Center(child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
         child: BlocListener<CreateAndUpdateOrgBloc, CreateAndUpdateOrgState>(
           listener: (context, state) {
             if (state is CreateAndUpdateOrgSuccess) {
@@ -78,6 +81,8 @@ class _CreateAndUpdateOrgFormState extends State<CreateAndUpdateOrgForm> {
                 key: formKey,
                 child: Column(
                   spacing: 15,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (widget.oldvalue != null)
                       BlocBuilder<UploadLogoOrgBloc, UploadOrgLogoState>(
@@ -126,12 +131,8 @@ class _CreateAndUpdateOrgFormState extends State<CreateAndUpdateOrgForm> {
                         label: Text('Organisation Name'),
                         hint: Text('Optima Sync'),
                         suffixIcon: Icon(Icons.person_2_outlined),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: Colors.blue),
-                        ),
+                        enabledBorder: AppTheme.inputBorder,
+                        focusedBorder: AppTheme.focusedInputBorder,
                       ),
                     ),
                     TextFormField(
@@ -140,12 +141,8 @@ class _CreateAndUpdateOrgFormState extends State<CreateAndUpdateOrgForm> {
                         label: Text('Organisation Email'),
                         hint: Text('john.doe@gmail.com'),
                         suffixIcon: Icon(Icons.email),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: Colors.blue),
-                        ),
+                        enabledBorder: AppTheme.inputBorder,
+                        focusedBorder: AppTheme.focusedInputBorder,
                       ),
                     ),
 
@@ -198,15 +195,8 @@ class _CreateAndUpdateOrgFormState extends State<CreateAndUpdateOrgForm> {
                                 label: Text('Phone Number'),
                                 hint: Text('999 999 999'),
                                 suffixIcon: Icon(Icons.phone_android_outlined),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(width: 1),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    width: 1,
-                                    color: Colors.blue,
-                                  ),
-                                ),
+                                enabledBorder: AppTheme.inputBorder,
+                                focusedBorder: AppTheme.focusedInputBorder,
                               ),
                             ),
                           ),
@@ -226,12 +216,8 @@ class _CreateAndUpdateOrgFormState extends State<CreateAndUpdateOrgForm> {
                         label: Text('Address'),
                         hint: Text('City , Country'),
                         suffixIcon: Icon(Icons.location_city_outlined),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: Colors.blue),
-                        ),
+                        enabledBorder: AppTheme.inputBorder,
+                        focusedBorder: AppTheme.focusedInputBorder,
                       ),
                     ),
 
@@ -251,12 +237,8 @@ class _CreateAndUpdateOrgFormState extends State<CreateAndUpdateOrgForm> {
                           'Tell us more about your buissniss fields, branches, or operations...',
                         ),
                         suffixIcon: Icon(Icons.note_sharp),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: Colors.blue),
-                        ),
+                        enabledBorder: AppTheme.inputBorder,
+                        focusedBorder: AppTheme.focusedInputBorder,
                       ),
                     ),
 
@@ -309,7 +291,7 @@ class _CreateAndUpdateOrgFormState extends State<CreateAndUpdateOrgForm> {
             },
           ),
         ),
-      ),
-    );
+      )),
+    ));
   }
 }

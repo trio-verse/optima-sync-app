@@ -88,7 +88,7 @@ class _AddCityFormState extends State<AddCityForm> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppPallete.industryPrimary,
+                backgroundColor: AppPallete.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -115,7 +115,7 @@ class _AddCityFormState extends State<AddCityForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(child: SafeArea(top: false, child: Padding(
       padding: EdgeInsets.only(
         left: 20,
         right: 20,
@@ -140,17 +140,7 @@ class _AddCityFormState extends State<AddCityForm> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: AppPallete.cardBorder,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
+
 
                   Row(
                     children: [
@@ -164,7 +154,7 @@ class _AddCityFormState extends State<AddCityForm> {
                         ),
                         child: const Icon(
                           Icons.add_location_alt_outlined,
-                          color: AppPallete.industryPrimary,
+                          color: AppPallete.primary,
                           size: 20,
                         ),
                       ),
@@ -229,13 +219,13 @@ class _AddCityFormState extends State<AddCityForm> {
                         vertical: 12,
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide.none,
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(
-                          color: AppPallete.industryPrimary,
+                          color: AppPallete.primary,
                           width: 1.4,
                         ),
                       ),
@@ -356,7 +346,7 @@ class _AddCityFormState extends State<AddCityForm> {
                         child: ElevatedButton.icon(
                           onPressed: isSubmitting ? null : _submit,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppPallete.industryPrimary,
+                            backgroundColor: AppPallete.primary,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -387,6 +377,6 @@ class _AddCityFormState extends State<AddCityForm> {
           },
         ),
       ),
-    );
+    )));
   }
 }

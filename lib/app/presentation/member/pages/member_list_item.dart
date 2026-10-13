@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:optima_sync_v2/app/domain/entities/member_entity.dart';
 import 'package:optima_sync_v2/app/presentation/member/pages/member_role_style.dart';
 
@@ -22,17 +23,34 @@ class MemberListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    final roleBadge = Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: MemberRoleStyle.background(member.role),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              MemberRoleStyle.label(member.role),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: MemberRoleStyle.foreground(member.role),
+              ),
+            ),
+          );
+    return LayoutBuilder(builder: (context, constraints) {
+      final compact = constraints.maxWidth < 600 || MediaQuery.textScalerOf(context).scale(14) > 20;
+      return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Row(
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: const Color(0xFFEEF2FF),
+            backgroundColor: AppPallete.primarySoft,
             child: Text(
               _initials,
               style: const TextStyle(
-                color: Color(0xFF4F46E5),
+                color: AppPallete.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -55,32 +73,23 @@ class MemberListItem extends StatelessWidget {
                       member.email!,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade600,
+                        color: AppPallete.textSecondary,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                if (compact) ...[
+                  const SizedBox(height: 6),
+                  roleBadge,
+                ],
               ],
             ),
           ),
 
-          const SizedBox(width: 8),
-
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: MemberRoleStyle.background(member.role),
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Text(
-              MemberRoleStyle.label(member.role),
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: MemberRoleStyle.foreground(member.role),
-              ),
-            ),
-          ),
+          if (!compact) ...[
+            const SizedBox(width: 8),
+            roleBadge,
+          ],
 
           const SizedBox(width: 4),
 
@@ -101,5 +110,6 @@ class MemberListItem extends StatelessWidget {
         ],
       ),
     );
+    });
   }
 }

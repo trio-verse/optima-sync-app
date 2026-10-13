@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
 class MarkdownScriptEditor extends StatefulWidget {
   final TextEditingController controller;
@@ -32,8 +33,8 @@ class _MarkdownScriptEditorState extends State<MarkdownScriptEditor> {
             ),
             const Spacer(),
             ToggleButtons(
-              constraints: const BoxConstraints(minHeight: 30, minWidth: 72),
-              borderRadius: BorderRadius.circular(8),
+              constraints: const BoxConstraints(minHeight: 48, minWidth: 64),
+              borderRadius: BorderRadius.circular(10),
               isSelected: [!_preview, _preview],
               onPressed: (index) => setState(() => _preview = index == 1),
               children: const [
@@ -55,9 +56,9 @@ class _MarkdownScriptEditorState extends State<MarkdownScriptEditor> {
             border: Border.all(
               color: widget.errorText != null
                   ? Theme.of(context).colorScheme.error
-                  : Colors.grey.shade400,
+                  : AppPallete.textSecondary,
             ),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(10),
           ),
           constraints: const BoxConstraints(minHeight: 160),
           padding: const EdgeInsets.all(10),

@@ -74,8 +74,8 @@ class _ClientDetailsScreenState extends State<ClientDetailsScreen> {
     return Scaffold(
       backgroundColor: AppPallete.pageBackground,
       appBar: AppBar(
-        backgroundColor: AppPallete.pageBackground,
-        surfaceTintColor: AppPallete.pageBackground,
+        backgroundColor: AppPallete.cardBackground,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         foregroundColor: AppPallete.textPrimary,
         titleSpacing: 0,
@@ -94,7 +94,7 @@ class _ClientDetailsScreenState extends State<ClientDetailsScreen> {
               icon: const Icon(Icons.edit_outlined, size: 16),
               label: const Text('Edit Profile'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: AppPallete.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
@@ -215,8 +215,8 @@ class _PillButton extends StatelessWidget {
       icon: Icon(icon, size: 16),
       label: Text(label),
       style: TextButton.styleFrom(
-        foregroundColor: const Color(0xFF3559E0),
-        backgroundColor: const Color(0xFFEDF0FE),
+        foregroundColor: AppPallete.primary,
+        backgroundColor: AppPallete.primarySoft,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         textStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
@@ -384,7 +384,7 @@ class _LabeledValue extends StatelessWidget {
                 Text(
                   label.toUpperCase(),
                   style: const TextStyle(
-                    fontSize: 10.5,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.4,
                     color: AppPallete.textSecondary,

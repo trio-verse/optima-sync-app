@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/campaign_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_event.dart';
 import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_state.dart';

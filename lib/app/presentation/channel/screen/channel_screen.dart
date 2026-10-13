@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/channel_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/channel_entity.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_event.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_state.dart';
@@ -110,7 +110,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFDC2626),
+                backgroundColor: AppPallete.danger,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -146,8 +146,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
       appBar: widget.embedded
           ? null
           : AppBar(
-              backgroundColor: AppPallete.pageBackground,
-              surfaceTintColor: AppPallete.pageBackground,
+              backgroundColor: AppPallete.cardBackground,
+              surfaceTintColor: Colors.transparent,
               elevation: 0,
               foregroundColor: AppPallete.textPrimary,
               title: const Text('Channels'),
@@ -155,7 +155,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
 
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddChannelForm,
-        backgroundColor: AppPallete.industryPrimary,
+        backgroundColor: AppPallete.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text(
@@ -193,7 +193,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                     const SizedBox(height: 14),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppPallete.industryPrimary,
+                        backgroundColor: AppPallete.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -282,7 +282,7 @@ class _ChannelsHeaderCard extends StatelessWidget {
             ),
             child: const Icon(
               Icons.wifi_tethering,
-              color: AppPallete.industryPrimary,
+              color: AppPallete.primary,
               size: 22,
             ),
           ),
@@ -363,11 +363,11 @@ class _SearchCard extends StatelessWidget {
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 14),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
           ),
           disabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide.none,
           ),
         ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/analytics_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/campaign_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/content_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/presentation/analytics/bloc/analytics_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/analytics/bloc/analytics_event.dart';
 import 'package:optima_sync_v2/app/presentation/analytics/bloc/analytics_state.dart';
@@ -220,7 +220,7 @@ class _HeaderCard extends StatelessWidget {
             child: Text(
               campaign.status.toUpperCase(),
               style: TextStyle(
-                fontSize: 10.5,
+                fontSize: 12,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.5,
                 color: statusColor,
@@ -508,7 +508,7 @@ class _ChannelDistributionCard extends StatelessWidget {
                 child: Text(
                   'No channel distribution data',
                   style: TextStyle(
-                    fontSize: 11.5,
+                    fontSize: 12,
                     color: AppPallete.textSecondary,
                   ),
                 ),

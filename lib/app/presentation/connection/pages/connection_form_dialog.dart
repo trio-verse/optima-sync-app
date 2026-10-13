@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/widgets/app_mobile_widgets.dart';
 
 Future<T?> showConnectionFormDialog<T>({
   required BuildContext context,
@@ -8,7 +9,7 @@ Future<T?> showConnectionFormDialog<T>({
     context: context,
     barrierDismissible: true,
     builder: (dialogContext) {
-      return Dialog(
+      return AppMobileDialog(
         backgroundColor: Colors.white,
         insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

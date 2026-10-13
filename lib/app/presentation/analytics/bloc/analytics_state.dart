@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:optima_sync_v2/app/domain/entities/analytics_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
 
 abstract class AnalyticsState extends Equatable {
   const AnalyticsState();

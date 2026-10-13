@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/theme.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/campaign_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_event.dart';
 import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_state.dart';
@@ -29,10 +31,8 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
   late String status;
 
   static const _borderedInput = InputDecoration(
-    enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 1)),
-    focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(width: 1, color: Colors.blue),
-    ),
+    enabledBorder: AppTheme.inputBorder,
+    focusedBorder: AppTheme.focusedInputBorder,
   );
 
   @override
@@ -342,13 +342,13 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
                               : (_) => setState(() => status = value),
                           selectedColor: color.withOpacity(.14),
                           labelStyle: TextStyle(
-                            color: selected ? color : Colors.grey.shade700,
+                            color: selected ? color : AppPallete.textSecondary,
                             fontWeight: selected
                                 ? FontWeight.w700
                                 : FontWeight.w500,
                           ),
                           side: BorderSide(
-                            color: selected ? color : Colors.grey.shade300,
+                            color: selected ? color : AppPallete.cardBorder,
                           ),
                         );
                       }).toList(),

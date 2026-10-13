@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:optima_sync_v2/app/domain/entities/sales_dashboard_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/sales_dashboard_entity.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();

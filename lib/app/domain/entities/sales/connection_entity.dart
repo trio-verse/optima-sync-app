@@ -107,7 +107,7 @@ class ConnectionEntity {
 
   final double? dealValue;
 
-  final DateTime? createdAt;
+  final DateTime createdAt;
 
   ConnectionEntity({
     this.id,
@@ -125,7 +125,7 @@ class ConnectionEntity {
     this.campaignId,
     this.campaignName,
     this.dealValue,
-    this.createdAt,
+    required this.createdAt,
   });
 
   double? get effectiveValue => dealValue ?? productPrice;
@@ -173,7 +173,9 @@ class ConnectionEntity {
       campaignId: _idOf(json['campaign_id'] ?? json['campaign']),
       campaignName:
           _nameOf(json['campaign']) ?? json['campaign_name']?.toString(),
-      createdAt: DateTime.tryParse((json['created_at'] ?? '').toString()),
+      createdAt:
+          DateTime.tryParse((json['created_at'] ?? '').toString()) ??
+          DateTime.now(),
     );
   }
 

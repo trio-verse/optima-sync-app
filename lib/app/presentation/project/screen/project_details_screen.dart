@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart';
 import 'package:optima_sync_v2/app/domain/entities/employee_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_details_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_feature_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/project_meeting_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_details_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_feature_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/project/project_meeting_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/project_usecases.dart';
 import 'package:optima_sync_v2/app/presentation/project/theme/project_colors.dart';
 import 'package:optima_sync_v2/app/presentation/project/widgets/project_form_dialog.dart';
@@ -391,7 +391,7 @@ class _ProjectDetailsScreenState extends State<ProjectDetailsScreen> {
       backgroundColor: ProjectColors.background,
       floatingActionButton: _buildFab(),
       appBar: AppBar(
-        backgroundColor: ProjectColors.background,
+        backgroundColor: ProjectColors.card,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         elevation: 0,
@@ -591,7 +591,7 @@ class _OverviewHeader extends StatelessWidget {
                   ProjectPill(
                     icon: Icons.apartment_outlined,
                     label: industry.toUpperCase(),
-                    fontSize: 11,
+                    fontSize: 12,
                   ),
                 if (reference != null)
                   ProjectPill(
@@ -599,14 +599,14 @@ class _OverviewHeader extends StatelessWidget {
                     label: reference,
                     background: ProjectColors.tint,
                     foreground: ProjectColors.body,
-                    fontSize: 11,
+                    fontSize: 12,
                   ),
               ],
             ),
           ),
         ProjectSurface(
           padding: const EdgeInsets.all(18),
-          radius: 26,
+          radius: 16,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -615,8 +615,8 @@ class _OverviewHeader extends StatelessWidget {
                 children: [
                   const ProjectIconTile(
                     icon: Icons.apartment,
-                    size: 64,
-                    radius: 20,
+                    size: 44,
+                    radius: 12,
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -643,7 +643,7 @@ class _OverviewHeader extends StatelessWidget {
                                 label: 'V${version.id}',
                                 background: ProjectColors.primarySoft,
                                 foreground: ProjectColors.primary,
-                                fontSize: 11,
+                                fontSize: 12,
                               ),
                             ],
                           ],
@@ -813,7 +813,7 @@ class _VersionSelector extends StatelessWidget {
                 label: 'Active',
                 background: ProjectColors.cyanSoft,
                 foreground: ProjectColors.teal,
-                fontSize: 11,
+                fontSize: 12,
               ),
             ],
             const SizedBox(width: 6),
@@ -1045,7 +1045,7 @@ class _TabPills extends StatelessWidget {
                                 color: isSelected
                                     ? Colors.white
                                     : ProjectColors.muted,
-                                fontSize: 11,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
@@ -1358,7 +1358,7 @@ class _OverviewTab extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: ProjectColors.line),
                 ),
                 child: Row(
@@ -1713,14 +1713,14 @@ class _VersionCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                if (selected) const ProjectPill(label: 'Viewing', fontSize: 11),
+                if (selected) const ProjectPill(label: 'Viewing', fontSize: 12),
                 if (selected && version.isActive) const SizedBox(height: 6),
                 if (version.isActive)
                   const ProjectPill(
                     label: 'Active',
                     background: ProjectColors.cyanSoft,
                     foreground: ProjectColors.teal,
-                    fontSize: 11,
+                    fontSize: 12,
                   ),
               ],
             ),
@@ -2640,7 +2640,7 @@ class _MeetingCard extends StatelessWidget {
                             foreground: meeting.isUpcoming
                                 ? ProjectColors.teal
                                 : ProjectColors.muted,
-                            fontSize: 11,
+                            fontSize: 12,
                           ),
                         ],
                       ],

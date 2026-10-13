@@ -90,10 +90,7 @@ class MemberBloc extends Bloc<MemberEvent, MemberState> {
     final existingMembers = _getCurrentMembers();
 
     emit(
-      MemberSubmitting(
-        members: existingMembers,
-        updatingId: event.memberId,
-      ),
+      MemberSubmitting(members: existingMembers, updatingId: event.memberId),
     );
 
     final result = await usecases.updateMemberRole(

@@ -175,7 +175,7 @@ class _ClientScreenState extends State<ClientScreen> {
                                   },
                                 ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),

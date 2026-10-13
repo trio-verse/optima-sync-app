@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:optima_sync_v2/app/domain/entities/industry_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/industry_entity.dart';
 
 abstract class IndustryState extends Equatable {
   const IndustryState();

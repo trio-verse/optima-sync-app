@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/capture/bloc/public_capture_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/capture/bloc/public_capture_event.dart';
@@ -134,7 +135,7 @@ class _PublicCaptureFormScreenState extends State<PublicCaptureFormScreen> {
                   if (form?.description != null) ...[
                     Text(
                       form!.description!,
-                      style: TextStyle(color: Colors.grey.shade700),
+                      style: TextStyle(color: AppPallete.textSecondary),
                     ),
                     const SizedBox(height: 20),
                   ],

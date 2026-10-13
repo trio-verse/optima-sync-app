@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/domain/entities/channel_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/refrence-data/channel_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/channel_usecases.dart';
 import 'package:optima_sync_v2/core/errors/failures.dart';
 
@@ -20,7 +20,8 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
     final currentState = state;
     if (currentState is ChannelSuccess) return currentState.channels;
     if (currentState is ChannelSubmitting) return currentState.channels;
-    if (currentState is ChannelFailure) return currentState.channels ?? const [];
+    if (currentState is ChannelFailure)
+      return currentState.channels ?? const [];
     return const [];
   }
 
@@ -71,14 +72,14 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
 
     emit(ChannelSubmitting(channels: existingChannels));
 
-    final result = await usecases.createChannel(
-      name: name,
-      color: event.color,
-    );
+    final result = await usecases.createChannel(name: name, color: event.color);
 
     result.fold(
       (failure) => emit(
-        ChannelFailure(message: _messageFor(failure), channels: existingChannels),
+        ChannelFailure(
+          message: _messageFor(failure),
+          channels: existingChannels,
+        ),
       ),
       (newChannel) =>
           emit(ChannelSuccess(channels: [newChannel, ...existingChannels])),
@@ -128,7 +129,10 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
 
     result.fold(
       (failure) => emit(
-        ChannelFailure(message: _messageFor(failure), channels: existingChannels),
+        ChannelFailure(
+          message: _messageFor(failure),
+          channels: existingChannels,
+        ),
       ),
       (updatedChannel) {
         final updatedChannels = existingChannels.map((channel) {
@@ -152,7 +156,10 @@ class ChannelBloc extends Bloc<ChannelEvent, ChannelState> {
 
     result.fold(
       (failure) => emit(
-        ChannelFailure(message: _messageFor(failure), channels: existingChannels),
+        ChannelFailure(
+          message: _messageFor(failure),
+          channels: existingChannels,
+        ),
       ),
       (_) {
         final updatedChannels = existingChannels

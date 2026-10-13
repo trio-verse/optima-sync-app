@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:optima_sync_v2/app/domain/entities/campaign_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/presentation/campaign/pages/campaign_status_style.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
@@ -19,19 +19,22 @@ class CampaignListItem extends StatelessWidget {
     this.isLoading = false,
   });
 
-  String _money(double? value) => value == null ? '—' : '\$${value.toStringAsFixed(2)}';
+  String _money(double? value) =>
+      value == null ? '—' : '\$${value.toStringAsFixed(2)}';
 
   @override
   Widget build(BuildContext context) {
     final statusColor = CampaignStatusStyle.color(campaign.status);
-    final initial = campaign.name.isNotEmpty ? campaign.name[0].toUpperCase() : '?';
+    final initial = campaign.name.isNotEmpty
+        ? campaign.name[0].toUpperCase()
+        : '?';
 
     return Card(
       margin: EdgeInsets.zero,
       elevation: 0,
       color: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         side: const BorderSide(color: AppPallete.cardBorder),
       ),
       child: InkWell(
@@ -65,11 +68,17 @@ class CampaignListItem extends StatelessWidget {
                           campaign.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: statusColor.withOpacity(.1),
                             borderRadius: BorderRadius.circular(20),
@@ -78,7 +87,7 @@ class CampaignListItem extends StatelessWidget {
                             CampaignStatusStyle.label(campaign.status),
                             style: TextStyle(
                               color: statusColor,
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -100,7 +109,10 @@ class CampaignListItem extends StatelessWidget {
                   campaign.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: AppPallete.textSecondary, fontSize: 12.5),
+                  style: const TextStyle(
+                    color: AppPallete.textSecondary,
+                    fontSize: 12.5,
+                  ),
                 ),
               ],
               const SizedBox(height: 14),
@@ -108,10 +120,22 @@ class CampaignListItem extends StatelessWidget {
                 spacing: 16,
                 runSpacing: 10,
                 children: [
-                  _Stat(label: 'Spent / Budget', value: '${_money(campaign.spent)} / ${_money(campaign.expectedBudget)}'),
-                  _Stat(label: 'Connections', value: '${campaign.connections ?? 0}'),
+                  _Stat(
+                    label: 'Spent / Budget',
+                    value:
+                        '${_money(campaign.spent)} / ${_money(campaign.expectedBudget)}',
+                  ),
+                  _Stat(
+                    label: 'Connections',
+                    value: '${campaign.connections ?? 0}',
+                  ),
                   _Stat(label: 'CPL', value: _money(campaign.cpl)),
-                  _Stat(label: 'ROI', value: campaign.roi == null ? 'N/A' : '${campaign.roi!.toStringAsFixed(1)}%'),
+                  _Stat(
+                    label: 'ROI',
+                    value: campaign.roi == null
+                        ? 'N/A'
+                        : '${campaign.roi!.toStringAsFixed(1)}%',
+                  ),
                 ],
               ),
               const Divider(height: 22),
@@ -155,7 +179,13 @@ class _Stat extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: AppPallete.textSecondary, fontSize: 10.5)),
+          Text(
+            label,
+            style: const TextStyle(
+              color: AppPallete.textSecondary,
+              fontSize: 12,
+            ),
+          ),
           const SizedBox(height: 3),
           Text(
             value,
