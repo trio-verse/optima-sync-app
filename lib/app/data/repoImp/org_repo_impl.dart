@@ -4,7 +4,7 @@ import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source
 import 'package:optima_sync_v2/app/data/sources/remote_data/org_remote_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/org_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/createOrg/org_repo.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class CreateOrgRepositoryImpl implements OrgRepository {
   final CreateOrgRemoteDataSource remoteDataSource;

@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:optima_sync_v2/app/domain/entities/org_entity.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 abstract class OrgRepository {
   Future<Either<WhateverFailure, List<OrgEntity>>> getOrganizations();

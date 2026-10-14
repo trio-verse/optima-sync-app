@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:optima_sync_v2/app/domain/usecases/org_usecases.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 import 'upload_logo_org_event.dart';
 import 'upload_logo_org_state.dart';

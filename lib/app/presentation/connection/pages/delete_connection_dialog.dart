@@ -2,8 +2,6 @@ import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_event.dart';
-import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_state.dart';
 
 void showDeleteConnectionDialog({
   required BuildContext context,

@@ -1,43 +1,22 @@
-import 'package:equatable/equatable.dart';
-import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
+part of 'connection_bloc.dart';
 
-abstract class ConnectionState extends Equatable {
-  const ConnectionState();
+@freezed
+class ConnectionState with _$ConnectionState {
+  const factory ConnectionState.initial() = ConnectionInitial;
 
-  @override
-  List<Object?> get props => [];
-}
+  const factory ConnectionState.loading() = ConnectionLoading;
 
-class ConnectionInitial extends ConnectionState {}
+  const factory ConnectionState.submitting({
+    required List<ConnectionEntity> connections,
+  }) = ConnectionSubmitting;
 
-class ConnectionLoading extends ConnectionState {}
+  const factory ConnectionState.success({
+    required List<ConnectionEntity> connections,
+    String? message,
+  }) = ConnectionSuccess;
 
-class ConnectionSubmitting extends ConnectionState {
-  final List<ConnectionEntity> connections;
-
-  const ConnectionSubmitting({required this.connections});
-
-  @override
-  List<Object?> get props => [connections];
-}
-
-class ConnectionSuccess extends ConnectionState {
-  final List<ConnectionEntity> connections;
-
-  final String? message;
-
-  const ConnectionSuccess({required this.connections, this.message});
-
-  @override
-  List<Object?> get props => [connections, message];
-}
-
-class ConnectionFailure extends ConnectionState {
-  final String message;
-  final List<ConnectionEntity>? connections;
-
-  const ConnectionFailure({required this.message, this.connections});
-
-  @override
-  List<Object?> get props => [message, connections];
+  const factory ConnectionState.failure({
+    required String message,
+    List<ConnectionEntity>? connections,
+  }) = ConnectionFailure;
 }

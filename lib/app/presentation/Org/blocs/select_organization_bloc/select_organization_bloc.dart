@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/usecases/org_usecases.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 import 'select_organization_event.dart';
 import 'select_organization_state.dart';

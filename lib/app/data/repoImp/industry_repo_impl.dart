@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/data/sources/remote_data/industry_remote_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/refrence-data/industry_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/industry/industry_repo.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class IndustryRepositoryImpl implements IndustryRepository {
   final IndustryRemoteDataSource remoteDataSource;
