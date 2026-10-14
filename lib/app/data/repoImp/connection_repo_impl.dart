@@ -9,28 +9,23 @@ class ConnectionRepositoryImpl implements ConnectionRepository {
   final ConnectionRemoteDataSource remoteDataSource;
 
   ConnectionRepositoryImpl({required this.remoteDataSource});
-
   Future<Either<ConnectionError, T>> _guard<T>(
     Future<T> Function() call,
   ) async {
     try {
       return Right(await call());
     } on OfflineException {
-      return Left(ConnectionError.connectionOffline());
-    } on NotFoundException {
-      return Left(ConnectionError.notFound());
-    } on NoContentException {
-      return Left(ConnectionError.noContent());
-    } on BadRequestException {
-      return Left(ConnectionError.badRequest());
+      return const Left(ConnectionError.offline());
     } on UnauthorizedException {
-      return Left(ConnectionError.unauthorized());
+      return const Left(ConnectionError.sessionExpired());
     } on NoOrganizationException {
-      return Left(ConnectionError.unauthorized());
-    } on ServerException {
-      return Left(ConnectionError.serverError());
+      return const Left(ConnectionError.noOrganization());
+    } on BadRequestException {
+      return const Left(ConnectionError.invalidData());
+    } on NotFoundException {
+      return const Left(ConnectionError.notFound());
     } catch (e) {
-      return Left(ConnectionError.unexpected());
+      return const Left(ConnectionError.serverError());
     }
   }
 

@@ -28,15 +28,13 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
 
   String _messageFor(ConnectionError error) {
     return error.when(
-      serverError: () => 'Server error, please try again',
-      connectionOffline: () => 'No internet connection',
-      badRequest: () =>
+      offline: () => 'No internet connection',
+      sessionExpired: () => 'Your session has expired, please log in again',
+      noOrganization: () => 'Please select an organization first',
+      invalidData: () =>
           'The submitted data is invalid, please check it and try again',
       notFound: () => 'This connection no longer exists',
-      noContent: () => 'No connections found',
-      unauthorized: () => 'Your session has expired, please log in again',
-      unexpected: () => 'Something went wrong, please try again',
-      database: () => 'Something went wrong, please try again',
+      serverError: () => 'Something went wrong, please try again',
     );
   }
 
