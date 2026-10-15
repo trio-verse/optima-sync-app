@@ -17,8 +17,6 @@ class ConnectionState with _$ConnectionState {
     ConnectionSuccessType? successType,
   }) = ConnectionSuccess;
 
-  const factory ConnectionState.failure({
-    required ConnectionError error,
-    List<ConnectionEntity>? connections,
-  }) = ConnectionFailure;
+  const factory ConnectionState.failure({required ConnectionError error}) =
+      ConnectionFailure;
 }

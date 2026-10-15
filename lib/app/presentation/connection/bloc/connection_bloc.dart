@@ -11,6 +11,7 @@ part 'connection_state.dart';
 class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
   final ConnectionUsecases usecases;
 
+  List<ConnectionEntity> _connections = const [];
   String? _lastLoadedClientId;
   bool _loadedAll = false;
 
@@ -24,14 +25,6 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
         deleteSubmitted: (id) => _onDeleteSubmitted(id, emit),
       );
     });
-  }
-
-  List<ConnectionEntity> _currentConnections() {
-    return switch (state) {
-      ConnectionSuccess(:final connections) ||
-      ConnectionSubmitting(:final connections) => connections,
-      _ => const [],
-    };
   }
 
   Future<List<ConnectionEntity>> _refreshCurrentList({
@@ -61,6 +54,7 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     result.fold((failure) => emit(.failure(error: failure)), (connections) {
       _lastLoadedClientId = clientId;
       _loadedAll = false;
+      _connections = connections;
       emit(.success(connections: connections));
     });
   }
@@ -73,6 +67,7 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     result.fold((failure) => emit(.failure(error: failure)), (connections) {
       _lastLoadedClientId = null;
       _loadedAll = true;
+      _connections = connections;
       emit(.success(connections: connections));
     });
   }
@@ -81,99 +76,74 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     ConnectionEntity connection,
     Emitter<ConnectionState> emit,
   ) async {
-    final existing = _currentConnections();
+    final existing = _connections;
 
     emit(.submitting(connections: existing));
-    if (connection.productId.trim().isEmpty) {
-      emit(
-        .failure(
-          error: const ConnectionError.productRequired(),
-          connections: existing,
-        ),
-      );
-      return;
-    }
 
     final createResult = await usecases.createConnection(connection);
 
-    await createResult.fold(
-      (failure) async => emit(.failure(error: failure, connections: existing)),
-      (created) async {
-        final connections = await _refreshCurrentList(
-          orElse: [created, ...existing],
-        );
+    await createResult.fold((failure) async => emit(.failure(error: failure)), (
+      created,
+    ) async {
+      _connections = await _refreshCurrentList(orElse: [created, ...existing]);
 
-        emit(
-          .success(
-            connections: connections,
-            successType: ConnectionSuccessType.created,
-          ),
-        );
-      },
-    );
+      emit(
+        .success(
+          connections: _connections,
+          successType: ConnectionSuccessType.created,
+        ),
+      );
+    });
   }
 
   Future<void> _onUpdateSubmitted(
     ConnectionEntity connection,
     Emitter<ConnectionState> emit,
   ) async {
-    final existing = _currentConnections();
+    final existing = _connections;
 
     emit(.submitting(connections: existing));
 
-    if (connection.productId.trim().isEmpty) {
-      emit(
-        .failure(
-          error: const ConnectionError.productRequired(),
-          connections: existing,
-        ),
-      );
-      return;
-    }
     final updateResult = await usecases.updateConnection(connection);
 
-    await updateResult.fold(
-      (failure) async => emit(.failure(error: failure, connections: existing)),
-      (updated) async {
-        final connections = await _refreshCurrentList(
-          orElse: [
-            for (final c in existing)
-              if (c.id == updated.id) updated else c,
-          ],
-        );
+    await updateResult.fold((failure) async => emit(.failure(error: failure)), (
+      updated,
+    ) async {
+      _connections = await _refreshCurrentList(
+        orElse: [
+          for (final c in existing)
+            if (c.id == updated.id) updated else c,
+        ],
+      );
 
-        emit(
-          .success(
-            connections: connections,
-            successType: ConnectionSuccessType.updated,
-          ),
-        );
-      },
-    );
+      emit(
+        .success(
+          connections: _connections,
+          successType: ConnectionSuccessType.updated,
+        ),
+      );
+    });
   }
 
   Future<void> _onDeleteSubmitted(
     String id,
     Emitter<ConnectionState> emit,
   ) async {
-    final existing = _currentConnections();
+    final existing = _connections;
 
     emit(.submitting(connections: existing));
 
     final result = await usecases.deleteConnection(id);
 
-    result.fold(
-      (failure) => emit(.failure(error: failure, connections: existing)),
-      (_) {
-        final remaining = existing.where((c) => c.id != id).toList();
+    result.fold((failure) => emit(.failure(error: failure)), (_) {
+      _connections = existing.where((c) => c.id != id).toList();
 
-        emit(
-          .success(
-            connections: remaining,
-            successType: ConnectionSuccessType.deleted,
-          ),
-        );
-      },
-    );
+      emit(
+        .success(
+          connections: _connections,
+          successType: ConnectionSuccessType.deleted,
+        ),
+      );
+    });
   }
 }

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/domain/entities/client_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/connection/connection_mesages.dart';
+import 'package:optima_sync_v2/app/presentation/connection/connection_messages.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/add_connection_form.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/connection_list_item.dart';
+import 'package:optima_sync_v2/core/errors/connection/connection_errors.dart';
 
 class ConnectionScreen extends StatefulWidget {
   final ClientEntity client;
@@ -56,96 +58,90 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
       ),
 
       body: BlocConsumer<ConnectionBloc, ConnectionState>(
+        buildWhen: (previous, current) =>
+            current is! ConnectionFailure || previous is ConnectionLoading,
         listener: (context, state) {
-          if (state is ConnectionSuccess && state.successType != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.successType!.text(context))),
-            );
-          }
-          if (state is ConnectionFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.error.text(context))));
-          }
-        },
-
-        builder: (context, state) {
-          if (state is ConnectionInitial || state is ConnectionLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state is ConnectionFailure && state.connections == null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      state.error.text(context),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<ConnectionBloc>().add(
-                          LoadConnections(clientId: _clientId),
-                        );
-                      },
-                      child: const Text("Retry"),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          final connections = switch (state) {
-            ConnectionSuccess(:final connections) => connections,
-            ConnectionSubmitting(:final connections) => connections,
-            ConnectionFailure(:final connections) => connections ?? const [],
-            _ => const [],
-          };
-
-          if (connections.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.hub_outlined,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(height: 12),
-                    const Text("No connections yet"),
-                    const SizedBox(height: 12),
-                    ElevatedButton.icon(
-                      onPressed: _openAddConnectionForm,
-                      icon: const Icon(Icons.add),
-                      label: const Text("New Connection"),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          return ListView.separated(
-            padding: const EdgeInsets.all(12),
-            itemCount: connections.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              return ConnectionListItem(
-                clientId: _clientId,
-                connection: connections[index],
+          state.whenOrNull(
+            success: (_, successType) {
+              if (successType == null) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(successType.text(context))),
               );
+            },
+            failure: (error) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(error.text(context))));
             },
           );
         },
+        builder: (context, state) => state.when(
+          initial: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          failure: (error) => _buildError(context, error),
+          submitting: (connections) => _buildList(connections),
+          success: (connections, _) => _buildList(connections),
+        ),
       ),
+    );
+  }
+
+  Widget _buildError(BuildContext context, ConnectionError error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(error.text(context), textAlign: TextAlign.center),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                context.read<ConnectionBloc>().add(
+                  LoadConnections(clientId: _clientId),
+                );
+              },
+              child: const Text("Retry"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildList(List<ConnectionEntity> connections) {
+    if (connections.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.hub_outlined, size: 48, color: Colors.grey),
+              const SizedBox(height: 12),
+              const Text("No connections yet"),
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                onPressed: _openAddConnectionForm,
+                icon: const Icon(Icons.add),
+                label: const Text("New Connection"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.all(12),
+      itemCount: connections.length,
+      separatorBuilder: (_, __) => const Divider(height: 1),
+      itemBuilder: (context, index) {
+        return ConnectionListItem(
+          clientId: _clientId,
+          connection: connections[index],
+        );
+      },
     );
   }
 }

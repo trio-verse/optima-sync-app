@@ -12,7 +12,6 @@ extension ConnectionErrorText on ConnectionError {
           'The submitted data is invalid, please check it and try again',
       notFound: () => 'This connection no longer exists',
       serverError: () => 'Something went wrong, please try again',
-      productRequired: () => 'Product is required',
     );
   }
 }

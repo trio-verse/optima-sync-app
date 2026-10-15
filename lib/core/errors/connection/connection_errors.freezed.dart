@@ -55,7 +55,7 @@ extension ConnectionErrorPatterns on ConnectionError {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Offline value)?  offline,TResult Function( _SessionExpired value)?  sessionExpired,TResult Function( _NoOrganization value)?  noOrganization,TResult Function( _InvalidData value)?  invalidData,TResult Function( _NotFound value)?  notFound,TResult Function( _ServerError value)?  serverError,TResult Function( _ProductRequired value)?  productRequired,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Offline value)?  offline,TResult Function( _SessionExpired value)?  sessionExpired,TResult Function( _NoOrganization value)?  noOrganization,TResult Function( _InvalidData value)?  invalidData,TResult Function( _NotFound value)?  notFound,TResult Function( _ServerError value)?  serverError,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Offline() when offline != null:
@@ -64,8 +64,7 @@ return sessionExpired(_that);case _NoOrganization() when noOrganization != null:
 return noOrganization(_that);case _InvalidData() when invalidData != null:
 return invalidData(_that);case _NotFound() when notFound != null:
 return notFound(_that);case _ServerError() when serverError != null:
-return serverError(_that);case _ProductRequired() when productRequired != null:
-return productRequired(_that);case _:
+return serverError(_that);case _:
   return orElse();
 
 }
@@ -83,7 +82,7 @@ return productRequired(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Offline value)  offline,required TResult Function( _SessionExpired value)  sessionExpired,required TResult Function( _NoOrganization value)  noOrganization,required TResult Function( _InvalidData value)  invalidData,required TResult Function( _NotFound value)  notFound,required TResult Function( _ServerError value)  serverError,required TResult Function( _ProductRequired value)  productRequired,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Offline value)  offline,required TResult Function( _SessionExpired value)  sessionExpired,required TResult Function( _NoOrganization value)  noOrganization,required TResult Function( _InvalidData value)  invalidData,required TResult Function( _NotFound value)  notFound,required TResult Function( _ServerError value)  serverError,}){
 final _that = this;
 switch (_that) {
 case _Offline():
@@ -92,8 +91,7 @@ return sessionExpired(_that);case _NoOrganization():
 return noOrganization(_that);case _InvalidData():
 return invalidData(_that);case _NotFound():
 return notFound(_that);case _ServerError():
-return serverError(_that);case _ProductRequired():
-return productRequired(_that);case _:
+return serverError(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -110,7 +108,7 @@ return productRequired(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Offline value)?  offline,TResult? Function( _SessionExpired value)?  sessionExpired,TResult? Function( _NoOrganization value)?  noOrganization,TResult? Function( _InvalidData value)?  invalidData,TResult? Function( _NotFound value)?  notFound,TResult? Function( _ServerError value)?  serverError,TResult? Function( _ProductRequired value)?  productRequired,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Offline value)?  offline,TResult? Function( _SessionExpired value)?  sessionExpired,TResult? Function( _NoOrganization value)?  noOrganization,TResult? Function( _InvalidData value)?  invalidData,TResult? Function( _NotFound value)?  notFound,TResult? Function( _ServerError value)?  serverError,}){
 final _that = this;
 switch (_that) {
 case _Offline() when offline != null:
@@ -119,8 +117,7 @@ return sessionExpired(_that);case _NoOrganization() when noOrganization != null:
 return noOrganization(_that);case _InvalidData() when invalidData != null:
 return invalidData(_that);case _NotFound() when notFound != null:
 return notFound(_that);case _ServerError() when serverError != null:
-return serverError(_that);case _ProductRequired() when productRequired != null:
-return productRequired(_that);case _:
+return serverError(_that);case _:
   return null;
 
 }
@@ -137,7 +134,7 @@ return productRequired(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  offline,TResult Function()?  sessionExpired,TResult Function()?  noOrganization,TResult Function()?  invalidData,TResult Function()?  notFound,TResult Function()?  serverError,TResult Function()?  productRequired,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  offline,TResult Function()?  sessionExpired,TResult Function()?  noOrganization,TResult Function()?  invalidData,TResult Function()?  notFound,TResult Function()?  serverError,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Offline() when offline != null:
 return offline();case _SessionExpired() when sessionExpired != null:
@@ -145,8 +142,7 @@ return sessionExpired();case _NoOrganization() when noOrganization != null:
 return noOrganization();case _InvalidData() when invalidData != null:
 return invalidData();case _NotFound() when notFound != null:
 return notFound();case _ServerError() when serverError != null:
-return serverError();case _ProductRequired() when productRequired != null:
-return productRequired();case _:
+return serverError();case _:
   return orElse();
 
 }
@@ -164,7 +160,7 @@ return productRequired();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  offline,required TResult Function()  sessionExpired,required TResult Function()  noOrganization,required TResult Function()  invalidData,required TResult Function()  notFound,required TResult Function()  serverError,required TResult Function()  productRequired,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  offline,required TResult Function()  sessionExpired,required TResult Function()  noOrganization,required TResult Function()  invalidData,required TResult Function()  notFound,required TResult Function()  serverError,}) {final _that = this;
 switch (_that) {
 case _Offline():
 return offline();case _SessionExpired():
@@ -172,8 +168,7 @@ return sessionExpired();case _NoOrganization():
 return noOrganization();case _InvalidData():
 return invalidData();case _NotFound():
 return notFound();case _ServerError():
-return serverError();case _ProductRequired():
-return productRequired();case _:
+return serverError();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -190,7 +185,7 @@ return productRequired();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  offline,TResult? Function()?  sessionExpired,TResult? Function()?  noOrganization,TResult? Function()?  invalidData,TResult? Function()?  notFound,TResult? Function()?  serverError,TResult? Function()?  productRequired,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  offline,TResult? Function()?  sessionExpired,TResult? Function()?  noOrganization,TResult? Function()?  invalidData,TResult? Function()?  notFound,TResult? Function()?  serverError,}) {final _that = this;
 switch (_that) {
 case _Offline() when offline != null:
 return offline();case _SessionExpired() when sessionExpired != null:
@@ -198,8 +193,7 @@ return sessionExpired();case _NoOrganization() when noOrganization != null:
 return noOrganization();case _InvalidData() when invalidData != null:
 return invalidData();case _NotFound() when notFound != null:
 return notFound();case _ServerError() when serverError != null:
-return serverError();case _ProductRequired() when productRequired != null:
-return productRequired();case _:
+return serverError();case _:
   return null;
 
 }
@@ -391,38 +385,6 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'ConnectionError.serverError()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class _ProductRequired implements ConnectionError {
-  const _ProductRequired();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductRequired);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ConnectionError.productRequired()';
 }
 
 

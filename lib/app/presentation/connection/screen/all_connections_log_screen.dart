@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/connection/connection_mesages.dart';
+import 'package:optima_sync_v2/app/presentation/connection/connection_messages.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/connection_log_item.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/new_connection_flow_dialog.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
@@ -95,31 +95,39 @@ class _AllConnectionsLogScreenState extends State<AllConnectionsLogScreen> {
         ),
       ),
       body: BlocConsumer<ConnectionBloc, ConnectionState>(
+        buildWhen: (previous, current) =>
+            current is! ConnectionFailure || previous is ConnectionLoading,
         listener: (context, state) {
-          if (state is ConnectionFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.error.text(context))));
-          }
-
-          if (state is ConnectionSuccess && state.successType != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.successType!.text(context))),
-            );
-          }
+          state.whenOrNull(
+            failure: (error) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(error.text(context))));
+            },
+            success: (_, successType) {
+              if (successType == null) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(successType.text(context))),
+              );
+            },
+          );
         },
         builder: (context, state) {
-          final isLoading =
-              state is ConnectionInitial || state is ConnectionLoading;
-          final isSubmitting = state is ConnectionSubmitting;
+          final isLoading = state.maybeWhen(
+            initial: () => true,
+            loading: () => true,
+            orElse: () => false,
+          );
+          final isSubmitting = state.maybeWhen(
+            submitting: (_) => true,
+            orElse: () => false,
+          );
 
-          final allConnections = switch (state) {
-            ConnectionSuccess(:final connections) => connections,
-            ConnectionSubmitting(:final connections) => connections,
-            ConnectionFailure(:final connections) => connections ?? const [],
-            _ => const <ConnectionEntity>[],
-          };
-
+          final allConnections = state.maybeWhen(
+            success: (connections, _) => connections,
+            submitting: (connections) => connections,
+            orElse: () => const <ConnectionEntity>[],
+          );
           final filtered = _applyFilters(allConnections);
           final hasAnyData = allConnections.isNotEmpty;
 
@@ -127,8 +135,11 @@ class _AllConnectionsLogScreenState extends State<AllConnectionsLogScreen> {
             onRefresh: () async {
               context.read<ConnectionBloc>().add(const LoadAllConnections());
               await context.read<ConnectionBloc>().stream.firstWhere(
-                (next) =>
-                    next is ConnectionSuccess || next is ConnectionFailure,
+                (next) => next.maybeWhen(
+                  success: (_, __) => true,
+                  failure: (_) => true,
+                  orElse: () => false,
+                ),
               );
             },
             child: ListView(

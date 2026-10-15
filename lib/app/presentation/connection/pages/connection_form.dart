@@ -11,7 +11,7 @@ import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_event.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_state.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/connection/connection_mesages.dart';
+import 'package:optima_sync_v2/app/presentation/connection/connection_messages.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_event.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_state.dart';
@@ -137,26 +137,30 @@ class _ConnectionFormState extends State<ConnectionForm> {
       ),
       child: BlocListener<ConnectionBloc, ConnectionState>(
         listener: (context, state) {
-          if (state is ConnectionFailure) {
-            _submissionRequested = false;
-          }
-
-          if (state is ConnectionSuccess && _submissionRequested) {
-            _submissionRequested = false;
-            widget.onSuccess?.call();
-            if (widget.closeOnSuccess) {
-              Navigator.pop(context);
-            }
-          }
+          state.whenOrNull(
+            failure: (_) {
+              _submissionRequested = false;
+            },
+            success: (_, __) {
+              if (!_submissionRequested) return;
+              _submissionRequested = false;
+              widget.onSuccess?.call();
+              if (widget.closeOnSuccess) {
+                Navigator.pop(context);
+              }
+            },
+          );
         },
         child: BlocBuilder<ConnectionBloc, ConnectionState>(
           builder: (context, connectionState) {
-            final isSubmitting = connectionState is ConnectionSubmitting;
+            final isSubmitting = connectionState.maybeWhen(
+              submitting: (_) => true,
+              orElse: () => false,
+            );
 
-            final errorMessage = connectionState is ConnectionFailure
-                ? connectionState.error.text(context)
-                : null;
-
+            final errorMessage = connectionState.whenOrNull(
+              failure: (error) => error.text(context),
+            );
             return Form(
               key: formKey,
               child: SingleChildScrollView(

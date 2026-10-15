@@ -279,7 +279,13 @@ class _ConnectionsLogCard extends StatelessWidget {
       ),
       child: BlocBuilder<ConnectionBloc, ConnectionState>(
         builder: (context, state) {
-          if (state is ConnectionInitial || state is ConnectionLoading) {
+          final isLoading = state.maybeWhen(
+            initial: () => true,
+            loading: () => true,
+            orElse: () => false,
+          );
+
+          if (isLoading) {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 20),
               child: Center(
@@ -292,13 +298,11 @@ class _ConnectionsLogCard extends StatelessWidget {
             );
           }
 
-          final connections = switch (state) {
-            ConnectionSuccess(:final connections) => connections,
-            ConnectionSubmitting(:final connections) => connections,
-            ConnectionFailure(:final connections) => connections ?? const [],
-            _ => const [],
-          };
-
+          final connections = state.maybeWhen(
+            success: (connections, _) => connections,
+            submitting: (connections) => connections,
+            orElse: () => const [],
+          );
           if (connections.isEmpty) {
             return const _EmptyHint(
               'No connections recorded yet for this client.',
