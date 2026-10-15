@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/connection/connection_mesages.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/connection_log_item.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/new_connection_flow_dialog.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
@@ -98,13 +99,13 @@ class _AllConnectionsLogScreenState extends State<AllConnectionsLogScreen> {
           if (state is ConnectionFailure) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ).showSnackBar(SnackBar(content: Text(state.error.text(context))));
           }
 
-          if (state is ConnectionSuccess && state.message != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message!)));
+          if (state is ConnectionSuccess && state.successType != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.successType!.text(context))),
+            );
           }
         },
         builder: (context, state) {

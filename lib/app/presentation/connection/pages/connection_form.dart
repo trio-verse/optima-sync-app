@@ -11,6 +11,7 @@ import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_event.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_state.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/connection/connection_mesages.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_event.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_state.dart';
@@ -153,7 +154,7 @@ class _ConnectionFormState extends State<ConnectionForm> {
             final isSubmitting = connectionState is ConnectionSubmitting;
 
             final errorMessage = connectionState is ConnectionFailure
-                ? connectionState.message
+                ? connectionState.error.text(context)
                 : null;
 
             return Form(

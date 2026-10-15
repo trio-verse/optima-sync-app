@@ -10,4 +10,5 @@ abstract class ConnectionError with _$ConnectionError {
   const factory ConnectionError.invalidData() = _InvalidData;
   const factory ConnectionError.notFound() = _NotFound;
   const factory ConnectionError.serverError() = _ServerError;
+  const factory ConnectionError.productRequired() = _ProductRequired;
 }

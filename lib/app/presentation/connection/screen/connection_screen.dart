@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/domain/entities/client_entity.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/connection/connection_mesages.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/add_connection_form.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/connection_list_item.dart';
 
@@ -56,16 +57,15 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
 
       body: BlocConsumer<ConnectionBloc, ConnectionState>(
         listener: (context, state) {
-          if (state is ConnectionSuccess && state.message != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message!)));
+          if (state is ConnectionSuccess && state.successType != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.successType!.text(context))),
+            );
           }
-
           if (state is ConnectionFailure) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ).showSnackBar(SnackBar(content: Text(state.error.text(context))));
           }
         },
 
@@ -81,7 +81,10 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(state.message, textAlign: TextAlign.center),
+                    Text(
+                      state.error.text(context),
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {

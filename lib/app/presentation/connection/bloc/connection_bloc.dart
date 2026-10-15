@@ -26,18 +26,6 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     });
   }
 
-  String _messageFor(ConnectionError error) {
-    return error.when(
-      offline: () => 'No internet connection',
-      sessionExpired: () => 'Your session has expired, please log in again',
-      noOrganization: () => 'Please select an organization first',
-      invalidData: () =>
-          'The submitted data is invalid, please check it and try again',
-      notFound: () => 'This connection no longer exists',
-      serverError: () => 'Something went wrong, please try again',
-    );
-  }
-
   List<ConnectionEntity> _currentConnections() {
     return switch (state) {
       ConnectionSuccess(:final connections) ||
@@ -70,9 +58,7 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
 
     final result = await usecases.getClientConnections(clientId);
 
-    result.fold((failure) => emit(.failure(message: _messageFor(failure))), (
-      connections,
-    ) {
+    result.fold((failure) => emit(.failure(error: failure)), (connections) {
       _lastLoadedClientId = clientId;
       _loadedAll = false;
       emit(.success(connections: connections));
@@ -84,9 +70,7 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
 
     final result = await usecases.getAllConnections();
 
-    result.fold((failure) => emit(.failure(message: _messageFor(failure))), (
-      connections,
-    ) {
+    result.fold((failure) => emit(.failure(error: failure)), (connections) {
       _lastLoadedClientId = null;
       _loadedAll = true;
       emit(.success(connections: connections));
@@ -101,15 +85,19 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
 
     emit(.submitting(connections: existing));
     if (connection.productId.trim().isEmpty) {
-      emit(.failure(message: 'Product is required', connections: existing));
+      emit(
+        .failure(
+          error: const ConnectionError.productRequired(),
+          connections: existing,
+        ),
+      );
       return;
     }
 
     final createResult = await usecases.createConnection(connection);
 
     await createResult.fold(
-      (failure) async =>
-          emit(.failure(message: _messageFor(failure), connections: existing)),
+      (failure) async => emit(.failure(error: failure, connections: existing)),
       (created) async {
         final connections = await _refreshCurrentList(
           orElse: [created, ...existing],
@@ -118,7 +106,7 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
         emit(
           .success(
             connections: connections,
-            message: 'Connection created successfully',
+            successType: ConnectionSuccessType.created,
           ),
         );
       },
@@ -134,14 +122,18 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     emit(.submitting(connections: existing));
 
     if (connection.productId.trim().isEmpty) {
-      emit(.failure(message: 'Product is required', connections: existing));
+      emit(
+        .failure(
+          error: const ConnectionError.productRequired(),
+          connections: existing,
+        ),
+      );
       return;
     }
     final updateResult = await usecases.updateConnection(connection);
 
     await updateResult.fold(
-      (failure) async =>
-          emit(.failure(message: _messageFor(failure), connections: existing)),
+      (failure) async => emit(.failure(error: failure, connections: existing)),
       (updated) async {
         final connections = await _refreshCurrentList(
           orElse: [
@@ -153,7 +145,7 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
         emit(
           .success(
             connections: connections,
-            message: 'Connection updated successfully',
+            successType: ConnectionSuccessType.updated,
           ),
         );
       },
@@ -171,15 +163,14 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     final result = await usecases.deleteConnection(id);
 
     result.fold(
-      (failure) =>
-          emit(.failure(message: _messageFor(failure), connections: existing)),
+      (failure) => emit(.failure(error: failure, connections: existing)),
       (_) {
         final remaining = existing.where((c) => c.id != id).toList();
 
         emit(
           .success(
             connections: remaining,
-            message: 'Connection deleted successfully',
+            successType: ConnectionSuccessType.deleted,
           ),
         );
       },

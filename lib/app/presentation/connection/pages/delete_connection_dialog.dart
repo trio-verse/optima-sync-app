@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/connection/connection_mesages.dart';
 
 void showDeleteConnectionDialog({
   required BuildContext context,
@@ -22,9 +23,9 @@ void showDeleteConnectionDialog({
             }
 
             if (state is ConnectionFailure) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.error.text(context))),
+              );
             }
           },
           child: BlocBuilder<ConnectionBloc, ConnectionState>(
