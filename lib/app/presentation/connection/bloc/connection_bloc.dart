@@ -1,10 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/connection_usecases.dart';
-
 import 'package:optima_sync_v2/core/errors/connection/connection_errors.dart';
-import 'connection_event.dart';
-import 'connection_state.dart';
+
+part 'connection_bloc.freezed.dart';
+part 'connection_event.dart';
+part 'connection_state.dart';
 
 class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
   final ConnectionUsecases usecases;
@@ -12,13 +14,36 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
   String? _lastLoadedClientId;
   bool _loadedAll = false;
 
-  ConnectionBloc({required this.usecases}) : super(ConnectionInitial()) {
-    on<LoadConnections>(_onLoadConnections);
-    on<LoadAllConnections>(_onLoadAllConnections);
-    on<AddConnectionSubmitted>(_onAddConnectionSubmitted);
-    on<UpdateConnectionSubmitted>(_onUpdateConnectionSubmitted);
+  ConnectionBloc({required this.usecases}) : super(.initial()) {
+    on<ConnectionEvent>((event, emit) async {
+      await event.when(
+        loadConnections: (clientId) => _onLoadConnections(clientId, emit),
+        loadAllConnections: () => _onLoadAllConnections(emit),
+        addSubmitted: (connection) => _onAddSubmitted(connection, emit),
+        updateSubmitted: (connection) => _onUpdateSubmitted(connection, emit),
+        deleteSubmitted: (id) => _onDeleteSubmitted(id, emit),
+      );
+    });
+  }
 
-    on<DeleteConnectionSubmitted>(_onDeleteConnectionSubmitted);
+  String _messageFor(ConnectionError error) {
+    return error.when(
+      offline: () => 'No internet connection',
+      sessionExpired: () => 'Your session has expired, please log in again',
+      noOrganization: () => 'Please select an organization first',
+      invalidData: () =>
+          'The submitted data is invalid, please check it and try again',
+      notFound: () => 'This connection no longer exists',
+      serverError: () => 'Something went wrong, please try again',
+    );
+  }
+
+  List<ConnectionEntity> _currentConnections() {
+    return switch (state) {
+      ConnectionSuccess(:final connections) ||
+      ConnectionSubmitting(:final connections) => connections,
+      _ => const [],
+    };
   }
 
   Future<List<ConnectionEntity>> _refreshCurrentList({
@@ -37,87 +62,61 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     return orElse;
   }
 
-  List<ConnectionEntity> _currentConnections() {
-    final currentState = state;
-
-    if (currentState is ConnectionSuccess) {
-      return currentState.connections;
-    }
-
-    if (currentState is ConnectionSubmitting) {
-      return currentState.connections;
-    }
-
-    return const [];
-  }
-
   Future<void> _onLoadConnections(
-    LoadConnections event,
+    String clientId,
     Emitter<ConnectionState> emit,
   ) async {
-    emit(ConnectionLoading());
+    emit(.loading());
 
-    final result = await usecases.getClientConnections(event.clientId);
+    final result = await usecases.getClientConnections(clientId);
 
-    result.fold(
-      (failure) => emit(ConnectionFailure(message: _messageFor(failure))),
-      (connections) {
-        _lastLoadedClientId = event.clientId;
-        _loadedAll = false;
-        emit(ConnectionSuccess(connections: connections));
-      },
-    );
+    result.fold((failure) => emit(.failure(message: _messageFor(failure))), (
+      connections,
+    ) {
+      _lastLoadedClientId = clientId;
+      _loadedAll = false;
+      emit(.success(connections: connections));
+    });
   }
 
-  Future<void> _onLoadAllConnections(
-    LoadAllConnections event,
-    Emitter<ConnectionState> emit,
-  ) async {
-    emit(ConnectionLoading());
+  Future<void> _onLoadAllConnections(Emitter<ConnectionState> emit) async {
+    emit(.loading());
 
     final result = await usecases.getAllConnections();
 
-    result.fold(
-      (failure) => emit(ConnectionFailure(message: _messageFor(failure))),
-      (connections) {
-        _lastLoadedClientId = null;
-        _loadedAll = true;
-        emit(ConnectionSuccess(connections: connections));
-      },
-    );
+    result.fold((failure) => emit(.failure(message: _messageFor(failure))), (
+      connections,
+    ) {
+      _lastLoadedClientId = null;
+      _loadedAll = true;
+      emit(.success(connections: connections));
+    });
   }
 
-  Future<void> _onAddConnectionSubmitted(
-    AddConnectionSubmitted event,
+  Future<void> _onAddSubmitted(
+    ConnectionEntity connection,
     Emitter<ConnectionState> emit,
   ) async {
     final existing = _currentConnections();
 
-    emit(ConnectionSubmitting(connections: existing));
-
-    if (event.connection.productId.trim().isEmpty) {
-      emit(
-        ConnectionFailure(
-          message: 'Product is required',
-          connections: existing,
-        ),
-      );
+    emit(.submitting(connections: existing));
+    if (connection.productId.trim().isEmpty) {
+      emit(.failure(message: 'Product is required', connections: existing));
       return;
     }
 
-    final createResult = await usecases.createConnection(event.connection);
+    final createResult = await usecases.createConnection(connection);
 
     await createResult.fold(
-      (failure) async => emit(
-        ConnectionFailure(message: _messageFor(failure), connections: existing),
-      ),
+      (failure) async =>
+          emit(.failure(message: _messageFor(failure), connections: existing)),
       (created) async {
         final connections = await _refreshCurrentList(
           orElse: [created, ...existing],
         );
 
         emit(
-          ConnectionSuccess(
+          .success(
             connections: connections,
             message: 'Connection created successfully',
           ),
@@ -126,29 +125,23 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     );
   }
 
-  Future<void> _onUpdateConnectionSubmitted(
-    UpdateConnectionSubmitted event,
+  Future<void> _onUpdateSubmitted(
+    ConnectionEntity connection,
     Emitter<ConnectionState> emit,
   ) async {
     final existing = _currentConnections();
 
-    emit(ConnectionSubmitting(connections: existing));
+    emit(.submitting(connections: existing));
 
-    if (event.connection.productId.trim().isEmpty) {
-      emit(
-        ConnectionFailure(
-          message: 'Product is required',
-          connections: existing,
-        ),
-      );
+    if (connection.productId.trim().isEmpty) {
+      emit(.failure(message: 'Product is required', connections: existing));
       return;
     }
+    final updateResult = await usecases.updateConnection(connection);
 
-    final updateResult = await usecases.updateConnection(event.connection);
     await updateResult.fold(
-      (failure) async => emit(
-        ConnectionFailure(message: _messageFor(failure), connections: existing),
-      ),
+      (failure) async =>
+          emit(.failure(message: _messageFor(failure), connections: existing)),
       (updated) async {
         final connections = await _refreshCurrentList(
           orElse: [
@@ -158,7 +151,7 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
         );
 
         emit(
-          ConnectionSuccess(
+          .success(
             connections: connections,
             message: 'Connection updated successfully',
           ),
@@ -167,39 +160,29 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionState> {
     );
   }
 
-  Future<void> _onDeleteConnectionSubmitted(
-    DeleteConnectionSubmitted event,
+  Future<void> _onDeleteSubmitted(
+    String id,
     Emitter<ConnectionState> emit,
   ) async {
     final existing = _currentConnections();
 
-    emit(ConnectionSubmitting(connections: existing));
+    emit(.submitting(connections: existing));
 
-    final result = await usecases.deleteConnection(event.id);
+    final result = await usecases.deleteConnection(id);
 
     result.fold(
-      (failure) => emit(
-        ConnectionFailure(message: _messageFor(failure), connections: existing),
-      ),
+      (failure) =>
+          emit(.failure(message: _messageFor(failure), connections: existing)),
       (_) {
-        final updatedConnections = existing
-            .where((connection) => connection.id != event.id)
-            .toList();
+        final remaining = existing.where((c) => c.id != id).toList();
+
         emit(
-          ConnectionSuccess(
-            connections: updatedConnections,
+          .success(
+            connections: remaining,
             message: 'Connection deleted successfully',
           ),
         );
       },
-    );
-  }
-
-  String _messageFor(ConnectionError error) {
-    return error.when(
-      serverError: () => 'Server error, please try again',
-      connectionOffline: () => 'No internet connection',
-      database: () => 'Something went wrong, please try again',
     );
   }
 }

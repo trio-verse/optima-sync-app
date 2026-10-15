@@ -4,7 +4,7 @@ import 'package:optima_sync_v2/app/domain/entities/member_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/task_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/member_usecases.dart';
 import 'package:optima_sync_v2/app/domain/usecases/task_usecases.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 import 'task_event.dart';
 import 'task_state.dart';
 

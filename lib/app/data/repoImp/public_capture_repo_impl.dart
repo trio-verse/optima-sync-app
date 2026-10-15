@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/data/sources/remote_data/public_capture_remote_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/public_capture_form_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/public_capture/public_capture_repo.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class PublicCaptureRepositoryImpl implements PublicCaptureRepository {
   final PublicCaptureRemoteDataSource remoteDataSource;

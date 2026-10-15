@@ -6,8 +6,6 @@ import 'package:optima_sync_v2/app/presentation/client/bloc/client_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/client/bloc/client_state.dart';
 import 'package:optima_sync_v2/app/presentation/client/pages/edit_client_form.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_event.dart';
-import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_state.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/add_connection_form.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/connection_list_item.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';

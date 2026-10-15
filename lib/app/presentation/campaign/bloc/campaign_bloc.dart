@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/campaign_usecases.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 import 'campaign_event.dart';
 import 'campaign_state.dart';

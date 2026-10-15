@@ -9,7 +9,7 @@ import 'package:optima_sync_v2/app/domain/usecases/project_usecases.dart';
 import 'package:optima_sync_v2/app/presentation/project/theme/project_colors.dart';
 import 'package:optima_sync_v2/app/presentation/project/widgets/project_form_dialog.dart';
 import 'package:optima_sync_v2/app/presentation/project/widgets/project_widgets.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 import 'package:optima_sync_v2/service_locator.dart';
 
 const int _kOverview = 0;

@@ -1,6 +1,7 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/errors/exceptions/exceptions.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
 class _ConnectionPage {
@@ -28,7 +29,7 @@ class ConnectionRemoteDataSource {
     final organizationId = await orgLocalDataSource.getSelectedOrganization();
 
     if (organizationId == null) {
-      throw Exception('No selected organization found');
+      throw const NoOrganizationException();
     }
 
     return organizationId;
@@ -67,10 +68,6 @@ class ConnectionRemoteDataSource {
     connections.sort((a, b) {
       final aDate = a.createdAt;
       final bDate = b.createdAt;
-
-      // if (aDate == null && bDate == null) return 0;
-      // if (aDate == null) return 1;
-      // if (bDate == null) return -1;
 
       return bDate.compareTo(aDate);
     });

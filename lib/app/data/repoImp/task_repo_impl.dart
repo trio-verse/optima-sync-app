@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/data/sources/remote_data/task_remote_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/task_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/task/task_repo.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
   final TaskRemoteDataSource remoteDataSource;

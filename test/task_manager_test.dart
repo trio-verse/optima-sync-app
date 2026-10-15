@@ -16,7 +16,7 @@ import 'package:optima_sync_v2/app/presentation/task/bloc/task_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/task/bloc/task_event.dart';
 import 'package:optima_sync_v2/app/presentation/task/bloc/task_state.dart';
 import 'package:optima_sync_v2/app/presentation/task/screen/task_manager_screen.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
 const _employee = TaskManagerAccess(role: 'employee', memberId: 'member-1');

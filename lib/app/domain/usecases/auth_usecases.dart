@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/domain/repo/auth/auth_repo.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class AuthUsecases {
   final AuthRepository repo;

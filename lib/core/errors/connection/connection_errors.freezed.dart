@@ -55,13 +55,16 @@ extension ConnectionErrorPatterns on ConnectionError {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _ServerError value)?  serverError,TResult Function( _ConnectionOffline value)?  connectionOffline,TResult Function( _Database value)?  database,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Offline value)?  offline,TResult Function( _SessionExpired value)?  sessionExpired,TResult Function( _NoOrganization value)?  noOrganization,TResult Function( _InvalidData value)?  invalidData,TResult Function( _NotFound value)?  notFound,TResult Function( _ServerError value)?  serverError,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _ServerError() when serverError != null:
-return serverError(_that);case _ConnectionOffline() when connectionOffline != null:
-return connectionOffline(_that);case _Database() when database != null:
-return database(_that);case _:
+case _Offline() when offline != null:
+return offline(_that);case _SessionExpired() when sessionExpired != null:
+return sessionExpired(_that);case _NoOrganization() when noOrganization != null:
+return noOrganization(_that);case _InvalidData() when invalidData != null:
+return invalidData(_that);case _NotFound() when notFound != null:
+return notFound(_that);case _ServerError() when serverError != null:
+return serverError(_that);case _:
   return orElse();
 
 }
@@ -79,13 +82,16 @@ return database(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _ServerError value)  serverError,required TResult Function( _ConnectionOffline value)  connectionOffline,required TResult Function( _Database value)  database,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Offline value)  offline,required TResult Function( _SessionExpired value)  sessionExpired,required TResult Function( _NoOrganization value)  noOrganization,required TResult Function( _InvalidData value)  invalidData,required TResult Function( _NotFound value)  notFound,required TResult Function( _ServerError value)  serverError,}){
 final _that = this;
 switch (_that) {
-case _ServerError():
-return serverError(_that);case _ConnectionOffline():
-return connectionOffline(_that);case _Database():
-return database(_that);case _:
+case _Offline():
+return offline(_that);case _SessionExpired():
+return sessionExpired(_that);case _NoOrganization():
+return noOrganization(_that);case _InvalidData():
+return invalidData(_that);case _NotFound():
+return notFound(_that);case _ServerError():
+return serverError(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -102,13 +108,16 @@ return database(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _ServerError value)?  serverError,TResult? Function( _ConnectionOffline value)?  connectionOffline,TResult? Function( _Database value)?  database,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Offline value)?  offline,TResult? Function( _SessionExpired value)?  sessionExpired,TResult? Function( _NoOrganization value)?  noOrganization,TResult? Function( _InvalidData value)?  invalidData,TResult? Function( _NotFound value)?  notFound,TResult? Function( _ServerError value)?  serverError,}){
 final _that = this;
 switch (_that) {
-case _ServerError() when serverError != null:
-return serverError(_that);case _ConnectionOffline() when connectionOffline != null:
-return connectionOffline(_that);case _Database() when database != null:
-return database(_that);case _:
+case _Offline() when offline != null:
+return offline(_that);case _SessionExpired() when sessionExpired != null:
+return sessionExpired(_that);case _NoOrganization() when noOrganization != null:
+return noOrganization(_that);case _InvalidData() when invalidData != null:
+return invalidData(_that);case _NotFound() when notFound != null:
+return notFound(_that);case _ServerError() when serverError != null:
+return serverError(_that);case _:
   return null;
 
 }
@@ -125,12 +134,15 @@ return database(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  serverError,TResult Function()?  connectionOffline,TResult Function()?  database,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  offline,TResult Function()?  sessionExpired,TResult Function()?  noOrganization,TResult Function()?  invalidData,TResult Function()?  notFound,TResult Function()?  serverError,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _ServerError() when serverError != null:
-return serverError();case _ConnectionOffline() when connectionOffline != null:
-return connectionOffline();case _Database() when database != null:
-return database();case _:
+case _Offline() when offline != null:
+return offline();case _SessionExpired() when sessionExpired != null:
+return sessionExpired();case _NoOrganization() when noOrganization != null:
+return noOrganization();case _InvalidData() when invalidData != null:
+return invalidData();case _NotFound() when notFound != null:
+return notFound();case _ServerError() when serverError != null:
+return serverError();case _:
   return orElse();
 
 }
@@ -148,12 +160,15 @@ return database();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  serverError,required TResult Function()  connectionOffline,required TResult Function()  database,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  offline,required TResult Function()  sessionExpired,required TResult Function()  noOrganization,required TResult Function()  invalidData,required TResult Function()  notFound,required TResult Function()  serverError,}) {final _that = this;
 switch (_that) {
-case _ServerError():
-return serverError();case _ConnectionOffline():
-return connectionOffline();case _Database():
-return database();case _:
+case _Offline():
+return offline();case _SessionExpired():
+return sessionExpired();case _NoOrganization():
+return noOrganization();case _InvalidData():
+return invalidData();case _NotFound():
+return notFound();case _ServerError():
+return serverError();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -170,18 +185,181 @@ return database();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  serverError,TResult? Function()?  connectionOffline,TResult? Function()?  database,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  offline,TResult? Function()?  sessionExpired,TResult? Function()?  noOrganization,TResult? Function()?  invalidData,TResult? Function()?  notFound,TResult? Function()?  serverError,}) {final _that = this;
 switch (_that) {
-case _ServerError() when serverError != null:
-return serverError();case _ConnectionOffline() when connectionOffline != null:
-return connectionOffline();case _Database() when database != null:
-return database();case _:
+case _Offline() when offline != null:
+return offline();case _SessionExpired() when sessionExpired != null:
+return sessionExpired();case _NoOrganization() when noOrganization != null:
+return noOrganization();case _InvalidData() when invalidData != null:
+return invalidData();case _NotFound() when notFound != null:
+return notFound();case _ServerError() when serverError != null:
+return serverError();case _:
   return null;
 
 }
 }
 
 }
+
+/// @nodoc
+
+
+class _Offline implements ConnectionError {
+  const _Offline();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Offline);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ConnectionError.offline()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _SessionExpired implements ConnectionError {
+  const _SessionExpired();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionExpired);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ConnectionError.sessionExpired()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _NoOrganization implements ConnectionError {
+  const _NoOrganization();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NoOrganization);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ConnectionError.noOrganization()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _InvalidData implements ConnectionError {
+  const _InvalidData();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InvalidData);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ConnectionError.invalidData()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _NotFound implements ConnectionError {
+  const _NotFound();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NotFound);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ConnectionError.notFound()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 
@@ -207,70 +385,6 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'ConnectionError.serverError()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class _ConnectionOffline implements ConnectionError {
-  const _ConnectionOffline();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ConnectionOffline);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ConnectionError.connectionOffline()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class _Database implements ConnectionError {
-  const _Database();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Database);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ConnectionError.database()';
 }
 
 

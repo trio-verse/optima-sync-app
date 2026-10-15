@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 abstract class AuthRepository {
   Future<Either<WhateverFailure, void>> signUp(String email);

@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/domain/entities/employee_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/employee/employee_repo.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class EmployeeUsecases {
   final EmployeeRepository repo;

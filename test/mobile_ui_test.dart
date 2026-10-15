@@ -17,7 +17,7 @@ import 'package:optima_sync_v2/app/presentation/channel/pages/channel_list_item.
 import 'package:optima_sync_v2/app/presentation/industry/pages/industry_list_item.dart'
     as industry;
 import 'package:optima_sync_v2/core/constants/theme.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 import 'package:optima_sync_v2/core/widgets/app_mobile_widgets.dart';
 
 Future<void> _pump(

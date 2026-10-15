@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_event.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/delete_connection_dialog.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/edit_connection_form.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';

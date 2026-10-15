@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 abstract class CampaignRepository {
   Future<Either<WhateverFailure, List<CampaignEntity>>> getCampaigns();

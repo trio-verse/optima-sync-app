@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/refrence-data/channel_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/channel_usecases.dart';
-import 'package:optima_sync_v2/core/errors/failures.dart';
+import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 import 'channel_event.dart';
 import 'channel_state.dart';

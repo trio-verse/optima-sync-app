@@ -11,7 +11,6 @@ import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_event.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_state.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_state.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_event.dart';
 import 'package:optima_sync_v2/app/presentation/product/bloc/product_state.dart';
