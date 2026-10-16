@@ -126,6 +126,233 @@ class _ConnectionFormState extends State<ConnectionForm> {
     );
   }
 
+  Widget _buildForm({required bool isSubmitting, String? errorMessage}) {
+    return Form(
+      key: formKey,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 15),
+
+            if (errorMessage != null) ...[
+              Text(errorMessage, style: const TextStyle(color: Colors.red)),
+              const SizedBox(height: 10),
+            ],
+
+            BlocBuilder<ProductBloc, ProductState>(
+              builder: (context, productState) {
+                final products = productState is ProductSuccess
+                    ? productState.products
+                    : const <ProductEntity>[];
+
+                final safeProductId = products.any((p) => p.id == productId)
+                    ? productId
+                    : null;
+
+                return DropdownButtonFormField<String>(
+                  value: safeProductId,
+                  decoration: _decoration(
+                    "Product *",
+                    errorText: _submitAttempted && productId == null
+                        ? "Product is required"
+                        : null,
+                    icon: const Icon(Icons.inventory_2_outlined),
+                  ),
+                  hint: Text(
+                    productState is ProductLoading
+                        ? "Loading products..."
+                        : "Select a product",
+                  ),
+                  items: products
+                      .where((p) => p.id != null)
+                      .map(
+                        (product) => DropdownMenuItem(
+                          value: product.id,
+                          child: Text(product.name),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: isSubmitting
+                      ? null
+                      : (value) => setState(() => productId = value),
+                );
+              },
+            ),
+
+            const SizedBox(height: 15),
+
+            if (widget.showStage) ...[
+              DropdownButtonFormField<String>(
+                value: stage,
+                decoration: _decoration(
+                  "Stage *",
+                  icon: const Icon(Icons.trending_up_rounded),
+                ),
+                items: ConnectionStage.values
+                    .map(
+                      (value) => DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(ConnectionStage.label(value)),
+                      ),
+                    )
+                    .toList(),
+                onChanged: isSubmitting
+                    ? null
+                    : (value) {
+                        if (value != null) {
+                          setState(() => stage = value);
+                        }
+                      },
+              ),
+              const SizedBox(height: 15),
+            ],
+
+            BlocBuilder<ChannelBloc, ChannelState>(
+              builder: (context, channelState) {
+                final channels = channelState is ChannelSuccess
+                    ? channelState.channels
+                    : const <ChannelEntity>[];
+
+                final safeChannelId = channels.any((c) => c.id == channelId)
+                    ? channelId
+                    : null;
+
+                return DropdownButtonFormField<String>(
+                  value: safeChannelId,
+                  decoration: _decoration(
+                    "Channel (optional)",
+                    icon: const Icon(Icons.podcasts_outlined),
+                  ),
+                  hint: Text(
+                    channelState is ChannelLoading
+                        ? "Loading channels..."
+                        : "Select a channel",
+                  ),
+                  items: channels
+                      .where((c) => c.id != null)
+                      .map(
+                        (channel) => DropdownMenuItem(
+                          value: channel.id,
+                          child: Text(channel.name),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: isSubmitting
+                      ? null
+                      : (value) => setState(() => channelId = value),
+                );
+              },
+            ),
+
+            const SizedBox(height: 15),
+
+            BlocBuilder<CampaignBloc, CampaignState>(
+              builder: (context, campaignState) {
+                final campaigns = campaignState is CampaignSuccess
+                    ? campaignState.campaigns
+                    : const <CampaignEntity>[];
+
+                final safeCampaignId = campaigns.any((c) => c.id == campaignId)
+                    ? campaignId
+                    : null;
+
+                return DropdownButtonFormField<String?>(
+                  value: safeCampaignId,
+                  decoration: _decoration(
+                    "Campaign (optional)",
+                    icon: const Icon(Icons.campaign_outlined),
+                  ),
+                  hint: Text(
+                    campaignState is CampaignLoading
+                        ? "Loading campaigns..."
+                        : "Not linked to a campaign",
+                  ),
+                  items: [
+                    const DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text("Not linked to a campaign"),
+                    ),
+                    ...campaigns
+                        .where((c) => c.id != null)
+                        .map(
+                          (campaign) => DropdownMenuItem<String?>(
+                            value: campaign.id,
+                            child: Text(campaign.name),
+                          ),
+                        ),
+                  ],
+                  onChanged: isSubmitting
+                      ? null
+                      : (value) => setState(() => campaignId = value),
+                );
+              },
+            ),
+
+            const SizedBox(height: 15),
+
+            TextFormField(
+              controller: assigneeController,
+              enabled: !isSubmitting,
+              decoration: _decoration(
+                "Assignee (optional)",
+                icon: const Icon(Icons.person_outline),
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            DropdownButtonFormField<String?>(
+              value: initiatedBy,
+              decoration: _decoration(
+                "Initiated By (optional)",
+                icon: const Icon(Icons.swap_horiz_outlined),
+              ),
+              hint: const Text("Not specified"),
+              items: [
+                const DropdownMenuItem<String?>(
+                  value: null,
+                  child: Text("Not specified"),
+                ),
+                ...InitiatedBy.values.map(
+                  (value) => DropdownMenuItem<String?>(
+                    value: value,
+                    child: Text(InitiatedBy.label(value)),
+                  ),
+                ),
+              ],
+              onChanged: isSubmitting
+                  ? null
+                  : (value) => setState(() => initiatedBy = value),
+            ),
+
+            const SizedBox(height: 20),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isSubmitting ? null : _submit,
+                child: isSubmitting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(widget.submitLabel),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -152,251 +379,16 @@ class _ConnectionFormState extends State<ConnectionForm> {
           );
         },
         child: BlocBuilder<ConnectionBloc, ConnectionState>(
-          builder: (context, connectionState) {
-            final isSubmitting = connectionState.maybeWhen(
-              submitting: (_) => true,
-              orElse: () => false,
-            );
-
-            final errorMessage = connectionState.whenOrNull(
-              failure: (error) => error.text(context),
-            );
-            return Form(
-              key: formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    if (errorMessage != null) ...[
-                      Text(
-                        errorMessage,
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                      const SizedBox(height: 10),
-                    ],
-
-                    BlocBuilder<ProductBloc, ProductState>(
-                      builder: (context, productState) {
-                        final products = productState is ProductSuccess
-                            ? productState.products
-                            : const <ProductEntity>[];
-
-                        final safeProductId =
-                            products.any((p) => p.id == productId)
-                            ? productId
-                            : null;
-
-                        return DropdownButtonFormField<String>(
-                          value: safeProductId,
-                          decoration: _decoration(
-                            "Product *",
-                            errorText: _submitAttempted && productId == null
-                                ? "Product is required"
-                                : null,
-                            icon: const Icon(Icons.inventory_2_outlined),
-                          ),
-                          hint: Text(
-                            productState is ProductLoading
-                                ? "Loading products..."
-                                : "Select a product",
-                          ),
-                          items: products
-                              .where((p) => p.id != null)
-                              .map(
-                                (product) => DropdownMenuItem(
-                                  value: product.id,
-                                  child: Text(product.name),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: isSubmitting
-                              ? null
-                              : (value) => setState(() => productId = value),
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    if (widget.showStage) ...[
-                      DropdownButtonFormField<String>(
-                        value: stage,
-                        decoration: _decoration(
-                          "Stage *",
-                          icon: const Icon(Icons.trending_up_rounded),
-                        ),
-                        items: ConnectionStage.values
-                            .map(
-                              (value) => DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(ConnectionStage.label(value)),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: isSubmitting
-                            ? null
-                            : (value) {
-                                if (value != null) {
-                                  setState(() => stage = value);
-                                }
-                              },
-                      ),
-                      const SizedBox(height: 15),
-                    ],
-
-                    BlocBuilder<ChannelBloc, ChannelState>(
-                      builder: (context, channelState) {
-                        final channels = channelState is ChannelSuccess
-                            ? channelState.channels
-                            : const <ChannelEntity>[];
-
-                        final safeChannelId =
-                            channels.any((c) => c.id == channelId)
-                            ? channelId
-                            : null;
-
-                        return DropdownButtonFormField<String>(
-                          value: safeChannelId,
-                          decoration: _decoration(
-                            "Channel (optional)",
-                            icon: const Icon(Icons.podcasts_outlined),
-                          ),
-                          hint: Text(
-                            channelState is ChannelLoading
-                                ? "Loading channels..."
-                                : "Select a channel",
-                          ),
-                          items: channels
-                              .where((c) => c.id != null)
-                              .map(
-                                (channel) => DropdownMenuItem(
-                                  value: channel.id,
-                                  child: Text(channel.name),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: isSubmitting
-                              ? null
-                              : (value) => setState(() => channelId = value),
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    BlocBuilder<CampaignBloc, CampaignState>(
-                      builder: (context, campaignState) {
-                        final campaigns = campaignState is CampaignSuccess
-                            ? campaignState.campaigns
-                            : const <CampaignEntity>[];
-
-                        final safeCampaignId =
-                            campaigns.any((c) => c.id == campaignId)
-                            ? campaignId
-                            : null;
-
-                        return DropdownButtonFormField<String?>(
-                          value: safeCampaignId,
-                          decoration: _decoration(
-                            "Campaign (optional)",
-                            icon: const Icon(Icons.campaign_outlined),
-                          ),
-                          hint: Text(
-                            campaignState is CampaignLoading
-                                ? "Loading campaigns..."
-                                : "Not linked to a campaign",
-                          ),
-                          items: [
-                            const DropdownMenuItem<String?>(
-                              value: null,
-                              child: Text("Not linked to a campaign"),
-                            ),
-                            ...campaigns
-                                .where((c) => c.id != null)
-                                .map(
-                                  (campaign) => DropdownMenuItem<String?>(
-                                    value: campaign.id,
-                                    child: Text(campaign.name),
-                                  ),
-                                ),
-                          ],
-                          onChanged: isSubmitting
-                              ? null
-                              : (value) => setState(() => campaignId = value),
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    TextFormField(
-                      controller: assigneeController,
-                      enabled: !isSubmitting,
-                      decoration: _decoration(
-                        "Assignee (optional)",
-                        icon: const Icon(Icons.person_outline),
-                      ),
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    DropdownButtonFormField<String?>(
-                      value: initiatedBy,
-                      decoration: _decoration(
-                        "Initiated By (optional)",
-                        icon: const Icon(Icons.swap_horiz_outlined),
-                      ),
-                      hint: const Text("Not specified"),
-                      items: [
-                        const DropdownMenuItem<String?>(
-                          value: null,
-                          child: Text("Not specified"),
-                        ),
-                        ...InitiatedBy.values.map(
-                          (value) => DropdownMenuItem<String?>(
-                            value: value,
-                            child: Text(InitiatedBy.label(value)),
-                          ),
-                        ),
-                      ],
-                      onChanged: isSubmitting
-                          ? null
-                          : (value) => setState(() => initiatedBy = value),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: isSubmitting ? null : _submit,
-                        child: isSubmitting
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(widget.submitLabel),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+          builder: (context, state) => state.when(
+            initial: () => _buildForm(isSubmitting: false),
+            loading: () => _buildForm(isSubmitting: false),
+            submitting: (_) => _buildForm(isSubmitting: true),
+            success: (_, __) => _buildForm(isSubmitting: false),
+            failure: (error) => _buildForm(
+              isSubmitting: false,
+              errorMessage: error.text(context),
+            ),
+          ),
         ),
       ),
     );

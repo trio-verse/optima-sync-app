@@ -143,8 +143,11 @@ class _AllConnectionsLogScreenState extends State<AllConnectionsLogScreen> {
         ),
       ),
       body: BlocConsumer<ConnectionBloc, ConnectionState>(
-        buildWhen: (previous, current) =>
-            current is! ConnectionFailure || previous is ConnectionLoading,
+        buildWhen: (previous, current) => current.maybeWhen(
+          failure: (_) =>
+              previous.maybeWhen(loading: () => true, orElse: () => false),
+          orElse: () => true,
+        ),
         listener: (context, state) {
           state.whenOrNull(
             failure: (error) {
@@ -160,26 +163,13 @@ class _AllConnectionsLogScreenState extends State<AllConnectionsLogScreen> {
             },
           );
         },
-        builder: (context, state) {
-          final isSubmitting = state.maybeWhen(
-            submitting: (_) => true,
-            orElse: () => false,
-          );
-
-          return state.maybeWhen(
-            initial: () => const Center(child: CircularProgressIndicator()),
-
-            loading: () => const Center(child: CircularProgressIndicator()),
-
-            success: (connections, _) =>
-                buildConnections(connections, isSubmitting),
-
-            submitting: (connections) =>
-                buildConnections(connections, isSubmitting),
-
-            orElse: () => const SizedBox.shrink(),
-          );
-        },
+        builder: (context, state) => state.when(
+          initial: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          submitting: (connections) => buildConnections(connections, true),
+          success: (connections, _) => buildConnections(connections, false),
+          failure: (_) => buildConnections(const [], false),
+        ),
       ),
     );
   }

@@ -58,8 +58,11 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
       ),
 
       body: BlocConsumer<ConnectionBloc, ConnectionState>(
-        buildWhen: (previous, current) =>
-            current is! ConnectionFailure || previous is ConnectionLoading,
+        buildWhen: (previous, current) => current.maybeWhen(
+          failure: (_) =>
+              previous.maybeWhen(loading: () => true, orElse: () => false),
+          orElse: () => true,
+        ),
         listener: (context, state) {
           state.whenOrNull(
             success: (_, successType) {
