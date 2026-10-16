@@ -80,6 +80,54 @@ class _AllConnectionsLogScreenState extends State<AllConnectionsLogScreen> {
     });
   }
 
+  Widget buildConnections(
+    List<ConnectionEntity> connections,
+    bool isSubmitting,
+  ) {
+    final filtered = _applyFilters(connections);
+    final hasAnyData = connections.isNotEmpty;
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<ConnectionBloc>().add(const LoadAllConnections());
+
+        await context.read<ConnectionBloc>().stream.firstWhere(
+          (next) => next.maybeWhen(
+            success: (_, __) => true,
+            failure: (_) => true,
+            orElse: () => false,
+          ),
+        );
+      },
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+        children: [
+          _HeaderCard(
+            onAddConnection: isSubmitting ? null : _openNewConnection,
+          ),
+          const SizedBox(height: 14),
+          _ToolbarCard(
+            searchController: _searchController,
+            selectedStage: _selectedStage,
+            onStageChanged: (value) => setState(() => _selectedStage = value),
+            onOpenFilterSheet: _openStageFilterSheet,
+          ),
+          const SizedBox(height: 14),
+
+          if (filtered.isEmpty)
+            _EmptyState(
+              hasAnyData: hasAnyData,
+              onAddConnection: _openNewConnection,
+            )
+          else
+            for (final connection in filtered)
+              ConnectionLogItem(connection: connection),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,66 +161,23 @@ class _AllConnectionsLogScreenState extends State<AllConnectionsLogScreen> {
           );
         },
         builder: (context, state) {
-          final isLoading = state.maybeWhen(
-            initial: () => true,
-            loading: () => true,
-            orElse: () => false,
-          );
           final isSubmitting = state.maybeWhen(
             submitting: (_) => true,
             orElse: () => false,
           );
 
-          final allConnections = state.maybeWhen(
-            success: (connections, _) => connections,
-            submitting: (connections) => connections,
-            orElse: () => const <ConnectionEntity>[],
-          );
-          final filtered = _applyFilters(allConnections);
-          final hasAnyData = allConnections.isNotEmpty;
+          return state.maybeWhen(
+            initial: () => const Center(child: CircularProgressIndicator()),
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<ConnectionBloc>().add(const LoadAllConnections());
-              await context.read<ConnectionBloc>().stream.firstWhere(
-                (next) => next.maybeWhen(
-                  success: (_, __) => true,
-                  failure: (_) => true,
-                  orElse: () => false,
-                ),
-              );
-            },
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
-              children: [
-                _HeaderCard(
-                  onAddConnection: isSubmitting ? null : _openNewConnection,
-                ),
-                const SizedBox(height: 14),
-                _ToolbarCard(
-                  searchController: _searchController,
-                  selectedStage: _selectedStage,
-                  onStageChanged: (value) =>
-                      setState(() => _selectedStage = value),
-                  onOpenFilterSheet: _openStageFilterSheet,
-                ),
-                const SizedBox(height: 14),
-                if (isLoading)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 70),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else if (filtered.isEmpty)
-                  _EmptyState(
-                    hasAnyData: hasAnyData,
-                    onAddConnection: _openNewConnection,
-                  )
-                else
-                  for (final connection in filtered)
-                    ConnectionLogItem(connection: connection),
-              ],
-            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+
+            success: (connections, _) =>
+                buildConnections(connections, isSubmitting),
+
+            submitting: (connections) =>
+                buildConnections(connections, isSubmitting),
+
+            orElse: () => const SizedBox.shrink(),
           );
         },
       ),
