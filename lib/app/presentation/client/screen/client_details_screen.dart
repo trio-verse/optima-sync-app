@@ -2,10 +2,12 @@ import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/domain/entities/client_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/presentation/client/bloc/client_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/client/bloc/client_state.dart';
 import 'package:optima_sync_v2/app/presentation/client/pages/edit_client_form.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/connection/connection_messages.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/add_connection_form.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/connection_list_item.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
@@ -279,44 +281,47 @@ class _ConnectionsLogCard extends StatelessWidget {
       ),
       child: BlocBuilder<ConnectionBloc, ConnectionState>(
         builder: (context, state) {
-          if (state is ConnectionInitial || state is ConnectionLoading) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: Center(
-                child: SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            );
-          }
-
-          final connections = switch (state) {
-            ConnectionSuccess(:final connections) => connections,
-            ConnectionSubmitting(:final connections) => connections,
-            ConnectionFailure(:final connections) => connections ?? const [],
-            _ => const [],
-          };
-
-          if (connections.isEmpty) {
-            return const _EmptyHint(
-              'No connections recorded yet for this client.',
-            );
-          }
-
-          return Column(
-            children: [
-              for (var i = 0; i < connections.length; i++) ...[
-                if (i > 0) const Divider(height: 1),
-                ConnectionListItem(
-                  clientId: clientId,
-                  connection: connections[i],
-                ),
-              ],
-            ],
+          return state.when(
+            initial: () => const _LoadingIndicator(),
+            loading: () => const _LoadingIndicator(),
+            success: (connections, _) => _buildConnections(connections),
+            submitting: (connections) => _buildConnections(connections),
+            failure: (error) => _EmptyHint(error.text(context)),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildConnections(List<ConnectionEntity> connections) {
+    if (connections.isEmpty) {
+      return const _EmptyHint('No connections recorded yet for this client.');
+    }
+
+    return Column(
+      children: [
+        for (var i = 0; i < connections.length; i++) ...[
+          if (i > 0) const Divider(height: 1),
+          ConnectionListItem(clientId: clientId, connection: connections[i]),
+        ],
+      ],
+    );
+  }
+}
+
+class _LoadingIndicator extends StatelessWidget {
+  const _LoadingIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: Center(
+        child: SizedBox(
+          width: 22,
+          height: 22,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
       ),
     );
   }

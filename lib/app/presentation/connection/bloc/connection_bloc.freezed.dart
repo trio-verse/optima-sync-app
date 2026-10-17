@@ -611,14 +611,14 @@ return failure(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<ConnectionEntity> connections)?  submitting,TResult Function( List<ConnectionEntity> connections,  String? message)?  success,TResult Function( String message,  List<ConnectionEntity>? connections)?  failure,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<ConnectionEntity> connections)?  submitting,TResult Function( List<ConnectionEntity> connections,  ConnectionSuccessType? successType)?  success,TResult Function( ConnectionError error)?  failure,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ConnectionInitial() when initial != null:
 return initial();case ConnectionLoading() when loading != null:
 return loading();case ConnectionSubmitting() when submitting != null:
 return submitting(_that.connections);case ConnectionSuccess() when success != null:
-return success(_that.connections,_that.message);case ConnectionFailure() when failure != null:
-return failure(_that.message,_that.connections);case _:
+return success(_that.connections,_that.successType);case ConnectionFailure() when failure != null:
+return failure(_that.error);case _:
   return orElse();
 
 }
@@ -636,14 +636,14 @@ return failure(_that.message,_that.connections);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<ConnectionEntity> connections)  submitting,required TResult Function( List<ConnectionEntity> connections,  String? message)  success,required TResult Function( String message,  List<ConnectionEntity>? connections)  failure,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<ConnectionEntity> connections)  submitting,required TResult Function( List<ConnectionEntity> connections,  ConnectionSuccessType? successType)  success,required TResult Function( ConnectionError error)  failure,}) {final _that = this;
 switch (_that) {
 case ConnectionInitial():
 return initial();case ConnectionLoading():
 return loading();case ConnectionSubmitting():
 return submitting(_that.connections);case ConnectionSuccess():
-return success(_that.connections,_that.message);case ConnectionFailure():
-return failure(_that.message,_that.connections);case _:
+return success(_that.connections,_that.successType);case ConnectionFailure():
+return failure(_that.error);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -660,14 +660,14 @@ return failure(_that.message,_that.connections);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<ConnectionEntity> connections)?  submitting,TResult? Function( List<ConnectionEntity> connections,  String? message)?  success,TResult? Function( String message,  List<ConnectionEntity>? connections)?  failure,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<ConnectionEntity> connections)?  submitting,TResult? Function( List<ConnectionEntity> connections,  ConnectionSuccessType? successType)?  success,TResult? Function( ConnectionError error)?  failure,}) {final _that = this;
 switch (_that) {
 case ConnectionInitial() when initial != null:
 return initial();case ConnectionLoading() when loading != null:
 return loading();case ConnectionSubmitting() when submitting != null:
 return submitting(_that.connections);case ConnectionSuccess() when success != null:
-return success(_that.connections,_that.message);case ConnectionFailure() when failure != null:
-return failure(_that.message,_that.connections);case _:
+return success(_that.connections,_that.successType);case ConnectionFailure() when failure != null:
+return failure(_that.error);case _:
   return null;
 
 }
@@ -815,7 +815,7 @@ as List<ConnectionEntity>,
 
 
 class ConnectionSuccess implements ConnectionState {
-  const ConnectionSuccess({required final  List<ConnectionEntity> connections, this.message}): _connections = connections;
+  const ConnectionSuccess({required final  List<ConnectionEntity> connections, this.successType}): _connections = connections;
   
 
  final  List<ConnectionEntity> _connections;
@@ -825,7 +825,7 @@ class ConnectionSuccess implements ConnectionState {
   return EqualUnmodifiableListView(_connections);
 }
 
- final  String? message;
+ final  ConnectionSuccessType? successType;
 
 /// Create a copy of ConnectionState
 /// with the given fields replaced by the non-null parameter values.
@@ -837,16 +837,16 @@ $ConnectionSuccessCopyWith<ConnectionSuccess> get copyWith => _$ConnectionSucces
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConnectionSuccess&&const DeepCollectionEquality().equals(other._connections, _connections)&&(identical(other.message, message) || other.message == message));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConnectionSuccess&&const DeepCollectionEquality().equals(other._connections, _connections)&&(identical(other.successType, successType) || other.successType == successType));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_connections),message);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_connections),successType);
 
 @override
 String toString() {
-  return 'ConnectionState.success(connections: $connections, message: $message)';
+  return 'ConnectionState.success(connections: $connections, successType: $successType)';
 }
 
 
@@ -857,7 +857,7 @@ abstract mixin class $ConnectionSuccessCopyWith<$Res> implements $ConnectionStat
   factory $ConnectionSuccessCopyWith(ConnectionSuccess value, $Res Function(ConnectionSuccess) _then) = _$ConnectionSuccessCopyWithImpl;
 @useResult
 $Res call({
- List<ConnectionEntity> connections, String? message
+ List<ConnectionEntity> connections, ConnectionSuccessType? successType
 });
 
 
@@ -874,11 +874,11 @@ class _$ConnectionSuccessCopyWithImpl<$Res>
 
 /// Create a copy of ConnectionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? connections = null,Object? message = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? connections = null,Object? successType = freezed,}) {
   return _then(ConnectionSuccess(
 connections: null == connections ? _self._connections : connections // ignore: cast_nullable_to_non_nullable
-as List<ConnectionEntity>,message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String?,
+as List<ConnectionEntity>,successType: freezed == successType ? _self.successType : successType // ignore: cast_nullable_to_non_nullable
+as ConnectionSuccessType?,
   ));
 }
 
@@ -889,19 +889,10 @@ as String?,
 
 
 class ConnectionFailure implements ConnectionState {
-  const ConnectionFailure({required this.message, final  List<ConnectionEntity>? connections}): _connections = connections;
+  const ConnectionFailure({required this.error});
   
 
- final  String message;
- final  List<ConnectionEntity>? _connections;
- List<ConnectionEntity>? get connections {
-  final value = _connections;
-  if (value == null) return null;
-  if (_connections is EqualUnmodifiableListView) return _connections;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(value);
-}
-
+ final  ConnectionError error;
 
 /// Create a copy of ConnectionState
 /// with the given fields replaced by the non-null parameter values.
@@ -913,16 +904,16 @@ $ConnectionFailureCopyWith<ConnectionFailure> get copyWith => _$ConnectionFailur
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConnectionFailure&&(identical(other.message, message) || other.message == message)&&const DeepCollectionEquality().equals(other._connections, _connections));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ConnectionFailure&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,message,const DeepCollectionEquality().hash(_connections));
+int get hashCode => Object.hash(runtimeType,error);
 
 @override
 String toString() {
-  return 'ConnectionState.failure(message: $message, connections: $connections)';
+  return 'ConnectionState.failure(error: $error)';
 }
 
 
@@ -933,11 +924,11 @@ abstract mixin class $ConnectionFailureCopyWith<$Res> implements $ConnectionStat
   factory $ConnectionFailureCopyWith(ConnectionFailure value, $Res Function(ConnectionFailure) _then) = _$ConnectionFailureCopyWithImpl;
 @useResult
 $Res call({
- String message, List<ConnectionEntity>? connections
+ ConnectionError error
 });
 
 
-
+$ConnectionErrorCopyWith<$Res> get error;
 
 }
 /// @nodoc
@@ -950,15 +941,23 @@ class _$ConnectionFailureCopyWithImpl<$Res>
 
 /// Create a copy of ConnectionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = null,Object? connections = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
   return _then(ConnectionFailure(
-message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,connections: freezed == connections ? _self._connections : connections // ignore: cast_nullable_to_non_nullable
-as List<ConnectionEntity>?,
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as ConnectionError,
   ));
 }
 
-
+/// Create a copy of ConnectionState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ConnectionErrorCopyWith<$Res> get error {
+  
+  return $ConnectionErrorCopyWith<$Res>(_self.error, (value) {
+    return _then(_self.copyWith(error: value));
+  });
+}
 }
 
 // dart format on

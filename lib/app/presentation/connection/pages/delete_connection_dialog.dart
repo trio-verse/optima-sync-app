@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/connection/connection_messages.dart';
 
 void showDeleteConnectionDialog({
   required BuildContext context,
@@ -17,20 +18,23 @@ void showDeleteConnectionDialog({
         value: bloc,
         child: BlocListener<ConnectionBloc, ConnectionState>(
           listener: (context, state) {
-            if (state is ConnectionSuccess) {
-              Navigator.pop(dialogContext);
-            }
-
-            if (state is ConnectionFailure) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
-            }
+            state.whenOrNull(
+              success: (_, __) {
+                Navigator.pop(dialogContext);
+              },
+              failure: (error) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(error.text(context))));
+              },
+            );
           },
           child: BlocBuilder<ConnectionBloc, ConnectionState>(
             builder: (context, state) {
-              final isDeleting = state is ConnectionSubmitting;
-
+              final isDeleting = state.maybeWhen(
+                submitting: (_) => true,
+                orElse: () => false,
+              );
               return AlertDialog(
                 title: const Text("Delete Connection"),
 

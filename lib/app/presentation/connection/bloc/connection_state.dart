@@ -1,5 +1,7 @@
 part of 'connection_bloc.dart';
 
+enum ConnectionSuccessType { created, updated, deleted }
+
 @freezed
 class ConnectionState with _$ConnectionState {
   const factory ConnectionState.initial() = ConnectionInitial;
@@ -12,11 +14,9 @@ class ConnectionState with _$ConnectionState {
 
   const factory ConnectionState.success({
     required List<ConnectionEntity> connections,
-    String? message,
+    ConnectionSuccessType? successType,
   }) = ConnectionSuccess;
 
-  const factory ConnectionState.failure({
-    required String message,
-    List<ConnectionEntity>? connections,
-  }) = ConnectionFailure;
+  const factory ConnectionState.failure({required ConnectionError error}) =
+      ConnectionFailure;
 }

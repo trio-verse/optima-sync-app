@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/connection/connection_messages.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/connection_log_item.dart';
 import 'package:optima_sync_v2/app/presentation/connection/pages/new_connection_flow_dialog.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
@@ -79,6 +80,54 @@ class _AllConnectionsLogScreenState extends State<AllConnectionsLogScreen> {
     });
   }
 
+  Widget buildConnections(
+    List<ConnectionEntity> connections,
+    bool isSubmitting,
+  ) {
+    final filtered = _applyFilters(connections);
+    final hasAnyData = connections.isNotEmpty;
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<ConnectionBloc>().add(const LoadAllConnections());
+
+        await context.read<ConnectionBloc>().stream.firstWhere(
+          (next) => next.maybeWhen(
+            success: (_, __) => true,
+            failure: (_) => true,
+            orElse: () => false,
+          ),
+        );
+      },
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+        children: [
+          _HeaderCard(
+            onAddConnection: isSubmitting ? null : _openNewConnection,
+          ),
+          const SizedBox(height: 14),
+          _ToolbarCard(
+            searchController: _searchController,
+            selectedStage: _selectedStage,
+            onStageChanged: (value) => setState(() => _selectedStage = value),
+            onOpenFilterSheet: _openStageFilterSheet,
+          ),
+          const SizedBox(height: 14),
+
+          if (filtered.isEmpty)
+            _EmptyState(
+              hasAnyData: hasAnyData,
+              onAddConnection: _openNewConnection,
+            )
+          else
+            for (final connection in filtered)
+              ConnectionLogItem(connection: connection),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,75 +143,33 @@ class _AllConnectionsLogScreenState extends State<AllConnectionsLogScreen> {
         ),
       ),
       body: BlocConsumer<ConnectionBloc, ConnectionState>(
+        buildWhen: (previous, current) => current.maybeWhen(
+          failure: (_) =>
+              previous.maybeWhen(loading: () => true, orElse: () => false),
+          orElse: () => true,
+        ),
         listener: (context, state) {
-          if (state is ConnectionFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
-          }
-
-          if (state is ConnectionSuccess && state.message != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message!)));
-          }
-        },
-        builder: (context, state) {
-          final isLoading =
-              state is ConnectionInitial || state is ConnectionLoading;
-          final isSubmitting = state is ConnectionSubmitting;
-
-          final allConnections = switch (state) {
-            ConnectionSuccess(:final connections) => connections,
-            ConnectionSubmitting(:final connections) => connections,
-            ConnectionFailure(:final connections) => connections ?? const [],
-            _ => const <ConnectionEntity>[],
-          };
-
-          final filtered = _applyFilters(allConnections);
-          final hasAnyData = allConnections.isNotEmpty;
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<ConnectionBloc>().add(const LoadAllConnections());
-              await context.read<ConnectionBloc>().stream.firstWhere(
-                (next) =>
-                    next is ConnectionSuccess || next is ConnectionFailure,
+          state.whenOrNull(
+            failure: (error) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(error.text(context))));
+            },
+            success: (_, successType) {
+              if (successType == null) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(successType.text(context))),
               );
             },
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
-              children: [
-                _HeaderCard(
-                  onAddConnection: isSubmitting ? null : _openNewConnection,
-                ),
-                const SizedBox(height: 14),
-                _ToolbarCard(
-                  searchController: _searchController,
-                  selectedStage: _selectedStage,
-                  onStageChanged: (value) =>
-                      setState(() => _selectedStage = value),
-                  onOpenFilterSheet: _openStageFilterSheet,
-                ),
-                const SizedBox(height: 14),
-                if (isLoading)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 70),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else if (filtered.isEmpty)
-                  _EmptyState(
-                    hasAnyData: hasAnyData,
-                    onAddConnection: _openNewConnection,
-                  )
-                else
-                  for (final connection in filtered)
-                    ConnectionLogItem(connection: connection),
-              ],
-            ),
           );
         },
+        builder: (context, state) => state.when(
+          initial: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          submitting: (connections) => buildConnections(connections, true),
+          success: (connections, _) => buildConnections(connections, false),
+          failure: (_) => buildConnections(const [], false),
+        ),
       ),
     );
   }
