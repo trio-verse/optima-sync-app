@@ -8,7 +8,6 @@ import 'package:optima_sync_v2/app/presentation/content/bloc/content_event.dart'
 import 'package:optima_sync_v2/app/presentation/content/bloc/content_state.dart';
 import 'package:optima_sync_v2/app/presentation/content/pages/add_content_form.dart';
 import 'package:optima_sync_v2/app/presentation/content/pages/content_card.dart';
-import 'package:optima_sync_v2/app/presentation/content/pages/content_status_style.dart';
 
 class ContentKanbanScreen extends StatefulWidget {
   final String campaignId;
@@ -28,7 +27,7 @@ class ContentKanbanScreen extends StatefulWidget {
 }
 
 class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
-  String _selectedStatus = kContentStatuses.first;
+  String _selectedStatus = ContentStatus.values.first;
   @override
   void initState() {
     super.initState();
@@ -170,13 +169,13 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                       child: Row(
-                        children: kContentStatuses
+                        children: ContentStatus.values
                             .map(
                               (status) => Padding(
                                 padding: const EdgeInsets.only(right: 8),
                                 child: ChoiceChip(
                                   label: Text(
-                                    '${ContentStatusStyle.label(status)} (${contents.where((content) => content.status == status).length})',
+                                    '${ContentStatus.label(status)} (${contents.where((content) => content.status == status).length})',
                                   ),
                                   selected: _selectedStatus == status,
                                   selectedColor: AppPallete.primarySoft,
@@ -217,12 +216,12 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
                                     tooltip: 'Change status',
                                     onSelected: (status) =>
                                         _moveToStatus(content, status),
-                                    itemBuilder: (_) => kContentStatuses
+                                    itemBuilder: (_) => ContentStatus.values
                                         .map(
                                           (status) => PopupMenuItem(
                                             value: status,
                                             child: Text(
-                                              ContentStatusStyle.label(status),
+                                              ContentStatus.label(status),
                                             ),
                                           ),
                                         )
@@ -254,7 +253,7 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
                 padding: const EdgeInsets.all(12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: kContentStatuses.map((status) {
+                  children: ContentStatus.values.map((status) {
                     final columnItems = contents
                         .where((c) => c.status == status)
                         .toList();
@@ -294,7 +293,7 @@ class _KanbanColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = ContentStatusStyle.color(status);
+    final color = ContentStatus.color(status);
 
     return Padding(
       padding: const EdgeInsets.only(right: 12),
@@ -323,15 +322,11 @@ class _KanbanColumn extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        ContentStatusStyle.icon(status),
-                        size: 16,
-                        color: color,
-                      ),
+                      Icon(ContentStatus.icon(status), size: 16, color: color),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          ContentStatusStyle.label(status),
+                          ContentStatus.label(status),
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
                             color: color,

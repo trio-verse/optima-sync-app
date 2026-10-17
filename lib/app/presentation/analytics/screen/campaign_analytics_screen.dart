@@ -73,7 +73,7 @@ class _CampaignAnalyticsScreenState extends State<CampaignAnalyticsScreen> {
               onRefresh: _refresh,
               child: ListView(
                 padding: const EdgeInsets.all(16),
-                children: [KpiJsonView(data: state.analytics.raw)],
+                children: [KpiJsonView(data: state.analytics.toMap())],
               ),
             );
           }

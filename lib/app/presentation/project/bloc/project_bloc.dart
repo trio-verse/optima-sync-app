@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
-import 'package:optima_sync_v2/app/domain/usecases/project_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/project/project_usecases.dart';
 import 'project_event.dart';
 import 'project_state.dart';
 

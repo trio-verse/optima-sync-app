@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:optima_sync_v2/app/data/sources/remote_data/project_remote_data_source.dart';
+import 'package:optima_sync_v2/app/data/sources/remote_data/project/project_remote_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/project/project_details_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/project/project_feature_entity.dart';

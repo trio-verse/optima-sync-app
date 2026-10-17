@@ -9,10 +9,8 @@ abstract class CampaignRepository {
     CampaignEntity campaign,
   );
 
-  Future<Either<WhateverFailure, CampaignEntity>> updateCampaign({
-    required String id,
-    required CampaignEntity campaign,
-  });
-
-  Future<Either<WhateverFailure, void>> deleteCampaign(String id);
+  Future<Either<WhateverFailure, CampaignEntity>> updateCampaign(
+    CampaignEntity campaign,
+  );
+  Future<Either<WhateverFailure, void>> deleteCampaign(CampaignEntity campaign);
 }

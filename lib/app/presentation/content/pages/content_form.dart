@@ -54,7 +54,7 @@ class _ContentFormState extends State<ContentForm> {
   late final TextEditingController descriptionController;
 
   String? channelId;
-  String status = 'draft';
+  String status = ContentStatus.draft;
   DateTime? publishedAt;
 
   bool _submitAttempted = false;
@@ -76,7 +76,7 @@ class _ContentFormState extends State<ContentForm> {
     );
 
     channelId = initial?.channelId;
-    status = initial?.status ?? 'draft';
+    status = initial?.status ?? ContentStatus.draft;
     publishedAt = initial?.publishedAt == null
         ? null
         : DateTime.tryParse(initial!.publishedAt!);
@@ -170,7 +170,7 @@ class _ContentFormState extends State<ContentForm> {
   Widget build(BuildContext context) {
     final canSeeCostBadge = currentUserCanApproveCost();
 
-    final costIsConfirmed = status == 'approved' || status == 'published';
+    final costIsConfirmed = ContentStatus.isCostConfirmed(status);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -351,11 +351,11 @@ class _ContentFormState extends State<ContentForm> {
                       "Status",
                       icon: const Icon(Icons.flag_outlined),
                     ),
-                    items: kContentStatuses
+                    items: ContentStatus.values
                         .map(
                           (s) => DropdownMenuItem(
                             value: s,
-                            child: Text(ContentStatusStyle.label(s)),
+                            child: Text(ContentStatus.label(s)),
                           ),
                         )
                         .toList(),

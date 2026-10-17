@@ -26,8 +26,7 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
 
   DateTime? startDate;
   DateTime? endDate;
-  String status = 'draft';
-
+  String status = CampaignStatus.draft;
   static const _borderedInput = InputDecoration(
     enabledBorder: AppTheme.inputBorder,
     focusedBorder: AppTheme.focusedInputBorder,
@@ -302,11 +301,12 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: kCampaignStatuses.map((value) {
+                      children: CampaignStatus.values.map((value) {
                         final selected = status == value;
-                        final color = CampaignStatusStyle.color(value);
+                        final color = CampaignStatus.color(value);
+
                         return ChoiceChip(
-                          label: Text(CampaignStatusStyle.label(value)),
+                          label: Text(CampaignStatus.label(value)),
                           selected: selected,
                           onSelected: isSubmitting
                               ? null

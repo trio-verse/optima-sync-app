@@ -5,10 +5,10 @@ import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart'
 import 'package:optima_sync_v2/app/domain/entities/refrence-data/industry_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/product_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/sales/sales_dashboard_entity.dart';
-import 'package:optima_sync_v2/app/domain/usecases/city_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/reference_data/city_usecases.dart';
 import 'package:optima_sync_v2/app/domain/usecases/client_usecases.dart';
-import 'package:optima_sync_v2/app/domain/usecases/connection_usecases.dart';
-import 'package:optima_sync_v2/app/domain/usecases/industry_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/sales/connection_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/reference_data/industry_usecases.dart';
 import 'package:optima_sync_v2/app/domain/usecases/product_usecases.dart';
 
 import 'home_event.dart';

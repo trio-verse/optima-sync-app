@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
-import 'package:optima_sync_v2/app/domain/usecases/connection_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/sales/connection_usecases.dart';
 import 'package:optima_sync_v2/core/errors/connection/connection_errors.dart';
 
 part 'connection_bloc.freezed.dart';

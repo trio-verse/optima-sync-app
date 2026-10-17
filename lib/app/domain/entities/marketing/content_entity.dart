@@ -1,10 +1,76 @@
-const List<String> kContentStatuses = [
-  'draft',
-  'in_review',
-  'approved',
-  'rejected',
-  'published',
-];
+import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
+
+class ContentStatus {
+  ContentStatus._();
+
+  static const String draft = 'draft';
+  static const String inReview = 'in_review';
+  static const String approved = 'approved';
+  static const String rejected = 'rejected';
+  static const String published = 'published';
+
+  static const List<String> values = [
+    draft,
+    inReview,
+    approved,
+    rejected,
+    published,
+  ];
+
+  static const List<String> pipeline = [draft, inReview, approved, rejected];
+
+  static bool isCostConfirmed(String status) =>
+      status == approved || status == published;
+
+  static String label(String status) {
+    switch (status) {
+      case inReview:
+        return 'In Review';
+      case approved:
+        return 'Approved';
+      case rejected:
+        return 'Rejected';
+      case published:
+        return 'Published';
+      case draft:
+      default:
+        return 'Draft';
+    }
+  }
+
+  static Color color(String status) {
+    switch (status) {
+      case inReview:
+        return AppPallete.warning;
+      case approved:
+        return AppPallete.primary;
+      case rejected:
+        return AppPallete.danger;
+      case published:
+        return AppPallete.success;
+      case draft:
+      default:
+        return AppPallete.textSecondary;
+    }
+  }
+
+  static IconData icon(String status) {
+    switch (status) {
+      case inReview:
+        return Icons.hourglass_top_outlined;
+      case approved:
+        return Icons.verified_outlined;
+      case rejected:
+        return Icons.cancel_outlined;
+      case published:
+        return Icons.public_outlined;
+      case draft:
+      default:
+        return Icons.edit_note_outlined;
+    }
+  }
+}
 
 class ContentEntity {
   final String? id;
@@ -29,13 +95,12 @@ class ContentEntity {
     required this.type,
     required this.script,
     this.cost,
-    this.status = 'draft',
+    this.status = ContentStatus.draft,
     this.publishedAt,
     this.description,
   });
 
-  bool get isCostConfirmed => status == 'approved' || status == 'published';
-
+  bool get isCostConfirmed => ContentStatus.isCostConfirmed(status);
   static double? _toDouble(dynamic value) {
     if (value == null) return null;
     if (value is num) return value.toDouble();
@@ -72,7 +137,7 @@ class ContentEntity {
       type: json['type']?.toString() ?? '',
       script: json['script']?.toString() ?? '',
       cost: _toDouble(json['cost']),
-      status: _asString(json['status']) ?? 'draft',
+      status: _asString(json['status']) ?? ContentStatus.draft,
       publishedAt: _asString(json['published_at']),
       description: _asString(json['description']),
     );

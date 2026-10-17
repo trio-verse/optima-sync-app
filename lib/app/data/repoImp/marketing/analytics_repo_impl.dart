@@ -1,7 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:optima_sync_v2/app/data/sources/remote_data/analytics_remote_data_source.dart';
+import 'package:optima_sync_v2/app/data/sources/remote_data/marketing/analytics_remote_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
-import 'package:optima_sync_v2/app/domain/repo/analytics/analytics_repo.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
+import 'package:optima_sync_v2/app/domain/repo/marketing/analytics/analytics_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class AnalyticsRepositoryImpl implements AnalyticsRepository {
@@ -33,10 +34,10 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
 
   @override
   Future<Either<WhateverFailure, CampaignAnalyticsEntity>> getCampaignAnalytics(
-    String campaignId,
+    CampaignEntity campaign,
   ) async {
     try {
-      final res = await remoteDataSource.getCampaignAnalytics(campaignId);
+      final res = await remoteDataSource.getCampaignAnalytics(campaign);
       return Right(res);
     } catch (e) {
       return Left(WhateverFailure.whatoffline());

@@ -269,11 +269,7 @@ class _FilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final labels = <String?, String>{
       null: 'All',
-      'active': 'Active',
-      'draft': 'Draft',
-      'paused': 'Paused',
-      'completed': 'Completed',
-      'cancelled': 'Cancelled',
+      for (final s in CampaignStatus.values) s: CampaignStatus.label(s),
     };
 
     return Column(

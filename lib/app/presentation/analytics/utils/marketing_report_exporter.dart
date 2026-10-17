@@ -4,7 +4,7 @@ import 'package:excel/excel.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
-import 'package:optima_sync_v2/app/domain/usecases/campaign_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/marketing/campaign_usecases.dart';
 
 class MarketingReportExporter {
   final CampaignUsecases campaignUsecases;
@@ -34,10 +34,7 @@ class MarketingReportExporter {
       (list) => list,
     );
 
-    final perCampaign = {
-      for (final p in dashboard.perCampaign) p['id']?.toString(): p,
-    };
-
+    final perCampaign = {for (final p in dashboard.perCampaign) p.id: p};
     final effectiveIds = effectiveCampaigns
         .map((e) => e.id)
         .whereType<String>()
@@ -67,16 +64,14 @@ class MarketingReportExporter {
       final spent = c.spent ?? 0.0;
       final connections = c.connections ?? 0;
       final wins = c.wins ?? 0;
-      final per = perCampaign[c.id] ?? const <String, dynamic>{};
+      final per = perCampaign[c.id];
       final winRate =
-          _d(per['win_rate']) ??
+          per?.winRate ??
           c.winRate ??
           (connections > 0 ? wins / connections * 100 : 0.0);
       final cpl =
-          _d(per['cpl']) ??
-          c.cpl ??
-          (connections > 0 ? spent / connections : 0.0);
-      final roi = _d(per['roi']) ?? c.roi;
+          per?.cpl ?? c.cpl ?? (connections > 0 ? spent / connections : 0.0);
+      final roi = per?.roi ?? c.roi;
       final isEffective =
           (c.id != null && effectiveIds.contains(c.id)) ||
           effectiveNames.contains(c.name);
@@ -104,12 +99,6 @@ class MarketingReportExporter {
       fileExtension: 'xlsx',
       mimeType: MimeType.microsoftExcel,
     );
-  }
-
-  static double? _d(dynamic v) {
-    if (v == null) return null;
-    if (v is num) return v.toDouble();
-    return double.tryParse(v.toString().replaceAll('%', '').trim());
   }
 
   static String _trim(double v) =>

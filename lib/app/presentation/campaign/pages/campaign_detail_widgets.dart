@@ -3,15 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/presentation/content/pages/content_card.dart';
-import 'package:optima_sync_v2/app/presentation/content/pages/content_status_style.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
-
-const List<String> kCampaignDetailContentStatuses = [
-  'draft',
-  'in_review',
-  'approved',
-  'rejected',
-];
 
 const Color kDetailIndigo = AppPallete.primary;
 const Color kDetailIndigoSoft = AppPallete.primarySoft;
@@ -498,7 +490,7 @@ class PipelineColumn extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      ContentStatusStyle.label(status),
+                      ContentStatus.label(status),
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,

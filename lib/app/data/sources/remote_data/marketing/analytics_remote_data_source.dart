@@ -1,5 +1,6 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/core/constants/api_constant.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
@@ -95,12 +96,12 @@ class AnalyticsRemoteDataSource {
   }
 
   Future<CampaignAnalyticsEntity> getCampaignAnalytics(
-    String campaignId,
+    CampaignEntity campaign,
   ) async {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.get<CampaignAnalyticsEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaignId/analytics",
+      "${ApiConstants.baseUrl}/api/v1/campaigns/${campaign.id}/analytics",
       (json) => CampaignAnalyticsEntity.fromJson(_unwrap(json)),
       organizationId: organizationId,
     );

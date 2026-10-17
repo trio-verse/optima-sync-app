@@ -24,7 +24,7 @@ class CampaignListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = CampaignStatusStyle.color(campaign.status);
+    final statusColor = CampaignStatus.color(campaign.status);
     final initial = campaign.name.isNotEmpty
         ? campaign.name[0].toUpperCase()
         : '?';
@@ -84,7 +84,7 @@ class CampaignListItem extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            CampaignStatusStyle.label(campaign.status),
+                            CampaignStatus.label(campaign.status),
                             style: TextStyle(
                               color: statusColor,
                               fontSize: 12,

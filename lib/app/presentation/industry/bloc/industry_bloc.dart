@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/refrence-data/industry_entity.dart';
-import 'package:optima_sync_v2/app/domain/usecases/industry_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/reference_data/industry_usecases.dart';
 import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 import 'industry_event.dart';

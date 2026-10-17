@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:optima_sync_v2/app/data/sources/remote_data/campaign_remote_data_source.dart';
+import 'package:optima_sync_v2/app/data/sources/remote_data/marketing/campaign_remote_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
-import 'package:optima_sync_v2/app/domain/repo/campaign/campaign_repo.dart';
+import 'package:optima_sync_v2/app/domain/repo/marketing/campaign/campaign_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class CampaignRepositoryImpl implements CampaignRepository {
@@ -32,15 +32,11 @@ class CampaignRepositoryImpl implements CampaignRepository {
   }
 
   @override
-  Future<Either<WhateverFailure, CampaignEntity>> updateCampaign({
-    required String id,
-    required CampaignEntity campaign,
-  }) async {
+  Future<Either<WhateverFailure, CampaignEntity>> updateCampaign(
+    CampaignEntity campaign,
+  ) async {
     try {
-      final res = await remoteDataSource.updateCampaign(
-        id: id,
-        campaign: campaign,
-      );
+      final res = await remoteDataSource.updateCampaign(campaign);
       return Right(res);
     } catch (e) {
       return Left(WhateverFailure.whatoffline());
@@ -48,9 +44,11 @@ class CampaignRepositoryImpl implements CampaignRepository {
   }
 
   @override
-  Future<Either<WhateverFailure, void>> deleteCampaign(String id) async {
+  Future<Either<WhateverFailure, void>> deleteCampaign(
+    CampaignEntity campaign,
+  ) async {
     try {
-      final res = await remoteDataSource.deleteCampaign(id);
+      final res = await remoteDataSource.deleteCampaign(campaign);
       return Right(res);
     } catch (e) {
       return Left(WhateverFailure.whatoffline());

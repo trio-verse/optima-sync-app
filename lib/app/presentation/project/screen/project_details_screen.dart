@@ -5,7 +5,7 @@ import 'package:optima_sync_v2/app/domain/entities/project/project_details_entit
 import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/project/project_feature_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/project/project_meeting_entity.dart';
-import 'package:optima_sync_v2/app/domain/usecases/project_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/project/project_usecases.dart';
 import 'package:optima_sync_v2/app/presentation/project/theme/project_colors.dart';
 import 'package:optima_sync_v2/app/presentation/project/widgets/project_form_dialog.dart';
 import 'package:optima_sync_v2/app/presentation/project/widgets/project_widgets.dart';

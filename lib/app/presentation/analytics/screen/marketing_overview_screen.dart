@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
-import 'package:optima_sync_v2/app/domain/usecases/campaign_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/marketing/campaign_usecases.dart';
 import 'package:optima_sync_v2/app/presentation/analytics/utils/marketing_report_exporter.dart';
 import 'package:optima_sync_v2/app/presentation/analytics/bloc/analytics_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/analytics/bloc/analytics_event.dart';
