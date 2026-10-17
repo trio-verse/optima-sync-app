@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:optima_sync_v2/app/data/sources/remote_data/content_remote_data_source.dart';
+import 'package:optima_sync_v2/app/data/sources/remote_data/marketing/content_remote_data_source.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/marketing/content/content_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures/failures.dart';
@@ -11,10 +12,10 @@ class ContentRepositoryImpl implements ContentRepository {
 
   @override
   Future<Either<WhateverFailure, List<ContentEntity>>> getCampaignContents(
-    String campaignId,
+    CampaignEntity campaign,
   ) async {
     try {
-      final res = await remoteDataSource.getCampaignContents(campaignId);
+      final res = await remoteDataSource.getCampaignContents(campaign);
       return Right(res);
     } catch (e) {
       return Left(WhateverFailure.whatoffline());
@@ -22,15 +23,11 @@ class ContentRepositoryImpl implements ContentRepository {
   }
 
   @override
-  Future<Either<WhateverFailure, ContentEntity>> getContent({
-    required String campaignId,
-    required String id,
-  }) async {
+  Future<Either<WhateverFailure, ContentEntity>> getContent(
+    ContentEntity content,
+  ) async {
     try {
-      final res = await remoteDataSource.getContent(
-        campaignId: campaignId,
-        id: id,
-      );
+      final res = await remoteDataSource.getContent(content);
       return Right(res);
     } catch (e) {
       return Left(WhateverFailure.whatoffline());
@@ -38,15 +35,11 @@ class ContentRepositoryImpl implements ContentRepository {
   }
 
   @override
-  Future<Either<WhateverFailure, ContentEntity>> createContent({
-    required String campaignId,
-    required ContentEntity content,
-  }) async {
+  Future<Either<WhateverFailure, ContentEntity>> createContent(
+    ContentEntity content,
+  ) async {
     try {
-      final res = await remoteDataSource.createContent(
-        campaignId: campaignId,
-        content: content,
-      );
+      final res = await remoteDataSource.createContent(content);
       return Right(res);
     } catch (e) {
       return Left(WhateverFailure.whatoffline());
@@ -54,17 +47,11 @@ class ContentRepositoryImpl implements ContentRepository {
   }
 
   @override
-  Future<Either<WhateverFailure, ContentEntity>> updateContent({
-    required String campaignId,
-    required String id,
-    required ContentEntity content,
-  }) async {
+  Future<Either<WhateverFailure, ContentEntity>> updateContent(
+    ContentEntity content,
+  ) async {
     try {
-      final res = await remoteDataSource.updateContent(
-        campaignId: campaignId,
-        id: id,
-        content: content,
-      );
+      final res = await remoteDataSource.updateContent(content);
       return Right(res);
     } catch (e) {
       return Left(WhateverFailure.whatoffline());
@@ -72,15 +59,11 @@ class ContentRepositoryImpl implements ContentRepository {
   }
 
   @override
-  Future<Either<WhateverFailure, void>> deleteContent({
-    required String campaignId,
-    required String id,
-  }) async {
+  Future<Either<WhateverFailure, void>> deleteContent(
+    ContentEntity content,
+  ) async {
     try {
-      final res = await remoteDataSource.deleteContent(
-        campaignId: campaignId,
-        id: id,
-      );
+      final res = await remoteDataSource.deleteContent(content);
       return Right(res);
     } catch (e) {
       return Left(WhateverFailure.whatoffline());

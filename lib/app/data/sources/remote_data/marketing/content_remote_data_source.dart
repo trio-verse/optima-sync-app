@@ -1,4 +1,5 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/core/constants/api_constant.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
@@ -48,11 +49,13 @@ class ContentRemoteDataSource {
     throw Exception('Expected content data but received none');
   }
 
-  Future<List<ContentEntity>> getCampaignContents(String campaignId) async {
+  Future<List<ContentEntity>> getCampaignContents(
+    CampaignEntity campaign,
+  ) async {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.get<List<ContentEntity>>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaignId/contents",
+      "${ApiConstants.baseUrl}/api/v1/campaigns/${campaign.id}/contents",
       _parseList,
       organizationId: organizationId,
     );
@@ -60,14 +63,11 @@ class ContentRemoteDataSource {
     return result!;
   }
 
-  Future<ContentEntity> getContent({
-    required String campaignId,
-    required String id,
-  }) async {
+  Future<ContentEntity> getContent(ContentEntity content) async {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.get<ContentEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaignId/contents/$id",
+      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
       _parseSingle,
       organizationId: organizationId,
     );
@@ -75,50 +75,26 @@ class ContentRemoteDataSource {
     return result!;
   }
 
-  Future<ContentEntity> createContent({
-    required String campaignId,
-    required ContentEntity content,
-  }) async {
+  Future<ContentEntity> createContent(ContentEntity content) async {
     final organizationId = await _requireOrganizationId();
 
-    ContentEntity? fallback;
-
     final result = await client.post<ContentEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaignId/contents",
+      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents",
       content.toJson(),
-      (json) {
-        final data = json["data"];
-
-        if (data is Map && data.isNotEmpty) {
-          return ContentEntity.fromJson(Map<String, dynamic>.from(data));
-        }
-
-        if (data is List && data.isNotEmpty) {
-          return ContentEntity.fromJson(
-            Map<String, dynamic>.from(data.first as Map),
-          );
-        }
-
-        fallback = content.copyWith(campaignId: campaignId);
-        return fallback!;
-      },
+      _parseSingle,
       organizationId: organizationId,
     );
 
-    return result ?? fallback!;
+    return result!;
   }
 
-  Future<ContentEntity> updateContent({
-    required String campaignId,
-    required String id,
-    required ContentEntity content,
-  }) async {
+  Future<ContentEntity> updateContent(ContentEntity content) async {
     final organizationId = await _requireOrganizationId();
 
-    final localFallback = content.copyWith(id: id, campaignId: campaignId);
+    final localFallback = content;
 
     final result = await client.patch<ContentEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaignId/contents/$id",
+      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
       content.toJson(),
       (json) {
         final data = json["data"];
@@ -141,14 +117,11 @@ class ContentRemoteDataSource {
     return result ?? localFallback;
   }
 
-  Future<void> deleteContent({
-    required String campaignId,
-    required String id,
-  }) async {
+  Future<void> deleteContent(ContentEntity content) async {
     final organizationId = await _requireOrganizationId();
 
     await client.delete(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaignId/contents/$id",
+      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
       organizationId: organizationId,
     );
   }

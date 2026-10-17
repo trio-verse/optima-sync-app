@@ -78,11 +78,11 @@ class CampaignRemoteDataSource {
     return result!;
   }
 
-  Future<void> deleteCampaign(String id) async {
+  Future<void> deleteCampaign(CampaignEntity campaign) async {
     final organizationId = await _requireOrganizationId();
 
     await client.delete(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$id",
+      "${ApiConstants.baseUrl}/api/v1/campaigns/${campaign.id}",
       organizationId: organizationId,
     );
   }
