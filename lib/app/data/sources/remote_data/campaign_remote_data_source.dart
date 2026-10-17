@@ -65,14 +65,11 @@ class CampaignRemoteDataSource {
     return result!;
   }
 
-  Future<CampaignEntity> updateCampaign({
-    required String id,
-    required CampaignEntity campaign,
-  }) async {
+  Future<CampaignEntity> updateCampaign(CampaignEntity campaign) async {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.patch<CampaignEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$id",
+      "${ApiConstants.baseUrl}/api/v1/campaigns/${campaign.id}",
       campaign.toJson(),
       (json) => CampaignEntity.fromJson(_asSingleObject(json["data"])),
       organizationId: organizationId,

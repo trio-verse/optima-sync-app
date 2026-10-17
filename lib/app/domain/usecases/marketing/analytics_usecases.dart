@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
-import 'package:optima_sync_v2/app/domain/repo/analytics/analytics_repo.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
+import 'package:optima_sync_v2/app/domain/repo/marketing/analytics/analytics_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class AnalyticsUsecases {
@@ -18,8 +19,8 @@ class AnalyticsUsecases {
   }
 
   Future<Either<WhateverFailure, CampaignAnalyticsEntity>> getCampaignAnalytics(
-    String campaignId,
+    CampaignEntity campaign,
   ) {
-    return repo.getCampaignAnalytics(campaignId);
+    return repo.getCampaignAnalytics(campaign);
   }
 }

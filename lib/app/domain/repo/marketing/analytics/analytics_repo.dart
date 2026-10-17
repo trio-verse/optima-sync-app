@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 abstract class AnalyticsRepository {
@@ -9,6 +10,6 @@ abstract class AnalyticsRepository {
   getEffectiveCampaigns();
 
   Future<Either<WhateverFailure, CampaignAnalyticsEntity>> getCampaignAnalytics(
-    String campaignId,
+    CampaignEntity campaign,
   );
 }

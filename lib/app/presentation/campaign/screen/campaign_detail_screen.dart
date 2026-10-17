@@ -195,10 +195,9 @@ class _HeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = campaign.status == 'active'
+    final statusColor = campaign.status == CampaignStatus.active
         ? AppPallete.salesPrimary
-        : CampaignStatusStyle.color(campaign.status);
-
+        : CampaignStatus.color(campaign.status);
     Widget info(Widget a, Widget b) => Row(
       children: [
         Expanded(child: a),
@@ -457,12 +456,12 @@ class _StatusBreakdownCard extends StatelessWidget {
             trailing: '$total Total',
           ),
           const SizedBox(height: 16),
-          for (final status in kCampaignDetailContentStatuses)
+          for (final status in ContentStatus.pipeline)
             DetailProgressRow(
-              label: ContentStatusStyle.label(status),
+              label: ContentStatus.label(status),
               count: contents.where((c) => c.status == status).length,
               total: total,
-              color: ContentStatusStyle.color(status),
+              color: ContentStatus.color(status),
             ),
         ],
       ),
@@ -586,7 +585,7 @@ class _PipelineSection extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                for (final status in kCampaignDetailContentStatuses)
+                for (final status in ContentStatus.pipeline)
                   PipelineColumn(
                     status: status,
                     campaignId: campaignId,

@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
-import 'package:optima_sync_v2/app/domain/repo/campaign/campaign_repo.dart';
+import 'package:optima_sync_v2/app/domain/repo/marketing/campaign/campaign_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class CampaignUsecases {
@@ -18,14 +18,15 @@ class CampaignUsecases {
     return repo.createCampaign(campaign);
   }
 
-  Future<Either<WhateverFailure, CampaignEntity>> updateCampaign({
-    required String id,
-    required CampaignEntity campaign,
-  }) {
-    return repo.updateCampaign(id: id, campaign: campaign);
+  Future<Either<WhateverFailure, CampaignEntity>> updateCampaign(
+    CampaignEntity campaign,
+  ) {
+    return repo.updateCampaign(campaign);
   }
 
-  Future<Either<WhateverFailure, void>> deleteCampaign(String id) {
-    return repo.deleteCampaign(id);
+  Future<Either<WhateverFailure, void>> deleteCampaign(
+    CampaignEntity campaign,
+  ) {
+    return repo.deleteCampaign(campaign);
   }
 }

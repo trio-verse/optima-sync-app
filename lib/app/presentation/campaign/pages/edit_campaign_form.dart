@@ -59,9 +59,9 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
     endDate = campaign.endDate == null
         ? null
         : DateTime.tryParse(campaign.endDate!);
-    status = kCampaignStatuses.contains(campaign.status)
+    status = CampaignStatus.values.contains(campaign.status)
         ? campaign.status
-        : 'draft';
+        : CampaignStatus.draft;
   }
 
   @override
@@ -331,11 +331,11 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: kCampaignStatuses.map((value) {
+                      children: CampaignStatus.values.map((value) {
                         final selected = status == value;
-                        final color = CampaignStatusStyle.color(value);
+                        final color = CampaignStatus.color(value);
                         return ChoiceChip(
-                          label: Text(CampaignStatusStyle.label(value)),
+                          label: Text(CampaignStatus.label(value)),
                           selected: selected,
                           onSelected: isSubmitting
                               ? null

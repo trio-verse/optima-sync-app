@@ -66,20 +66,14 @@ class _MarketingAnalyticsScreenState extends State<MarketingAnalyticsScreen> {
                 children: [
                   const Text(
                     'Overview',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
-                  KpiJsonView(data: state.dashboard.raw),
+                  KpiJsonView(data: state.dashboard.toMap()),
                   const SizedBox(height: 24),
                   const Text(
                     'Most Effective Campaigns',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
                   if (state.effectiveCampaigns.isEmpty)
@@ -112,7 +106,7 @@ class _MarketingAnalyticsScreenState extends State<MarketingAnalyticsScreen> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              KpiJsonView(data: campaign.raw),
+                              KpiJsonView(data: campaign.toMap()),
                             ],
                           ),
                         ),

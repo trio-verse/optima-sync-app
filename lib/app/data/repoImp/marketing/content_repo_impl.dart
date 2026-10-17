@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/data/sources/remote_data/content_remote_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
-import 'package:optima_sync_v2/app/domain/repo/content/content_repo.dart';
+import 'package:optima_sync_v2/app/domain/repo/marketing/content/content_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 class ContentRepositoryImpl implements ContentRepository {

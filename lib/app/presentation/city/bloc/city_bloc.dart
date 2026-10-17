@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/refrence-data/city_entity.dart';
-import 'package:optima_sync_v2/app/domain/usecases/city_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/reference_data/city_usecases.dart';
 import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 
 import 'city_event.dart';

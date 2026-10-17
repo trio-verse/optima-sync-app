@@ -1,10 +1,55 @@
-const List<String> kCampaignStatuses = [
-  'active',
-  'draft',
-  'paused',
-  'completed',
-  'cancelled',
-];
+import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/core/constants/appPallete.dart';
+
+class CampaignStatus {
+  CampaignStatus._();
+
+  static const String active = 'active';
+  static const String draft = 'draft';
+  static const String paused = 'paused';
+  static const String completed = 'completed';
+  static const String cancelled = 'cancelled';
+
+  static const List<String> values = [
+    active,
+    draft,
+    paused,
+    completed,
+    cancelled,
+  ];
+
+  static String label(String status) {
+    switch (status) {
+      case active:
+        return 'Active';
+      case paused:
+        return 'Paused';
+      case completed:
+        return 'Completed';
+      case cancelled:
+        return 'Cancelled';
+      case draft:
+      default:
+        return 'Draft';
+    }
+  }
+
+  static Color color(String status) {
+    switch (status) {
+      case active:
+        return AppPallete.success;
+      case paused:
+        return AppPallete.warning;
+      case completed:
+        return AppPallete.primary;
+      case cancelled:
+        return AppPallete.danger;
+      case draft:
+      default:
+        return AppPallete.textSecondary;
+    }
+  }
+}
 
 class CampaignEntity {
   final String? id;
@@ -35,7 +80,7 @@ class CampaignEntity {
     this.endDate,
     this.expectedBudget,
     this.estimatedContentCount,
-    this.status = 'draft',
+    this.status = CampaignStatus.draft,
     required this.target,
     this.spent,
     this.connections,
@@ -91,7 +136,7 @@ class CampaignEntity {
       estimatedContentCount: _toInt(
         data['estimated_content_count'] ?? data['content_count'],
       ),
-      status: _asString(data['status']) ?? 'draft',
+      status: _asString(data['status']) ?? CampaignStatus.draft,
       target:
           data['target']?.toString() ??
           data['target_audience']?.toString() ??
