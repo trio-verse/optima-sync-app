@@ -6,9 +6,9 @@ import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart
 import 'package:optima_sync_v2/app/domain/entities/member_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/marketing/content/content_repo.dart';
 import 'package:optima_sync_v2/app/domain/usecases/marketing/content_usecases.dart';
-import 'package:optima_sync_v2/app/presentation/analytics/widgets/kpi_json_view.dart';
-import 'package:optima_sync_v2/app/presentation/content/bloc/content_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/content/screen/content_kanban_screen.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/analytics/widgets/kpi_json_view.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/content/screen/content_kanban_screen.dart';
 import 'package:optima_sync_v2/app/presentation/member/pages/member_list_item.dart';
 import 'package:optima_sync_v2/app/presentation/city/pages/city_list_item.dart'
     as city;

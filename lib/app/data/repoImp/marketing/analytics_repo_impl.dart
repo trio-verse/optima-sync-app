@@ -3,44 +3,43 @@ import 'package:optima_sync_v2/app/data/sources/remote_data/marketing/analytics_
 import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/marketing/analytics/analytics_repo.dart';
-import 'package:optima_sync_v2/core/errors/failures/failures.dart';
+import 'package:optima_sync_v2/core/errors/exceptions/exceptions.dart';
+import 'package:optima_sync_v2/core/errors/marketing/marketing_errors.dart';
 
 class AnalyticsRepositoryImpl implements AnalyticsRepository {
   final AnalyticsRemoteDataSource remoteDataSource;
 
   AnalyticsRepositoryImpl({required this.remoteDataSource});
 
-  @override
-  Future<Either<WhateverFailure, MarketingDashboardEntity>>
-  getDashboard() async {
+  Future<Either<MarketingError, T>> _guard<T>(Future<T> Function() call) async {
     try {
-      final res = await remoteDataSource.getDashboard();
-      return Right(res);
+      return Right(await call());
+    } on OfflineException {
+      return const Left(MarketingError.offline());
+    } on UnauthorizedException {
+      return const Left(MarketingError.sessionExpired());
+    } on NoOrganizationException {
+      return const Left(MarketingError.noOrganization());
+    } on BadRequestException {
+      return const Left(MarketingError.invalidData());
+    } on NotFoundException {
+      return const Left(MarketingError.notFound());
     } catch (e) {
-      return Left(WhateverFailure.whatoffline());
+      return const Left(MarketingError.serverError());
     }
   }
 
   @override
-  Future<Either<WhateverFailure, List<EffectiveCampaignEntity>>>
-  getEffectiveCampaigns() async {
-    try {
-      final res = await remoteDataSource.getEffectiveCampaigns();
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  Future<Either<MarketingError, MarketingDashboardEntity>> getDashboard() =>
+      _guard(() => remoteDataSource.getDashboard());
 
   @override
-  Future<Either<WhateverFailure, CampaignAnalyticsEntity>> getCampaignAnalytics(
+  Future<Either<MarketingError, List<EffectiveCampaignEntity>>>
+  getEffectiveCampaigns() =>
+      _guard(() => remoteDataSource.getEffectiveCampaigns());
+
+  @override
+  Future<Either<MarketingError, CampaignAnalyticsEntity>> getCampaignAnalytics(
     CampaignEntity campaign,
-  ) async {
-    try {
-      final res = await remoteDataSource.getCampaignAnalytics(campaign);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  ) => _guard(() => remoteDataSource.getCampaignAnalytics(campaign));
 }

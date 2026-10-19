@@ -4,9 +4,7 @@ import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dar
 import 'package:optima_sync_v2/app/domain/entities/refrence-data/channel_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/product_entity.dart';
-import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_event.dart';
-import 'package:optima_sync_v2/app/presentation/campaign/bloc/campaign_state.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/campaign/bloc/campaign_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_event.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_state.dart';
@@ -255,9 +253,10 @@ class _ConnectionFormState extends State<ConnectionForm> {
 
             BlocBuilder<CampaignBloc, CampaignState>(
               builder: (context, campaignState) {
-                final campaigns = campaignState is CampaignSuccess
-                    ? campaignState.campaigns
-                    : const <CampaignEntity>[];
+                final campaigns = campaignState.maybeWhen(
+                  success: (list, _) => list,
+                  orElse: () => const <CampaignEntity>[],
+                );
 
                 final safeCampaignId = campaigns.any((c) => c.id == campaignId)
                     ? campaignId
@@ -270,7 +269,10 @@ class _ConnectionFormState extends State<ConnectionForm> {
                     icon: const Icon(Icons.campaign_outlined),
                   ),
                   hint: Text(
-                    campaignState is CampaignLoading
+                    campaignState.maybeWhen(
+                          loading: () => true,
+                          orElse: () => false,
+                        )
                         ? "Loading campaigns..."
                         : "Not linked to a campaign",
                   ),

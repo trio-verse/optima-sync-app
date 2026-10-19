@@ -9,27 +9,15 @@ class ContentUsecases {
 
   ContentUsecases({required this.repo});
 
-  Future<Either<WhateverFailure, List<ContentEntity>>> getCampaignContents(
-    CampaignEntity campaign,
-  ) {
+  Future<Either<WhateverFailure, List<ContentEntity>>> getCampaignContents(String campaign) {
     return repo.getCampaignContents(campaign);
   }
 
-  Future<Either<WhateverFailure, ContentEntity>> getContent(
-    ContentEntity content,
-  ) {
-    return repo.getContent(content);
-  }
-
-  Future<Either<WhateverFailure, ContentEntity>> createContent(
-    ContentEntity content,
-  ) {
+  Future<Either<WhateverFailure, ContentEntity>> createContent(ContentEntity content) {
     return repo.createContent(content);
   }
 
-  Future<Either<WhateverFailure, ContentEntity>> updateContent(
-    ContentEntity content,
-  ) {
+  Future<Either<WhateverFailure, ContentEntity>> updateContent(ContentEntity content) {
     return repo.updateContent(content);
   }
 

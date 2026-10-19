@@ -3,70 +3,53 @@ import 'package:optima_sync_v2/app/data/sources/remote_data/marketing/content_re
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/marketing/content/content_repo.dart';
-import 'package:optima_sync_v2/core/errors/failures/failures.dart';
+import 'package:optima_sync_v2/core/errors/exceptions/exceptions.dart';
+import 'package:optima_sync_v2/core/errors/marketing/marketing_errors.dart';
 
 class ContentRepositoryImpl implements ContentRepository {
   final ContentRemoteDataSource remoteDataSource;
 
   ContentRepositoryImpl({required this.remoteDataSource});
 
+  Future<Either<MarketingError, T>> _guard<T>(Future<T> Function() call) async {
+    try {
+      return Right(await call());
+    } on OfflineException {
+      return const Left(MarketingError.offline());
+    } on UnauthorizedException {
+      return const Left(MarketingError.sessionExpired());
+    } on NoOrganizationException {
+      return const Left(MarketingError.noOrganization());
+    } on BadRequestException {
+      return const Left(MarketingError.invalidData());
+    } on NotFoundException {
+      return const Left(MarketingError.notFound());
+    } catch (e) {
+      return const Left(MarketingError.serverError());
+    }
+  }
+
   @override
-  Future<Either<WhateverFailure, List<ContentEntity>>> getCampaignContents(
+  Future<Either<MarketingError, List<ContentEntity>>> getCampaignContents(
     CampaignEntity campaign,
-  ) async {
-    try {
-      final res = await remoteDataSource.getCampaignContents(campaign);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  ) => _guard(() => remoteDataSource.getCampaignContents(campaign));
 
   @override
-  Future<Either<WhateverFailure, ContentEntity>> getContent(
+  Future<Either<MarketingError, ContentEntity>> getContent(
     ContentEntity content,
-  ) async {
-    try {
-      final res = await remoteDataSource.getContent(content);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  ) => _guard(() => remoteDataSource.getContent(content));
 
   @override
-  Future<Either<WhateverFailure, ContentEntity>> createContent(
+  Future<Either<MarketingError, ContentEntity>> createContent(
     ContentEntity content,
-  ) async {
-    try {
-      final res = await remoteDataSource.createContent(content);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  ) => _guard(() => remoteDataSource.createContent(content));
 
   @override
-  Future<Either<WhateverFailure, ContentEntity>> updateContent(
+  Future<Either<MarketingError, ContentEntity>> updateContent(
     ContentEntity content,
-  ) async {
-    try {
-      final res = await remoteDataSource.updateContent(content);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  ) => _guard(() => remoteDataSource.updateContent(content));
 
   @override
-  Future<Either<WhateverFailure, void>> deleteContent(
-    ContentEntity content,
-  ) async {
-    try {
-      final res = await remoteDataSource.deleteContent(content);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  Future<Either<MarketingError, void>> deleteContent(ContentEntity content) =>
+      _guard<void>(() => remoteDataSource.deleteContent(content));
 }
