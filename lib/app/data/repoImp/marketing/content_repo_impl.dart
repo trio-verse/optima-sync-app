@@ -30,24 +30,16 @@ class ContentRepositoryImpl implements ContentRepository {
   }
 
   @override
-  Future<Either<MarketingError, List<ContentEntity>>> getCampaignContents(
-    CampaignEntity campaign,
-  ) => _guard(() => remoteDataSource.getCampaignContents(campaign));
+  Future<Either<MarketingError, List<ContentEntity>>> getCampaignContents(String campaignId) =>
+      _guard(() => remoteDataSource.getCampaignContents(campaignId));
 
   @override
-  Future<Either<MarketingError, ContentEntity>> getContent(
-    ContentEntity content,
-  ) => _guard(() => remoteDataSource.getContent(content));
+  Future<Either<MarketingError, ContentEntity>> createContent(ContentEntity content) =>
+      _guard(() => remoteDataSource.createContent(content));
 
   @override
-  Future<Either<MarketingError, ContentEntity>> createContent(
-    ContentEntity content,
-  ) => _guard(() => remoteDataSource.createContent(content));
-
-  @override
-  Future<Either<MarketingError, ContentEntity>> updateContent(
-    ContentEntity content,
-  ) => _guard(() => remoteDataSource.updateContent(content));
+  Future<Either<MarketingError, ContentEntity>> updateContent(ContentEntity content) =>
+      _guard(() => remoteDataSource.updateContent(content));
 
   @override
   Future<Either<MarketingError, void>> deleteContent(ContentEntity content) =>

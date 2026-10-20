@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
+import 'package:optima_sync_v2/core/errors/marketing/marketing_errors.dart';
 
 abstract class AnalyticsState extends Equatable {
   const AnalyticsState();
@@ -16,10 +17,7 @@ class MarketingDashboardLoaded extends AnalyticsState {
   final MarketingDashboardEntity dashboard;
   final List<EffectiveCampaignEntity> effectiveCampaigns;
 
-  const MarketingDashboardLoaded({
-    required this.dashboard,
-    required this.effectiveCampaigns,
-  });
+  const MarketingDashboardLoaded({required this.dashboard, required this.effectiveCampaigns});
 
   @override
   List<Object?> get props => [dashboard, effectiveCampaigns];
@@ -35,10 +33,10 @@ class CampaignAnalyticsLoaded extends AnalyticsState {
 }
 
 class AnalyticsFailure extends AnalyticsState {
-  final String message;
+  final MarketingError failure;
 
-  const AnalyticsFailure({required this.message});
+  const AnalyticsFailure({required this.failure});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [failure];
 }

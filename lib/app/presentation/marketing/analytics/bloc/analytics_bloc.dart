@@ -14,51 +14,30 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
     on<LoadCampaignAnalytics>(_onLoadCampaignAnalytics);
   }
 
-  Future<void> _onLoadDashboard(
-    LoadMarketingDashboard event,
-    Emitter<AnalyticsState> emit,
-  ) async {
+  Future<void> _onLoadDashboard(LoadMarketingDashboard event, Emitter<AnalyticsState> emit) async {
     emit(AnalyticsLoading());
 
     final dashboardResult = await usecases.getDashboard();
 
-    await dashboardResult.fold(
-      (failure) async => emit(AnalyticsFailure(message: _messageFor(failure))),
-      (dashboard) async {
-        final campaignsResult = await usecases.getEffectiveCampaigns();
+    await dashboardResult.fold((failure) async => emit(AnalyticsFailure(failure: failure)), (dashboard) async {
+      final campaignsResult = await usecases.getEffectiveCampaigns();
 
-        campaignsResult.fold(
-          (failure) => emit(AnalyticsFailure(message: _messageFor(failure))),
-          (effectiveCampaigns) => emit(
-            MarketingDashboardLoaded(
-              dashboard: dashboard,
-              effectiveCampaigns: effectiveCampaigns,
-            ),
-          ),
-        );
-      },
-    );
+      campaignsResult.fold(
+        (failure) => emit(AnalyticsFailure(failure: failure)),
+        (effectiveCampaigns) =>
+            emit(MarketingDashboardLoaded(dashboard: dashboard, effectiveCampaigns: effectiveCampaigns)),
+      );
+    });
   }
 
-  Future<void> _onLoadCampaignAnalytics(
-    LoadCampaignAnalytics event,
-    Emitter<AnalyticsState> emit,
-  ) async {
+  Future<void> _onLoadCampaignAnalytics(LoadCampaignAnalytics event, Emitter<AnalyticsState> emit) async {
     emit(AnalyticsLoading());
 
     final result = await usecases.getCampaignAnalytics(event.campaign);
 
     result.fold(
-      (failure) => emit(AnalyticsFailure(message: _messageFor(failure))),
+      (failure) => emit(AnalyticsFailure(failure: failure)),
       (analytics) => emit(CampaignAnalyticsLoaded(analytics: analytics)),
-    );
-  }
-
-  String _messageFor(MarketingError failure) {
-    return failure.when(
-      serverError: () => 'Server error, please try again',
-      whatoffline: () => 'No internet connection',
-      database: () => 'Something went wrong, please try again',
     );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/refrence-data/channel_entity.dart';
@@ -6,21 +8,11 @@ import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_event.dart';
 import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_state.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_state.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/pages/content_permissions.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/pages/content_status_style.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/pages/markdown_script_editor.dart';
 
-const List<String> _suggestedContentTypes = [
-  'post',
-  'video',
-  'story',
-  'reel',
-  'banner',
-  'article',
-  'email',
-];
+const List<String> _suggestedContentTypes = ['post', 'video', 'story', 'reel', 'banner', 'article', 'email'];
 
 class ContentForm extends StatefulWidget {
   final String title;
@@ -68,18 +60,12 @@ class _ContentFormState extends State<ContentForm> {
     titleController = TextEditingController(text: initial?.title ?? '');
     typeController = TextEditingController(text: initial?.type ?? '');
     scriptController = TextEditingController(text: initial?.script ?? '');
-    costController = TextEditingController(
-      text: initial?.cost == null ? '' : initial!.cost!.toStringAsFixed(2),
-    );
-    descriptionController = TextEditingController(
-      text: initial?.description ?? '',
-    );
+    costController = TextEditingController(text: initial?.cost == null ? '' : initial!.cost!.toStringAsFixed(2));
+    descriptionController = TextEditingController(text: initial?.description ?? '');
 
     channelId = initial?.channelId;
     status = initial?.status ?? ContentStatus.draft;
-    publishedAt = initial?.publishedAt == null
-        ? null
-        : DateTime.tryParse(initial!.publishedAt!);
+    publishedAt = initial?.publishedAt == null ? null : DateTime.tryParse(initial!.publishedAt!);
 
     context.read<ChannelBloc>().add(LoadChannels());
   }
@@ -99,12 +85,8 @@ class _ContentFormState extends State<ContentForm> {
       label: Text(label),
       errorText: errorText,
       prefixIcon: icon,
-      enabledBorder: const OutlineInputBorder(
-        borderSide: BorderSide(width: 1, color: AppPallete.cardBorder),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(width: 1, color: AppPallete.primary),
-      ),
+      enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1, color: AppPallete.cardBorder)),
+      focusedBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1, color: AppPallete.primary)),
     );
   }
 
@@ -120,20 +102,11 @@ class _ContentFormState extends State<ContentForm> {
     if (date == null) return;
     if (!mounted) return;
 
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(publishedAt ?? now),
-    );
+    final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(publishedAt ?? now));
     if (time == null) return;
 
     setState(() {
-      publishedAt = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
+      publishedAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
     });
   }
 
@@ -159,9 +132,7 @@ class _ContentFormState extends State<ContentForm> {
         cost: costText.isEmpty ? null : double.tryParse(costText),
         status: status,
         publishedAt: publishedAt?.toIso8601String(),
-        description: descriptionController.text.trim().isEmpty
-            ? null
-            : descriptionController.text.trim(),
+        description: descriptionController.text.trim().isEmpty ? null : descriptionController.text.trim(),
       ),
     );
   }
@@ -173,19 +144,11 @@ class _ContentFormState extends State<ContentForm> {
     final costIsConfirmed = ContentStatus.isCostConfirmed(status);
 
     return Padding(
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-      ),
+      padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: MediaQuery.of(context).viewInsets.bottom + 20),
       child: BlocBuilder<ContentBloc, ContentState>(
         builder: (context, contentState) {
-          final isSubmitting = contentState is ContentSubmitting;
-          final errorMessage = contentState is ContentFailure
-              ? contentState.message
-              : null;
-
+          final isSubmitting = contentState.maybeWhen(loading: () => true, orElse: () => false);
+          final errorMessage = contentState.maybeWhen(failure: (error) => error.text(context), orElse: () => null);
           return Form(
             key: formKey,
             child: SingleChildScrollView(
@@ -193,21 +156,12 @@ class _ContentFormState extends State<ContentForm> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(widget.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
 
                   const SizedBox(height: 15),
 
                   if (errorMessage != null) ...[
-                    Text(
-                      errorMessage,
-                      style: const TextStyle(color: Colors.red),
-                    ),
+                    Text(errorMessage, style: const TextStyle(color: Colors.red)),
                     const SizedBox(height: 10),
                   ],
 
@@ -224,10 +178,7 @@ class _ContentFormState extends State<ContentForm> {
                       }
                       return null;
                     },
-                    decoration: _decoration(
-                      "Title *",
-                      icon: const Icon(Icons.title_outlined),
-                    ),
+                    decoration: _decoration("Title *", icon: const Icon(Icons.title_outlined)),
                   ),
 
                   const SizedBox(height: 15),
@@ -244,10 +195,7 @@ class _ContentFormState extends State<ContentForm> {
                       }
                       return null;
                     },
-                    decoration: _decoration(
-                      "Type *",
-                      icon: const Icon(Icons.category_outlined),
-                    ),
+                    decoration: _decoration("Type *", icon: const Icon(Icons.category_outlined)),
                   ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -256,11 +204,7 @@ class _ContentFormState extends State<ContentForm> {
                     children: _suggestedContentTypes.map((suggestion) {
                       return ActionChip(
                         label: Text(suggestion),
-                        onPressed: isSubmitting
-                            ? null
-                            : () => setState(
-                                () => typeController.text = suggestion,
-                              ),
+                        onPressed: isSubmitting ? null : () => setState(() => typeController.text = suggestion),
                       );
                     }).toList(),
                   ),
@@ -272,10 +216,7 @@ class _ContentFormState extends State<ContentForm> {
                     enabled: !isSubmitting,
                     minLines: 2,
                     maxLines: 4,
-                    decoration: _decoration(
-                      "Description",
-                      icon: const Icon(Icons.notes_outlined),
-                    ),
+                    decoration: _decoration("Description", icon: const Icon(Icons.notes_outlined)),
                   ),
 
                   const SizedBox(height: 15),
@@ -283,10 +224,7 @@ class _ContentFormState extends State<ContentForm> {
                   MarkdownScriptEditor(
                     controller: scriptController,
                     enabled: !isSubmitting,
-                    errorText:
-                        _submitAttempted && scriptController.text.trim().isEmpty
-                        ? "Script is required"
-                        : null,
+                    errorText: _submitAttempted && scriptController.text.trim().isEmpty ? "Script is required" : null,
                   ),
 
                   const SizedBox(height: 15),
@@ -299,25 +237,15 @@ class _ContentFormState extends State<ContentForm> {
 
                       final channels = widget.campaignChannelIds == null
                           ? allChannels
-                          : allChannels
-                                .where(
-                                  (c) =>
-                                      widget.campaignChannelIds!.contains(c.id),
-                                )
-                                .toList();
+                          : allChannels.where((c) => widget.campaignChannelIds!.contains(c.id)).toList();
 
-                      final safeChannelId =
-                          channels.any((c) => c.id == channelId)
-                          ? channelId
-                          : null;
+                      final safeChannelId = channels.any((c) => c.id == channelId) ? channelId : null;
 
                       return DropdownButtonFormField<String>(
                         value: safeChannelId,
                         decoration: _decoration(
                           "Channel *",
-                          errorText: _submitAttempted && channelId == null
-                              ? "Channel is required"
-                              : null,
+                          errorText: _submitAttempted && channelId == null ? "Channel is required" : null,
                           icon: const Icon(Icons.podcasts_outlined),
                         ),
                         hint: Text(
@@ -329,16 +257,9 @@ class _ContentFormState extends State<ContentForm> {
                         ),
                         items: channels
                             .where((c) => c.id != null)
-                            .map(
-                              (channel) => DropdownMenuItem(
-                                value: channel.id,
-                                child: Text(channel.name),
-                              ),
-                            )
+                            .map((channel) => DropdownMenuItem(value: channel.id, child: Text(channel.name)))
                             .toList(),
-                        onChanged: isSubmitting
-                            ? null
-                            : (value) => setState(() => channelId = value),
+                        onChanged: isSubmitting ? null : (value) => setState(() => channelId = value),
                       );
                     },
                   ),
@@ -347,17 +268,9 @@ class _ContentFormState extends State<ContentForm> {
 
                   DropdownButtonFormField<String>(
                     value: status,
-                    decoration: _decoration(
-                      "Status",
-                      icon: const Icon(Icons.flag_outlined),
-                    ),
+                    decoration: _decoration("Status", icon: const Icon(Icons.flag_outlined)),
                     items: ContentStatus.values
-                        .map(
-                          (s) => DropdownMenuItem(
-                            value: s,
-                            child: Text(ContentStatus.label(s)),
-                          ),
-                        )
+                        .map((s) => DropdownMenuItem(value: s, child: Text(ContentStatus.label(s))))
                         .toList(),
                     onChanged: isSubmitting
                         ? null
@@ -375,9 +288,7 @@ class _ContentFormState extends State<ContentForm> {
                         child: TextFormField(
                           controller: costController,
                           enabled: !isSubmitting,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
                               return null;
@@ -388,10 +299,7 @@ class _ContentFormState extends State<ContentForm> {
                             }
                             return null;
                           },
-                          decoration: _decoration(
-                            "Cost (estimated)",
-                            icon: const Icon(Icons.attach_money_outlined),
-                          ),
+                          decoration: _decoration("Cost (estimated)", icon: const Icon(Icons.attach_money_outlined)),
                         ),
                       ),
                       if (canSeeCostBadge) ...[
@@ -399,29 +307,18 @@ class _ContentFormState extends State<ContentForm> {
                         Padding(
                           padding: const EdgeInsets.only(top: 14),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             decoration: BoxDecoration(
-                              color:
-                                  (costIsConfirmed
-                                          ? Colors.green
-                                          : Colors.orange)
-                                      .withOpacity(0.12),
+                              color: (costIsConfirmed ? Colors.green : Colors.orange).withOpacity(0.12),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  costIsConfirmed
-                                      ? Icons.check_circle_outline
-                                      : Icons.hourglass_top_outlined,
+                                  costIsConfirmed ? Icons.check_circle_outline : Icons.hourglass_top_outlined,
                                   size: 14,
-                                  color: costIsConfirmed
-                                      ? Colors.green
-                                      : Colors.orange,
+                                  color: costIsConfirmed ? Colors.green : Colors.orange,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
@@ -429,9 +326,7 @@ class _ContentFormState extends State<ContentForm> {
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: costIsConfirmed
-                                        ? Colors.green
-                                        : Colors.orange,
+                                    color: costIsConfirmed ? Colors.green : Colors.orange,
                                   ),
                                 ),
                               ],
@@ -447,11 +342,7 @@ class _ContentFormState extends State<ContentForm> {
                   OutlinedButton.icon(
                     onPressed: isSubmitting ? null : _pickPublishedAt,
                     icon: const Icon(Icons.event_available_outlined, size: 18),
-                    label: Text(
-                      publishedAt == null
-                          ? 'Published At (optional)'
-                          : publishedAt!.toLocal().toString(),
-                    ),
+                    label: Text(publishedAt == null ? 'Published At (optional)' : publishedAt!.toLocal().toString()),
                   ),
 
                   const SizedBox(height: 20),
@@ -461,11 +352,7 @@ class _ContentFormState extends State<ContentForm> {
                     child: ElevatedButton(
                       onPressed: isSubmitting ? null : _submit,
                       child: isSubmitting
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
+                          ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                           : Text(widget.submitLabel),
                     ),
                   ),

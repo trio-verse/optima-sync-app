@@ -4,8 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_event.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_state.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/pages/add_content_form.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/pages/content_card.dart';
 
@@ -15,12 +13,7 @@ class ContentKanbanScreen extends StatefulWidget {
 
   final List<String>? campaignChannelIds;
 
-  const ContentKanbanScreen({
-    super.key,
-    required this.campaignId,
-    required this.campaignName,
-    this.campaignChannelIds,
-  });
+  const ContentKanbanScreen({super.key, required this.campaignId, required this.campaignName, this.campaignChannelIds});
 
   @override
   State<ContentKanbanScreen> createState() => _ContentKanbanScreenState();
@@ -31,9 +24,7 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ContentBloc>().add(
-      LoadContents(campaignId: widget.campaignId),
-    );
+    context.read<ContentBloc>().add(ContentEvent.getAllCampaignContents(campaignId: widget.campaignId));
   }
 
   void _openAddContentForm() {
@@ -42,16 +33,11 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (_) {
         return BlocProvider.value(
           value: bloc,
-          child: AddContentForm(
-            campaignId: widget.campaignId,
-            campaignChannelIds: widget.campaignChannelIds,
-          ),
+          child: AddContentForm(campaignId: widget.campaignId, campaignChannelIds: widget.campaignChannelIds),
         );
       },
     );
@@ -60,14 +46,7 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
   void _moveToStatus(ContentEntity content, String newStatus) {
     if (content.status == newStatus) return;
 
-    context.read<ContentBloc>().add(
-      ContentStatusChanged(
-        id: content.id!,
-        campaignId: widget.campaignId,
-        content: content,
-        newStatus: newStatus,
-      ),
-    );
+    context.read<ContentBloc>().add(ContentEvent.updateCampaignContent(content: content.copyWith(status: newStatus)));
   }
 
   @override
@@ -84,15 +63,11 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
       body: BlocConsumer<ContentBloc, ContentState>(
         listener: (context, state) {
           if (state is ContentSuccess && state.message != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message!)));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message!)));
           }
 
           if (state is ContentFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
 
@@ -112,9 +87,7 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
-                        context.read<ContentBloc>().add(
-                          LoadContents(campaignId: widget.campaignId),
-                        );
+                        context.read<ContentBloc>().add(LoadContents(campaignId: widget.campaignId));
                       },
                       child: const Text("Retry"),
                     ),
@@ -138,11 +111,7 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.view_kanban_outlined,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
+                    const Icon(Icons.view_kanban_outlined, size: 48, color: Colors.grey),
                     const SizedBox(height: 12),
                     const Text("No content yet"),
                     const SizedBox(height: 12),
@@ -160,9 +129,7 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
           return LayoutBuilder(
             builder: (context, constraints) {
               if (constraints.maxWidth < AppPallete.mobileBreakpoint) {
-                final visible = contents
-                    .where((content) => content.status == _selectedStatus)
-                    .toList();
+                final visible = contents.where((content) => content.status == _selectedStatus).toList();
                 return Column(
                   children: [
                     SingleChildScrollView(
@@ -179,16 +146,14 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
                                   ),
                                   selected: _selectedStatus == status,
                                   selectedColor: AppPallete.primarySoft,
-                                  onSelected: (_) =>
-                                      setState(() => _selectedStatus = status),
+                                  onSelected: (_) => setState(() => _selectedStatus = status),
                                 ),
                               ),
                             )
                             .toList(),
                       ),
                     ),
-                    if (state is ContentSubmitting)
-                      const LinearProgressIndicator(minHeight: 2),
+                    if (state is ContentSubmitting) const LinearProgressIndicator(minHeight: 2),
                     Expanded(
                       child: ListView(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
@@ -196,10 +161,7 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
                           if (visible.isEmpty)
                             const Padding(
                               padding: EdgeInsets.symmetric(vertical: 40),
-                              child: Text(
-                                'No content in this status.',
-                                textAlign: TextAlign.center,
-                              ),
+                              child: Text('No content in this status.', textAlign: TextAlign.center),
                             ),
                           ...visible.map(
                             (content) => Column(
@@ -214,26 +176,18 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
                                   alignment: Alignment.centerRight,
                                   child: PopupMenuButton<String>(
                                     tooltip: 'Change status',
-                                    onSelected: (status) =>
-                                        _moveToStatus(content, status),
+                                    onSelected: (status) => _moveToStatus(content, status),
                                     itemBuilder: (_) => ContentStatus.values
                                         .map(
-                                          (status) => PopupMenuItem(
-                                            value: status,
-                                            child: Text(
-                                              ContentStatus.label(status),
-                                            ),
-                                          ),
+                                          (status) =>
+                                              PopupMenuItem(value: status, child: Text(ContentStatus.label(status))),
                                         )
                                         .toList(),
                                     child: const Padding(
                                       padding: EdgeInsets.all(12),
                                       child: Text(
                                         'Change status',
-                                        style: TextStyle(
-                                          color: AppPallete.primary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                        style: TextStyle(color: AppPallete.primary, fontWeight: FontWeight.w600),
                                       ),
                                     ),
                                   ),
@@ -254,9 +208,7 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: ContentStatus.values.map((status) {
-                    final columnItems = contents
-                        .where((c) => c.status == status)
-                        .toList();
+                    final columnItems = contents.where((c) => c.status == status).toList();
 
                     return _KanbanColumn(
                       status: status,
@@ -307,14 +259,9 @@ class _KanbanColumn extends StatelessWidget {
 
             return Container(
               decoration: BoxDecoration(
-                color: isHovering
-                    ? color.withOpacity(0.08)
-                    : AppPallete.inputFill,
+                color: isHovering ? color.withOpacity(0.08) : AppPallete.inputFill,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: isHovering ? color : AppPallete.cardBorder,
-                  width: isHovering ? 2 : 1,
-                ),
+                border: Border.all(color: isHovering ? color : AppPallete.cardBorder, width: isHovering ? 2 : 1),
               ),
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -327,28 +274,18 @@ class _KanbanColumn extends StatelessWidget {
                       Expanded(
                         child: Text(
                           ContentStatus.label(status),
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: color,
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.w700, color: color),
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: color.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           '${items.length}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: color,
-                          ),
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: color),
                         ),
                       ),
                     ],
@@ -361,10 +298,7 @@ class _KanbanColumn extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             child: Text(
                               'Drop content here',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppPallete.textSecondary,
-                              ),
+                              style: TextStyle(fontSize: 12, color: AppPallete.textSecondary),
                             ),
                           )
                         : SingleChildScrollView(

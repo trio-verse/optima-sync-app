@@ -12,10 +12,7 @@ class LoadMarketingDashboard extends AnalyticsEvent {}
 
 class LoadCampaignAnalytics extends AnalyticsEvent {
   final CampaignEntity campaign;
-  const LoadCampaignAnalytics({
-    required this.campaign,
-    required String campaignId,
-  });
+  const LoadCampaignAnalytics({required this.campaign});
   @override
   List<Object?> get props => [campaign.id];
 }

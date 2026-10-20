@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
 import 'package:optima_sync_v2/core/constants/theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/check_selected_org/cubit/check_selected_org_cubit.dart';
@@ -12,7 +13,6 @@ import 'package:optima_sync_v2/app/presentation/channel/bloc/channel_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/city/bloc/city_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/client/bloc/client_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/connection/bloc/connection_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/home/bloc/home_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/industry/bloc/industry_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/employee/bloc/employee_bloc.dart';

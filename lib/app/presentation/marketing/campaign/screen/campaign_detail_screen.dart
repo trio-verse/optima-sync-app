@@ -8,12 +8,9 @@ import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analyti
 import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_state.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/campaign/bloc/campaign_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/campaign/pages/campaign_detail_widgets.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/campaign/pages/campaign_status_style.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_event.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_state.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/pages/add_content_form.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/content/pages/content_status_style.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:optima_sync_v2/service_locator.dart';
 
@@ -25,9 +22,7 @@ class CampaignDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AnalyticsBloc>(
-      create: (_) =>
-          AnalyticsBloc(usecases: sl())
-            ..add(LoadCampaignAnalytics(campaignId: campaign.id!)),
+      create: (_) => AnalyticsBloc(usecases: sl())..add(LoadCampaignAnalytics(campaign: campaign)),
       child: _CampaignDetailView(campaign: campaign),
     );
   }
@@ -46,21 +41,13 @@ class _CampaignDetailViewState extends State<_CampaignDetailView> {
   @override
   void initState() {
     super.initState();
-    context.read<ContentBloc>().add(
-      LoadContents(campaignId: widget.campaign.id!),
-    );
+    context.read<ContentBloc>().add(ContentEvent.getAllCampaignContents(campaignId: widget.campaign.id!));
   }
 
   Future<void> _refresh() async {
-    context.read<AnalyticsBloc>().add(
-      LoadCampaignAnalytics(campaignId: widget.campaign.id!),
-    );
-    context.read<ContentBloc>().add(
-      LoadContents(campaignId: widget.campaign.id!),
-    );
-    await context.read<AnalyticsBloc>().stream.firstWhere(
-      (s) => s is CampaignAnalyticsLoaded || s is AnalyticsFailure,
-    );
+    context.read<AnalyticsBloc>().add(LoadCampaignAnalytics(campaign: widget.campaign));
+    context.read<ContentBloc>().add(ContentEvent.getAllCampaignContents(campaignId: widget.campaign.id!));
+    await context.read<AnalyticsBloc>().stream.firstWhere((s) => s is CampaignAnalyticsLoaded || s is AnalyticsFailure);
   }
 
   void _openAddContent(String campaignId) {
@@ -69,9 +56,7 @@ class _CampaignDetailViewState extends State<_CampaignDetailView> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (_) => BlocProvider.value(
         value: bloc,
         child: AddContentForm(campaignId: campaignId),
@@ -84,10 +69,8 @@ class _CampaignDetailViewState extends State<_CampaignDetailView> {
     return BlocBuilder<CampaignBloc, CampaignState>(
       builder: (context, campaignState) {
         final current = campaignState.maybeWhen(
-          success: (campaigns, _) => campaigns.firstWhere(
-            (c) => c.id == widget.campaign.id,
-            orElse: () => widget.campaign,
-          ),
+          success: (campaigns, _) =>
+              campaigns.firstWhere((c) => c.id == widget.campaign.id, orElse: () => widget.campaign),
           orElse: () => widget.campaign,
         );
 
@@ -97,45 +80,36 @@ class _CampaignDetailViewState extends State<_CampaignDetailView> {
             backgroundColor: AppPallete.cardBackground,
             surfaceTintColor: AppPallete.cardBackground,
             elevation: 0,
-            title: const Text(
-              'Campaign Details',
-              style: TextStyle(fontWeight: FontWeight.w800),
-            ),
+            title: const Text('Campaign Details', style: TextStyle(fontWeight: FontWeight.w800)),
           ),
           body: BlocListener<ContentBloc, ContentState>(
             listener: (context, state) {
-              if (state is ContentSuccess && state.message != null) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(state.message!)));
-              }
-              if (state is ContentFailure) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(state.message)));
-              }
+              state.whenOrNull(
+                success: (_, message) {
+                  if (message != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+                  }
+                },
+                failure: (error) =>
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.text(context)))),
+              );
             },
             child: BlocBuilder<AnalyticsBloc, AnalyticsState>(
               builder: (context, analyticsState) {
-                final analytics = analyticsState is CampaignAnalyticsLoaded
-                    ? analyticsState.analytics
-                    : null;
-                final loading =
-                    analyticsState is AnalyticsLoading ||
-                    analyticsState is AnalyticsInitial;
+                final analytics = analyticsState is CampaignAnalyticsLoaded ? analyticsState.analytics : null;
+                final loading = analyticsState is AnalyticsLoading || analyticsState is AnalyticsInitial;
 
                 return BlocBuilder<ContentBloc, ContentState>(
                   builder: (context, contentState) {
-                    final contentsLoading =
-                        contentState is ContentInitial ||
-                        contentState is ContentLoading;
-                    final contents = switch (contentState) {
-                      ContentSuccess(:final contents) => contents,
-                      ContentSubmitting(:final contents) => contents,
-                      ContentFailure(:final contents) =>
-                        contents ?? const <ContentEntity>[],
-                      _ => const <ContentEntity>[],
-                    };
+                    final contentsLoading = contentState.maybeWhen(
+                      initial: () => true,
+                      loading: () => true,
+                      orElse: () => false,
+                    );
+                    final contents = contentState.maybeWhen(
+                      success: (contents, _) => contents,
+                      orElse: () => const <ContentEntity>[],
+                    );
 
                     return RefreshIndicator(
                       onRefresh: _refresh,
@@ -150,21 +124,11 @@ class _CampaignDetailViewState extends State<_CampaignDetailView> {
                             ),
                           _HeaderCard(campaign: current),
                           const SizedBox(height: 14),
-                          _MetricsGrid(
-                            campaign: current,
-                            analytics: analytics,
-                            contentCount: contents.length,
-                          ),
+                          _MetricsGrid(campaign: current, analytics: analytics, contentCount: contents.length),
                           const SizedBox(height: 14),
-                          _StatusBreakdownCard(
-                            contents: contents,
-                            loading: contentsLoading,
-                          ),
+                          _StatusBreakdownCard(contents: contents, loading: contentsLoading),
                           const SizedBox(height: 14),
-                          _ChannelDistributionCard(
-                            contents: contents,
-                            loading: contentsLoading,
-                          ),
+                          _ChannelDistributionCard(contents: contents, loading: contentsLoading),
                           const SizedBox(height: 22),
                           _PipelineSection(
                             campaignId: current.id!,
@@ -217,32 +181,17 @@ class _HeaderCard extends StatelessWidget {
             ),
             child: Text(
               campaign.status.toUpperCase(),
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.5,
-                color: statusColor,
-              ),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 0.5, color: statusColor),
             ),
           ),
           const SizedBox(height: 10),
           Text(
             campaign.name,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: AppPallete.textPrimary,
-            ),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: AppPallete.textPrimary),
           ),
           if (campaign.description.isNotEmpty) ...[
             const SizedBox(height: 6),
-            Text(
-              campaign.description,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppPallete.textSecondary,
-              ),
-            ),
+            Text(campaign.description, style: const TextStyle(fontSize: 13, color: AppPallete.textSecondary)),
           ],
           const SizedBox(height: 14),
           const Divider(height: 1, color: AppPallete.cardBorder),
@@ -291,11 +240,7 @@ class _MetricsGrid extends StatelessWidget {
   final CampaignAnalyticsEntity? analytics;
   final int contentCount;
 
-  const _MetricsGrid({
-    required this.campaign,
-    required this.analytics,
-    required this.contentCount,
-  });
+  const _MetricsGrid({required this.campaign, required this.analytics, required this.contentCount});
 
   @override
   Widget build(BuildContext context) {
@@ -310,18 +255,10 @@ class _MetricsGrid extends StatelessWidget {
     final budgetPct = budget > 0 ? spent / budget * 100 : 0.0;
     final contentPct = target > 0 ? contentCount / target * 100 : 0.0;
 
-    final cpl =
-        analytics?.cpl ??
-        campaign.cpl ??
-        (connections > 0 ? spent / connections : null);
-    final winRate =
-        analytics?.winRate ??
-        campaign.winRate ??
-        (connections > 0 ? wins / connections * 100 : 0.0);
+    final cpl = analytics?.cpl ?? campaign.cpl ?? (connections > 0 ? spent / connections : null);
+    final winRate = analytics?.winRate ?? campaign.winRate ?? (connections > 0 ? wins / connections * 100 : 0.0);
     final roi =
-        analytics?.roi ??
-        campaign.roi ??
-        (spent > 0 && revenue != null ? (revenue - spent) / spent * 100 : 0.0);
+        analytics?.roi ?? campaign.roi ?? (spent > 0 && revenue != null ? (revenue - spent) / spent * 100 : 0.0);
 
     final profitable = roi >= 0;
 
@@ -359,17 +296,12 @@ class _MetricsGrid extends StatelessWidget {
         children: [
           Text(
             revenue != null && revenue > 0 ? formatMoney(revenue) : 'N/A',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: AppPallete.textPrimary,
-            ),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: AppPallete.textPrimary),
           ),
           const SizedBox(height: 8),
           DetailPill(
             icon: profitable ? Icons.north_east : Icons.south_east,
-            text:
-                'ROI: ${formatPercent(roi)} ${profitable ? 'Making Profit' : 'Losing Money'}',
+            text: 'ROI: ${formatPercent(roi)} ${profitable ? 'Making Profit' : 'Losing Money'}',
             color: profitable ? AppPallete.salesGreen : Colors.red.shade600,
             background: profitable ? kDetailGreenSoft : Colors.red.shade50,
           ),
@@ -393,11 +325,7 @@ class _MetricsGrid extends StatelessWidget {
         children: [
           Text(
             '$wins Wins',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: AppPallete.textPrimary,
-            ),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: AppPallete.textPrimary),
           ),
           const SizedBox(height: 8),
           DetailPill(
@@ -407,9 +335,7 @@ class _MetricsGrid extends StatelessWidget {
           ),
         ],
       ),
-      footer: [
-        MetricFooterRow(label: 'Count Connections:', value: '$connections'),
-      ],
+      footer: [MetricFooterRow(label: 'Count Connections:', value: '$connections')],
     );
 
     Widget row(Widget a, Widget b) => Row(
@@ -425,11 +351,7 @@ class _MetricsGrid extends StatelessWidget {
     );
 
     return Column(
-      children: [
-        row(budgetCard, contentCard),
-        const SizedBox(height: 12),
-        row(revenueCard, conversionsCard),
-      ],
+      children: [row(budgetCard, contentCard), const SizedBox(height: 12), row(revenueCard, conversionsCard)],
     );
   }
 }
@@ -472,22 +394,16 @@ class _ChannelDistributionCard extends StatelessWidget {
   final List<ContentEntity> contents;
   final bool loading;
 
-  const _ChannelDistributionCard({
-    required this.contents,
-    required this.loading,
-  });
+  const _ChannelDistributionCard({required this.contents, required this.loading});
 
   @override
   Widget build(BuildContext context) {
     final counts = <String, int>{};
     for (final c in contents) {
-      final name = (c.channelName?.trim().isNotEmpty ?? false)
-          ? c.channelName!.trim()
-          : 'Unknown';
+      final name = (c.channelName?.trim().isNotEmpty ?? false) ? c.channelName!.trim() : 'Unknown';
       counts[name] = (counts[name] ?? 0) + 1;
     }
-    final entries = counts.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
+    final entries = counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
     return DetailCard(
       child: Column(
@@ -505,21 +421,13 @@ class _ChannelDistributionCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   'No channel distribution data',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppPallete.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 12, color: AppPallete.textSecondary),
                 ),
               ),
             )
           else
             for (final e in entries)
-              DetailProgressRow(
-                label: e.key,
-                count: e.value,
-                total: contents.length,
-                color: AppPallete.salesGreen,
-              ),
+              DetailProgressRow(label: e.key, count: e.value, total: contents.length, color: AppPallete.salesGreen),
         ],
       ),
     );
@@ -549,26 +457,17 @@ class _PipelineSection extends StatelessWidget {
             const Expanded(
               child: Text(
                 'Campaign Content Pipeline',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                  color: AppPallete.textPrimary,
-                ),
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppPallete.textPrimary),
               ),
             ),
             FilledButton.icon(
               onPressed: onAdd,
               style: FilledButton.styleFrom(
                 backgroundColor: AppPallete.salesPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               icon: const Icon(Icons.add, size: 16),
-              label: const Text(
-                'Add Content',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5),
-              ),
+              label: const Text('Add Content', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5)),
             ),
           ],
         ),

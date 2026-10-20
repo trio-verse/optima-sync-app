@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_bloc.dart';
@@ -10,8 +11,7 @@ class MarketingAnalyticsScreen extends StatefulWidget {
   const MarketingAnalyticsScreen({super.key});
 
   @override
-  State<MarketingAnalyticsScreen> createState() =>
-      _MarketingAnalyticsScreenState();
+  State<MarketingAnalyticsScreen> createState() => _MarketingAnalyticsScreenState();
 }
 
 class _MarketingAnalyticsScreenState extends State<MarketingAnalyticsScreen> {
@@ -43,15 +43,12 @@ class _MarketingAnalyticsScreenState extends State<MarketingAnalyticsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      state.message,
+                      state.failure.text(context),
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.red.shade700),
                     ),
                     const SizedBox(height: 12),
-                    OutlinedButton(
-                      onPressed: _refresh,
-                      child: const Text('Retry'),
-                    ),
+                    OutlinedButton(onPressed: _refresh, child: const Text('Retry')),
                   ],
                 ),
               ),
@@ -64,25 +61,16 @@ class _MarketingAnalyticsScreenState extends State<MarketingAnalyticsScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  const Text(
-                    'Overview',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  const Text('Overview', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   KpiJsonView(data: state.dashboard.toMap()),
                   const SizedBox(height: 24),
-                  const Text(
-                    'Most Effective Campaigns',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  const Text('Most Effective Campaigns', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   if (state.effectiveCampaigns.isEmpty)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Text(
-                        'No campaign data yet.',
-                        style: TextStyle(color: AppPallete.textSecondary),
-                      ),
+                      child: Text('No campaign data yet.', style: TextStyle(color: AppPallete.textSecondary)),
                     )
                   else
                     ...state.effectiveCampaigns.map((campaign) {
@@ -98,13 +86,7 @@ class _MarketingAnalyticsScreenState extends State<MarketingAnalyticsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                campaign.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 15,
-                                ),
-                              ),
+                              Text(campaign.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
                               const SizedBox(height: 8),
                               KpiJsonView(data: campaign.toMap()),
                             ],

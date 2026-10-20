@@ -9,6 +9,7 @@ import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analyti
 import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_event.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_state.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/campaign/screen/campaign_screen.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:optima_sync_v2/core/widgets/app_drawer.dart';
 import 'package:optima_sync_v2/service_locator.dart';
@@ -17,8 +18,7 @@ class MarketingOverviewScreen extends StatefulWidget {
   const MarketingOverviewScreen({super.key});
 
   @override
-  State<MarketingOverviewScreen> createState() =>
-      _MarketingOverviewScreenState();
+  State<MarketingOverviewScreen> createState() => _MarketingOverviewScreenState();
 }
 
 class _MarketingOverviewScreenState extends State<MarketingOverviewScreen> {
@@ -37,10 +37,7 @@ class _MarketingOverviewScreenState extends State<MarketingOverviewScreen> {
 
   bool _exporting = false;
 
-  Future<void> _export(
-    MarketingDashboardEntity dashboard,
-    List<EffectiveCampaignEntity> effectiveCampaigns,
-  ) async {
+  Future<void> _export(MarketingDashboardEntity dashboard, List<EffectiveCampaignEntity> effectiveCampaigns) async {
     if (_exporting) return;
     setState(() => _exporting = true);
 
@@ -51,9 +48,7 @@ class _MarketingOverviewScreenState extends State<MarketingOverviewScreen> {
       ).export(dashboard: dashboard, effectiveCampaigns: effectiveCampaigns);
     } catch (e, st) {
       debugPrint('MARKETING EXPORT FAILED: $e\n$st');
-      messenger.showSnackBar(
-        SnackBar(content: Text('Could not export the report: $e')),
-      );
+      messenger.showSnackBar(SnackBar(content: Text('Could not export the report: $e')));
     } finally {
       if (mounted) setState(() => _exporting = false);
     }
@@ -68,10 +63,7 @@ class _MarketingOverviewScreenState extends State<MarketingOverviewScreen> {
         backgroundColor: AppPallete.cardBackground,
         surfaceTintColor: AppPallete.cardBackground,
         elevation: 0,
-        title: const Text(
-          'Marketing Overview',
-          style: TextStyle(fontWeight: FontWeight.w800),
-        ),
+        title: const Text('Marketing Overview', style: TextStyle(fontWeight: FontWeight.w800)),
       ),
       body: BlocBuilder<AnalyticsBloc, AnalyticsState>(
         builder: (context, state) {
@@ -80,7 +72,7 @@ class _MarketingOverviewScreenState extends State<MarketingOverviewScreen> {
           }
 
           if (state is AnalyticsFailure) {
-            return _ErrorView(message: state.message, onRetry: _refresh);
+            return _ErrorView(message: state.failure.text(context), onRetry: _refresh);
           }
 
           if (state is MarketingDashboardLoaded) {
@@ -89,13 +81,9 @@ class _MarketingOverviewScreenState extends State<MarketingOverviewScreen> {
               child: _OverviewContent(
                 dashboard: state.dashboard,
                 onManageCampaigns: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const CampaignScreen()),
-                  );
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const CampaignScreen()));
                 },
-                onExport: () =>
-                    _export(state.dashboard, state.effectiveCampaigns),
+                onExport: () => _export(state.dashboard, state.effectiveCampaigns),
               ),
             );
           }
@@ -112,11 +100,7 @@ class _OverviewContent extends StatelessWidget {
   final VoidCallback onManageCampaigns;
   final VoidCallback onExport;
 
-  const _OverviewContent({
-    required this.dashboard,
-    required this.onManageCampaigns,
-    required this.onExport,
-  });
+  const _OverviewContent({required this.dashboard, required this.onManageCampaigns, required this.onExport});
 
   @override
   Widget build(BuildContext context) {
@@ -129,17 +113,11 @@ class _OverviewContent extends StatelessWidget {
             final intro = const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Marketing Overview',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
-                ),
+                Text('Marketing Overview', style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800)),
                 SizedBox(height: 5),
                 Text(
                   'Executive performance analytics and real-time financial ROI metrics.',
-                  style: TextStyle(
-                    color: AppPallete.textSecondary,
-                    height: 1.35,
-                  ),
+                  style: TextStyle(color: AppPallete.textSecondary, height: 1.35),
                 ),
               ],
             );
@@ -180,9 +158,7 @@ class _OverviewContent extends StatelessWidget {
         const SizedBox(height: 20),
         LayoutBuilder(
           builder: (context, constraints) {
-            final count =
-                MediaQuery.textScalerOf(context).scale(14) > 20 ||
-                    constraints.maxWidth < 280
+            final count = MediaQuery.textScalerOf(context).scale(14) > 20 || constraints.maxWidth < 280
                 ? 1
                 : constraints.maxWidth >= 900
                 ? 4
@@ -291,16 +267,8 @@ class _MetricCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppPallete.cardBackground,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: accentBorder ? AppPallete.primarySoft : AppPallete.cardBorder,
-        ),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x10000000),
-            blurRadius: 5,
-            offset: Offset(0, 2),
-          ),
-        ],
+        border: Border.all(color: accentBorder ? AppPallete.primarySoft : AppPallete.cardBorder),
+        boxShadow: const [BoxShadow(color: Color(0x10000000), blurRadius: 5, offset: Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,36 +289,20 @@ class _MetricCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
-                  color: (iconColor ?? AppPallete.salesPrimary).withOpacity(
-                    .08,
-                  ),
+                  color: (iconColor ?? AppPallete.salesPrimary).withOpacity(.08),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(
-                  icon,
-                  size: 17,
-                  color: iconColor ?? AppPallete.salesPrimary,
-                ),
+                child: Icon(icon, size: 17, color: iconColor ?? AppPallete.salesPrimary),
               ),
             ],
           ),
           const SizedBox(height: 10),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 23,
-              fontWeight: FontWeight.w800,
-              color: valueColor ?? AppPallete.textPrimary,
-            ),
+            style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800, color: valueColor ?? AppPallete.textPrimary),
           ),
           const SizedBox(height: 5),
-          Text(
-            helper,
-            style: const TextStyle(
-              color: AppPallete.textSecondary,
-              fontSize: 12,
-            ),
-          ),
+          Text(helper, style: const TextStyle(color: AppPallete.textSecondary, fontSize: 12)),
         ],
       ),
     );
@@ -362,11 +314,7 @@ class _Panel extends StatelessWidget {
   final String subtitle;
   final Widget child;
 
-  const _Panel({
-    required this.title,
-    required this.subtitle,
-    required this.child,
-  });
+  const _Panel({required this.title, required this.subtitle, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -376,29 +324,14 @@ class _Panel extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppPallete.cardBorder),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x08000000),
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
+        boxShadow: const [BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-          ),
+          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              color: AppPallete.textSecondary,
-              fontSize: 12,
-            ),
-          ),
+          Text(subtitle, style: const TextStyle(color: AppPallete.textSecondary, fontSize: 12)),
           const SizedBox(height: 18),
           child,
         ],
@@ -414,20 +347,14 @@ class _SpentRevenueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maxValue = math
-        .max(1.0, math.max(dashboard.totalSpent, dashboard.totalRevenue))
-        .toDouble();
+    final maxValue = math.max(1.0, math.max(dashboard.totalSpent, dashboard.totalRevenue)).toDouble();
     return _Panel(
       title: 'Spent vs Revenue',
       subtitle: 'Total marketing spend compared to revenue from won deals',
       child: SizedBox(
         height: 230,
         child: CustomPaint(
-          painter: _BarChartPainter(
-            spent: dashboard.totalSpent,
-            revenue: dashboard.totalRevenue,
-            maxValue: maxValue,
-          ),
+          painter: _BarChartPainter(spent: dashboard.totalSpent, revenue: dashboard.totalRevenue, maxValue: maxValue),
           child: const SizedBox.expand(),
         ),
       ),
@@ -460,20 +387,8 @@ class _ConnectionsCard extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      '$won',
-                      style: const TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Text(
-                      'of $total won',
-                      style: const TextStyle(
-                        color: AppPallete.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
+                    Text('$won', style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w800)),
+                    Text('of $total won', style: const TextStyle(color: AppPallete.textSecondary, fontSize: 12)),
                   ],
                 ),
               ),
@@ -485,16 +400,10 @@ class _ConnectionsCard extends StatelessWidget {
             spacing: 16,
             children: [
               _LegendDot(color: AppPallete.salesGreen, text: 'Won ($won)'),
-              _LegendDot(
-                color: const Color(0xFFD0D9E5),
-                text: 'Other (${math.max(0, total - won)})',
-              ),
+              _LegendDot(color: const Color(0xFFD0D9E5), text: 'Other (${math.max(0, total - won)})'),
               Text(
                 '${(percentage * 100).round()}%',
-                style: const TextStyle(
-                  color: AppPallete.salesPurple,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: const TextStyle(color: AppPallete.salesPurple, fontWeight: FontWeight.w800),
               ),
             ],
           ),
@@ -517,19 +426,10 @@ class _KpiCard extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _KpiRing(
-              value: dashboard.winRate,
-              label: 'Win Rate',
-              color: AppPallete.salesPurple,
-            ),
+            child: _KpiRing(value: dashboard.winRate, label: 'Win Rate', color: AppPallete.salesPurple),
           ),
           Expanded(
-            child: _KpiRing(
-              value: dashboard.roi,
-              label: 'ROI',
-              color: AppPallete.salesGreen,
-              showMoneyLabel: true,
-            ),
+            child: _KpiRing(value: dashboard.roi, label: 'ROI', color: AppPallete.salesGreen, showMoneyLabel: true),
           ),
         ],
       ),
@@ -543,12 +443,7 @@ class _KpiRing extends StatelessWidget {
   final Color color;
   final bool showMoneyLabel;
 
-  const _KpiRing({
-    required this.value,
-    required this.label,
-    required this.color,
-    this.showMoneyLabel = false,
-  });
+  const _KpiRing({required this.value, required this.label, required this.color, this.showMoneyLabel = false});
 
   @override
   Widget build(BuildContext context) {
@@ -561,21 +456,12 @@ class _KpiRing extends StatelessWidget {
           child: CustomPaint(
             painter: _RingPainter(value: normalized / 100, color: color),
             child: Center(
-              child: Text(
-                '${normalized.round()}%',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              child: Text('${normalized.round()}%', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
             ),
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(color: AppPallete.textSecondary, fontSize: 12),
-        ),
+        Text(label, style: const TextStyle(color: AppPallete.textSecondary, fontSize: 12)),
         if (showMoneyLabel) ...[
           const SizedBox(height: 6),
           Text(
@@ -609,10 +495,7 @@ class _LegendDot extends StatelessWidget {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 5),
-        Text(
-          text,
-          style: const TextStyle(fontSize: 12, color: AppPallete.textSecondary),
-        ),
+        Text(text, style: const TextStyle(fontSize: 12, color: AppPallete.textSecondary)),
       ],
     );
   }
@@ -623,11 +506,7 @@ class _BarChartPainter extends CustomPainter {
   final double revenue;
   final double maxValue;
 
-  const _BarChartPainter({
-    required this.spent,
-    required this.revenue,
-    required this.maxValue,
-  });
+  const _BarChartPainter({required this.spent, required this.revenue, required this.maxValue});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -661,21 +540,11 @@ class _BarChartPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
           text: labels[i],
-          style: const TextStyle(
-            color: AppPallete.textPrimary,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(color: AppPallete.textPrimary, fontSize: 12, fontWeight: FontWeight.w600),
         ),
         textDirection: TextDirection.ltr,
       )..layout(maxWidth: slot);
-      textPainter.paint(
-        canvas,
-        Offset(
-          chart.left + slot * i + (slot - textPainter.width) / 2,
-          chart.bottom + 12,
-        ),
-      );
+      textPainter.paint(canvas, Offset(chart.left + slot * i + (slot - textPainter.width) / 2, chart.bottom + 12));
     }
   }
 
@@ -716,8 +585,7 @@ class _DonutPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _DonutPainter oldDelegate) =>
-      oldDelegate.percentage != percentage;
+  bool shouldRepaint(covariant _DonutPainter oldDelegate) => oldDelegate.percentage != percentage;
 }
 
 class _RingPainter extends CustomPainter {
@@ -742,19 +610,12 @@ class _RingPainter extends CustomPainter {
 
     canvas.drawCircle(center, radius, bg);
     if (value > 0) {
-      canvas.drawArc(
-        Rect.fromCircle(center: center, radius: radius),
-        -math.pi / 2,
-        2 * math.pi * value,
-        false,
-        fg,
-      );
+      canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -math.pi / 2, 2 * math.pi * value, false, fg);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _RingPainter oldDelegate) =>
-      oldDelegate.value != value || oldDelegate.color != color;
+  bool shouldRepaint(covariant _RingPainter oldDelegate) => oldDelegate.value != value || oldDelegate.color != color;
 }
 
 class _ErrorView extends StatelessWidget {

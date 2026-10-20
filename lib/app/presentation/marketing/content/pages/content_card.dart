@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/pages/content_permissions.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/pages/delete_content_dialog.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/pages/edit_content_form.dart';
@@ -13,12 +13,7 @@ class ContentCard extends StatelessWidget {
   final ContentEntity content;
   final List<String>? campaignChannelIds;
 
-  const ContentCard({
-    super.key,
-    required this.campaignId,
-    required this.content,
-    this.campaignChannelIds,
-  });
+  const ContentCard({super.key, required this.campaignId, required this.content, this.campaignChannelIds});
 
   void _openEditForm(BuildContext context) {
     final bloc = context.read<ContentBloc>();
@@ -26,29 +21,18 @@ class ContentCard extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (_) {
         return BlocProvider.value(
           value: bloc,
-          child: EditContentForm(
-            campaignId: campaignId,
-            content: content,
-            campaignChannelIds: campaignChannelIds,
-          ),
+          child: EditContentForm(campaignId: campaignId, content: content, campaignChannelIds: campaignChannelIds),
         );
       },
     );
   }
 
   void _delete(BuildContext context) {
-    showDeleteContentDialog(
-      context: context,
-      contentId: content.id!,
-      campaignId: campaignId,
-      contentTitle: content.title,
-    );
+   showDeleteContentDialog(context: context, content: content);
   }
 
   @override
@@ -76,10 +60,7 @@ class ContentCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       content.title,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -109,10 +90,7 @@ class ContentCard extends StatelessWidget {
                 ),
                 child: Text(
                   content.type.isEmpty ? 'Untyped' : content.type,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                 ),
               ),
 
@@ -120,19 +98,12 @@ class ContentCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Icon(
-                      Icons.podcasts_outlined,
-                      size: 13,
-                      color: AppPallete.textSecondary,
-                    ),
+                    Icon(Icons.podcasts_outlined, size: 13, color: AppPallete.textSecondary),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         content.channelName!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppPallete.textSecondary,
-                        ),
+                        style: TextStyle(fontSize: 12, color: AppPallete.textSecondary),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -145,31 +116,17 @@ class ContentCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Icon(
-                      Icons.attach_money_outlined,
-                      size: 13,
-                      color: AppPallete.textSecondary,
-                    ),
+                    Icon(Icons.attach_money_outlined, size: 13, color: AppPallete.textSecondary),
                     Text(
                       content.cost!.toStringAsFixed(2),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppPallete.textSecondary,
-                      ),
+                      style: TextStyle(fontSize: 12, color: AppPallete.textSecondary),
                     ),
                     if (canSeeCostBadge) ...[
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 1,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                         decoration: BoxDecoration(
-                          color:
-                              (content.isCostConfirmed
-                                      ? Colors.green
-                                      : Colors.orange)
-                                  .withOpacity(0.12),
+                          color: (content.isCostConfirmed ? Colors.green : Colors.orange).withOpacity(0.12),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -177,9 +134,7 @@ class ContentCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: content.isCostConfirmed
-                                ? Colors.green
-                                : Colors.orange,
+                            color: content.isCostConfirmed ? Colors.green : Colors.orange,
                           ),
                         ),
                       ),
