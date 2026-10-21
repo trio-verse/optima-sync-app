@@ -10,19 +10,19 @@ class ContentUsecases {
 
   ContentUsecases({required this.repo});
 
-  Future<Either<MarketingError, List<ContentEntity>>> getCampaignContents(String campaignId) {
+  Future<Either<ContentError, List<ContentEntity>>> getCampaignContents(String campaignId) {
     return repo.getCampaignContents(campaignId);
   }
 
-  Future<Either<MarketingError, ContentEntity>> createContent(ContentEntity content) {
+  Future<Either<ContentError, ContentEntity>> createContent(ContentEntity content) {
     return repo.createContent(content);
   }
 
-  Future<Either<MarketingError, ContentEntity>> updateContent(ContentEntity content) {
+  Future<Either<ContentError, ContentEntity>> updateContent(ContentEntity content) {
     return repo.updateContent(content);
   }
 
-  Future<Either<MarketingError, void>> deleteContent(ContentEntity content) {
+  Future<Either<ContentError, void>> deleteContent(ContentEntity content) {
     return repo.deleteContent(content);
   }
 }

@@ -11,35 +11,33 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
 
   AnalyticsRepositoryImpl({required this.remoteDataSource});
 
-  Future<Either<MarketingError, T>> _guard<T>(Future<T> Function() call) async {
+  Future<Either<AnalyticsError, T>> _guard<T>(Future<T> Function() call) async {
     try {
       return Right(await call());
     } on OfflineException {
-      return const Left(MarketingError.offline());
+      return const Left(AnalyticsError.offline());
     } on UnauthorizedException {
-      return const Left(MarketingError.sessionExpired());
+      return const Left(AnalyticsError.sessionExpired());
     } on NoOrganizationException {
-      return const Left(MarketingError.noOrganization());
+      return const Left(AnalyticsError.noOrganization());
     } on BadRequestException {
-      return const Left(MarketingError.invalidData());
+      return const Left(AnalyticsError.invalidData());
     } on NotFoundException {
-      return const Left(MarketingError.notFound());
+      return const Left(AnalyticsError.notFound());
     } catch (e) {
-      return const Left(MarketingError.serverError());
+      return const Left(AnalyticsError.serverError());
     }
   }
 
   @override
-  Future<Either<MarketingError, MarketingDashboardEntity>> getDashboard() =>
+  Future<Either<AnalyticsError, MarketingDashboardEntity>> getDashboard() =>
       _guard(() => remoteDataSource.getDashboard());
 
   @override
-  Future<Either<MarketingError, List<EffectiveCampaignEntity>>>
-  getEffectiveCampaigns() =>
+  Future<Either<AnalyticsError, List<EffectiveCampaignEntity>>> getEffectiveCampaigns() =>
       _guard(() => remoteDataSource.getEffectiveCampaigns());
 
   @override
-  Future<Either<MarketingError, CampaignAnalyticsEntity>> getCampaignAnalytics(
-    CampaignEntity campaign,
-  ) => _guard(() => remoteDataSource.getCampaignAnalytics(campaign));
+  Future<Either<AnalyticsError, CampaignAnalyticsEntity>> getCampaignAnalytics(CampaignEntity campaign) =>
+      _guard(() => remoteDataSource.getCampaignAnalytics(campaign));
 }

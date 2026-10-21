@@ -11,37 +11,37 @@ class ContentRepositoryImpl implements ContentRepository {
 
   ContentRepositoryImpl({required this.remoteDataSource});
 
-  Future<Either<MarketingError, T>> _guard<T>(Future<T> Function() call) async {
+  Future<Either<ContentError, T>> _guard<T>(Future<T> Function() call) async {
     try {
       return Right(await call());
     } on OfflineException {
-      return const Left(MarketingError.offline());
+      return const Left(ContentError.offline());
     } on UnauthorizedException {
-      return const Left(MarketingError.sessionExpired());
+      return const Left(ContentError.sessionExpired());
     } on NoOrganizationException {
-      return const Left(MarketingError.noOrganization());
+      return const Left(ContentError.noOrganization());
     } on BadRequestException {
-      return const Left(MarketingError.invalidData());
+      return const Left(ContentError.invalidData());
     } on NotFoundException {
-      return const Left(MarketingError.notFound());
+      return const Left(ContentError.notFound());
     } catch (e) {
-      return const Left(MarketingError.serverError());
+      return const Left(ContentError.serverError());
     }
   }
 
   @override
-  Future<Either<MarketingError, List<ContentEntity>>> getCampaignContents(String campaignId) =>
+  Future<Either<ContentError, List<ContentEntity>>> getCampaignContents(String campaignId) =>
       _guard(() => remoteDataSource.getCampaignContents(campaignId));
 
   @override
-  Future<Either<MarketingError, ContentEntity>> createContent(ContentEntity content) =>
+  Future<Either<ContentError, ContentEntity>> createContent(ContentEntity content) =>
       _guard(() => remoteDataSource.createContent(content));
 
   @override
-  Future<Either<MarketingError, ContentEntity>> updateContent(ContentEntity content) =>
+  Future<Either<ContentError, ContentEntity>> updateContent(ContentEntity content) =>
       _guard(() => remoteDataSource.updateContent(content));
 
   @override
-  Future<Either<MarketingError, void>> deleteContent(ContentEntity content) =>
+  Future<Either<ContentError, void>> deleteContent(ContentEntity content) =>
       _guard<void>(() => remoteDataSource.deleteContent(content));
 }

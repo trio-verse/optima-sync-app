@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
 import 'package:optima_sync_v2/core/constants/theme.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/campaign/bloc/campaign_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/campaign/pages/campaign_status_style.dart';
 
 class AddCampaignForm extends StatefulWidget {
   const AddCampaignForm({super.key});
@@ -68,9 +67,7 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
     if (!formKey.currentState!.validate()) return;
 
     if (startDate != null && endDate != null && !endDate!.isAfter(startDate!)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('End date must be after start date')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('End date must be after start date')));
       return;
     }
 
@@ -84,12 +81,8 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
           description: descriptionController.text.trim(),
           startDate: startDate == null ? null : _formatDate(startDate!),
           endDate: endDate == null ? null : _formatDate(endDate!),
-          expectedBudget: budgetText.isEmpty
-              ? null
-              : double.tryParse(budgetText),
-          estimatedContentCount: contentCountText.isEmpty
-              ? null
-              : int.tryParse(contentCountText),
+          expectedBudget: budgetText.isEmpty ? null : double.tryParse(budgetText),
+          estimatedContentCount: contentCountText.isEmpty ? null : int.tryParse(contentCountText),
           status: status,
           target: targetController.text.trim(),
         ),
@@ -100,12 +93,7 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-      ),
+      padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: MediaQuery.of(context).viewInsets.bottom + 20),
       child: BlocListener<CampaignBloc, CampaignState>(
         listener: (context, state) {
           state.whenOrNull(
@@ -116,14 +104,8 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
         },
         child: BlocBuilder<CampaignBloc, CampaignState>(
           builder: (context, state) {
-            final isSubmitting = state.maybeWhen(
-              submitting: (_) => true,
-              orElse: () => false,
-            );
-            final errorMessage = state.maybeWhen(
-              failure: (error) => error.text(context),
-              orElse: () => null,
-            );
+            final isSubmitting = state.maybeWhen(submitting: (_) => true, orElse: () => false);
+            final errorMessage = state.maybeWhen(failure: (error) => error.text(context), orElse: () => null);
 
             return SingleChildScrollView(
               child: Form(
@@ -132,13 +114,7 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Create New Campaign",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    const Text("Create New Campaign", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
 
                     const SizedBox(height: 15),
 
@@ -210,32 +186,17 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: isSubmitting
-                                ? null
-                                : () => _pickDate(isStart: true),
-                            icon: const Icon(
-                              Icons.calendar_today_outlined,
-                              size: 18,
-                            ),
-                            label: Text(
-                              startDate == null
-                                  ? 'Start Date'
-                                  : _formatDate(startDate!),
-                            ),
+                            onPressed: isSubmitting ? null : () => _pickDate(isStart: true),
+                            icon: const Icon(Icons.calendar_today_outlined, size: 18),
+                            label: Text(startDate == null ? 'Start Date' : _formatDate(startDate!)),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: isSubmitting
-                                ? null
-                                : () => _pickDate(isStart: false),
+                            onPressed: isSubmitting ? null : () => _pickDate(isStart: false),
                             icon: const Icon(Icons.event_outlined, size: 18),
-                            label: Text(
-                              endDate == null
-                                  ? 'End Date'
-                                  : _formatDate(endDate!),
-                            ),
+                            label: Text(endDate == null ? 'End Date' : _formatDate(endDate!)),
                           ),
                         ),
                       ],
@@ -249,12 +210,9 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
                           child: TextFormField(
                             controller: budgetController,
                             enabled: !isSubmitting,
-                            keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
-                            ),
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             validator: (value) {
-                              if (value == null || value.trim().isEmpty)
-                                return null;
+                              if (value == null || value.trim().isEmpty) return null;
                               final budget = double.tryParse(value.trim());
                               if (budget == null || budget < 0) {
                                 return "Enter a valid budget";
@@ -263,9 +221,7 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
                             },
                             decoration: _borderedInput.copyWith(
                               label: const Text('Expected Budget'),
-                              prefixIcon: const Icon(
-                                Icons.attach_money_outlined,
-                              ),
+                              prefixIcon: const Icon(Icons.attach_money_outlined),
                             ),
                           ),
                         ),
@@ -276,8 +232,7 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
                             enabled: !isSubmitting,
                             keyboardType: TextInputType.number,
                             validator: (value) {
-                              if (value == null || value.trim().isEmpty)
-                                return null;
+                              if (value == null || value.trim().isEmpty) return null;
                               final count = int.tryParse(value.trim());
                               if (count == null || count < 0) {
                                 return "Enter a valid count";
@@ -295,13 +250,7 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
 
                     const SizedBox(height: 15),
 
-                    const Text(
-                      'Status',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const Text('Status', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
@@ -313,19 +262,13 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
                         return ChoiceChip(
                           label: Text(CampaignStatus.label(value)),
                           selected: selected,
-                          onSelected: isSubmitting
-                              ? null
-                              : (_) => setState(() => status = value),
+                          onSelected: isSubmitting ? null : (_) => setState(() => status = value),
                           selectedColor: color.withOpacity(.14),
                           labelStyle: TextStyle(
                             color: selected ? color : AppPallete.textSecondary,
-                            fontWeight: selected
-                                ? FontWeight.w700
-                                : FontWeight.w500,
+                            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                           ),
-                          side: BorderSide(
-                            color: selected ? color : AppPallete.cardBorder,
-                          ),
+                          side: BorderSide(color: selected ? color : AppPallete.cardBorder),
                         );
                       }).toList(),
                     ),
@@ -337,13 +280,7 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
                       child: ElevatedButton(
                         onPressed: isSubmitting ? null : _submit,
                         child: isSubmitting
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                             : const Text("Create Campaign"),
                       ),
                     ),

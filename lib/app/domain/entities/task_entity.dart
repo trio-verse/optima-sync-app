@@ -1,10 +1,4 @@
-// These labels describe the requested UI. Wire values await the API contract.
-const List<String> kTaskStatuses = [
-  'Pending',
-  'Assigned',
-  'In Progress',
-  'Completed',
-];
+const List<String> kTaskStatuses = ['Pending', 'Assigned', 'In Progress', 'Completed'];
 
 class TaskEntity {
   final String id;
@@ -52,9 +46,6 @@ class TaskInput {
     required this.status,
     required this.priority,
   });
-
-  // assignedBy must come from the authenticated server, never a form field.
-  // Do not add toJson until the actual request keys and formats are supplied.
 }
 
 class TaskCategoryEntity {
@@ -83,18 +74,15 @@ class TaskManagerAccess {
 
   bool get isManager => role == 'manager';
   bool get isEmployee => role == 'employee';
-  bool get canViewTasks =>
-      isManager || (isEmployee && (memberId?.trim().isNotEmpty ?? false));
+  bool get canViewTasks => isManager || (isEmployee && (memberId?.trim().isNotEmpty ?? false));
   bool get canManageTasks => isManager && mayManageTasks;
   bool get canManageCategories => isManager && mayManageCategories;
 
-  bool canViewTask(TaskEntity task) =>
-      isManager || (canViewTasks && task.memberId == memberId);
+  bool canViewTask(TaskEntity task) => isManager || (canViewTasks && task.memberId == memberId);
 
   bool canChangeStatus(TaskEntity task) =>
       allowedStatuses.any(kTaskStatuses.contains) &&
-      (canManageTasks ||
-          (isEmployee && mayChangeOwnStatus && canViewTask(task)));
+      (canManageTasks || (isEmployee && mayChangeOwnStatus && canViewTask(task)));
 
   // Resolve role, memberId and permissions from authenticated server data.
   // Existing organization roles admin/member are not mapped automatically.
@@ -106,20 +94,11 @@ class TaskFilter {
   final DateTime? fromDate;
   final DateTime? toDate;
 
-  const TaskFilter({
-    this.memberId,
-    this.categoryId,
-    this.fromDate,
-    this.toDate,
-  });
+  const TaskFilter({this.memberId, this.categoryId, this.fromDate, this.toDate});
 
-  bool get isValid =>
-      fromDate == null || toDate == null ||
-      !_dateOnly(fromDate!).isAfter(_dateOnly(toDate!));
+  bool get isValid => fromDate == null || toDate == null || !_dateOnly(fromDate!).isAfter(_dateOnly(toDate!));
 
-  bool get isActive =>
-      memberId != null || categoryId != null ||
-      fromDate != null || toDate != null;
+  bool get isActive => memberId != null || categoryId != null || fromDate != null || toDate != null;
 
   TaskFilter forAccess(TaskManagerAccess access) => TaskFilter(
     memberId: access.isEmployee ? access.memberId : memberId,
@@ -140,6 +119,5 @@ class TaskFilter {
     return true;
   }
 
-  static DateTime _dateOnly(DateTime date) =>
-      DateTime(date.year, date.month, date.day);
+  static DateTime _dateOnly(DateTime date) => DateTime(date.year, date.month, date.day);
 }

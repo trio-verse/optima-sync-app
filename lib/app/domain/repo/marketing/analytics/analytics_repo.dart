@@ -5,9 +5,9 @@ import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 import 'package:optima_sync_v2/core/errors/marketing/marketing_errors.dart';
 
 abstract class AnalyticsRepository {
-  Future<Either<MarketingError, MarketingDashboardEntity>> getDashboard();
+  Future<Either<AnalyticsError, MarketingDashboardEntity>> getDashboard();
 
-  Future<Either<MarketingError, List<EffectiveCampaignEntity>>> getEffectiveCampaigns();
+  Future<Either<AnalyticsError, List<EffectiveCampaignEntity>>> getEffectiveCampaigns();
 
-  Future<Either<MarketingError, CampaignAnalyticsEntity>> getCampaignAnalytics(CampaignEntity campaign);
+  Future<Either<AnalyticsError, CampaignAnalyticsEntity>> getCampaignAnalytics(CampaignEntity campaign);
 }

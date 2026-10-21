@@ -8,15 +8,10 @@ class CampaignState with _$CampaignState {
 
   const factory CampaignState.loading() = CampaignLoading;
 
-  const factory CampaignState.submitting({
-    required List<CampaignEntity> campaigns,
-  }) = CampaignSubmitting;
+  const factory CampaignState.submitting({required List<CampaignEntity> campaigns}) = CampaignSubmitting;
 
-  const factory CampaignState.success({
-    required List<CampaignEntity> campaigns,
-    CampaignSuccessType? successType,
-  }) = CampaignSuccess;
+  const factory CampaignState.success({required List<CampaignEntity> campaigns, CampaignSuccessType? successType}) =
+      CampaignSuccess;
 
-  const factory CampaignState.failure({required MarketingError error}) =
-      CampaignFailure;
+  const factory CampaignState.failure({required CampaignError error}) = CampaignFailure;
 }

@@ -539,7 +539,7 @@ return failure(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<CampaignEntity> campaigns)?  submitting,TResult Function( List<CampaignEntity> campaigns,  CampaignSuccessType? successType)?  success,TResult Function( MarketingError error)?  failure,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<CampaignEntity> campaigns)?  submitting,TResult Function( List<CampaignEntity> campaigns,  CampaignSuccessType? successType)?  success,TResult Function( CampaignError error)?  failure,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case CampaignInitial() when initial != null:
 return initial();case CampaignLoading() when loading != null:
@@ -564,7 +564,7 @@ return failure(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<CampaignEntity> campaigns)  submitting,required TResult Function( List<CampaignEntity> campaigns,  CampaignSuccessType? successType)  success,required TResult Function( MarketingError error)  failure,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<CampaignEntity> campaigns)  submitting,required TResult Function( List<CampaignEntity> campaigns,  CampaignSuccessType? successType)  success,required TResult Function( CampaignError error)  failure,}) {final _that = this;
 switch (_that) {
 case CampaignInitial():
 return initial();case CampaignLoading():
@@ -588,7 +588,7 @@ return failure(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<CampaignEntity> campaigns)?  submitting,TResult? Function( List<CampaignEntity> campaigns,  CampaignSuccessType? successType)?  success,TResult? Function( MarketingError error)?  failure,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<CampaignEntity> campaigns)?  submitting,TResult? Function( List<CampaignEntity> campaigns,  CampaignSuccessType? successType)?  success,TResult? Function( CampaignError error)?  failure,}) {final _that = this;
 switch (_that) {
 case CampaignInitial() when initial != null:
 return initial();case CampaignLoading() when loading != null:
@@ -820,7 +820,7 @@ class CampaignFailure implements CampaignState {
   const CampaignFailure({required this.error});
   
 
- final  MarketingError error;
+ final  CampaignError error;
 
 /// Create a copy of CampaignState
 /// with the given fields replaced by the non-null parameter values.
@@ -852,11 +852,11 @@ abstract mixin class $CampaignFailureCopyWith<$Res> implements $CampaignStateCop
   factory $CampaignFailureCopyWith(CampaignFailure value, $Res Function(CampaignFailure) _then) = _$CampaignFailureCopyWithImpl;
 @useResult
 $Res call({
- MarketingError error
+ CampaignError error
 });
 
 
-$MarketingErrorCopyWith<$Res> get error;
+$CampaignErrorCopyWith<$Res> get error;
 
 }
 /// @nodoc
@@ -872,7 +872,7 @@ class _$CampaignFailureCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
   return _then(CampaignFailure(
 error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as MarketingError,
+as CampaignError,
   ));
 }
 
@@ -880,9 +880,9 @@ as MarketingError,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$MarketingErrorCopyWith<$Res> get error {
+$CampaignErrorCopyWith<$Res> get error {
   
-  return $MarketingErrorCopyWith<$Res>(_self.error, (value) {
+  return $CampaignErrorCopyWith<$Res>(_self.error, (value) {
     return _then(_self.copyWith(error: value));
   });
 }

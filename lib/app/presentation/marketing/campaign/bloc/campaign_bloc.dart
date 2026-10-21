@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/marketing/campaign_usecases.dart';
-import 'package:optima_sync_v2/core/errors/failures/failures.dart';
 import 'package:optima_sync_v2/core/errors/marketing/marketing_errors.dart';
 
 part 'campaign_bloc.freezed.dart';
@@ -36,48 +35,30 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
     });
   }
 
-  Future<void> _onAddSubmitted(
-    CampaignEntity campaign,
-    Emitter<CampaignState> emit,
-  ) async {
+  Future<void> _onAddSubmitted(CampaignEntity campaign, Emitter<CampaignState> emit) async {
     final existing = _campaigns;
 
     emit(.submitting(campaigns: existing));
 
     final createResult = await usecases.createCampaign(campaign);
 
-    await createResult.fold((failure) async => emit(.failure(error: failure)), (
-      created,
-    ) async {
+    await createResult.fold((failure) async => emit(.failure(error: failure)), (created) async {
       final refreshResult = await usecases.getCampaigns();
 
-      _campaigns = refreshResult.fold(
-        (_) => [...existing, created],
-        (list) => list,
-      );
+      _campaigns = refreshResult.fold((_) => [...existing, created], (list) => list);
 
-      emit(
-        .success(
-          campaigns: _campaigns,
-          successType: CampaignSuccessType.created,
-        ),
-      );
+      emit(.success(campaigns: _campaigns, successType: CampaignSuccessType.created));
     });
   }
 
-  Future<void> _onUpdateSubmitted(
-    CampaignEntity campaign,
-    Emitter<CampaignState> emit,
-  ) async {
+  Future<void> _onUpdateSubmitted(CampaignEntity campaign, Emitter<CampaignState> emit) async {
     final existing = _campaigns;
 
     emit(.submitting(campaigns: existing));
 
     final updateResult = await usecases.updateCampaign(campaign);
 
-    await updateResult.fold((failure) async => emit(.failure(error: failure)), (
-      updated,
-    ) async {
+    await updateResult.fold((failure) async => emit(.failure(error: failure)), (updated) async {
       final refreshResult = await usecases.getCampaigns();
 
       _campaigns = refreshResult.fold(
@@ -88,19 +69,11 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
         (list) => list,
       );
 
-      emit(
-        .success(
-          campaigns: _campaigns,
-          successType: CampaignSuccessType.updated,
-        ),
-      );
+      emit(.success(campaigns: _campaigns, successType: CampaignSuccessType.updated));
     });
   }
 
-  Future<void> _onDeleteSubmitted(
-    CampaignEntity campaign,
-    Emitter<CampaignState> emit,
-  ) async {
+  Future<void> _onDeleteSubmitted(CampaignEntity campaign, Emitter<CampaignState> emit) async {
     final existing = _campaigns;
 
     emit(.submitting(campaigns: existing));
@@ -110,12 +83,7 @@ class CampaignBloc extends Bloc<CampaignEvent, CampaignState> {
     result.fold((failure) => emit(.failure(error: failure)), (_) {
       _campaigns = existing.where((c) => c.id != campaign.id).toList();
 
-      emit(
-        .success(
-          campaigns: _campaigns,
-          successType: CampaignSuccessType.deleted,
-        ),
-      );
+      emit(.success(campaigns: _campaigns, successType: CampaignSuccessType.deleted));
     });
   }
 }

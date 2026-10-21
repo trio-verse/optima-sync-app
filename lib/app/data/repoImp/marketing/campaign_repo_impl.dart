@@ -10,40 +10,36 @@ class CampaignRepositoryImpl implements CampaignRepository {
 
   CampaignRepositoryImpl({required this.remoteDataSource});
 
-  Future<Either<MarketingError, T>> _guard<T>(Future<T> Function() call) async {
+  Future<Either<CampaignError, T>> _guard<T>(Future<T> Function() call) async {
     try {
       return Right(await call());
     } on OfflineException {
-      return const Left(MarketingError.offline());
+      return const Left(CampaignError.offline());
     } on UnauthorizedException {
-      return const Left(MarketingError.sessionExpired());
+      return const Left(CampaignError.sessionExpired());
     } on NoOrganizationException {
-      return const Left(MarketingError.noOrganization());
+      return const Left(CampaignError.noOrganization());
     } on BadRequestException {
-      return const Left(MarketingError.invalidData());
+      return const Left(CampaignError.invalidData());
     } on NotFoundException {
-      return const Left(MarketingError.notFound());
+      return const Left(CampaignError.notFound());
     } catch (e) {
-      return const Left(MarketingError.serverError());
+      return const Left(CampaignError.serverError());
     }
   }
 
   @override
-  Future<Either<MarketingError, List<CampaignEntity>>> getCampaigns() =>
-      _guard(() => remoteDataSource.getCampaigns());
+  Future<Either<CampaignError, List<CampaignEntity>>> getCampaigns() => _guard(() => remoteDataSource.getCampaigns());
 
   @override
-  Future<Either<MarketingError, CampaignEntity>> createCampaign(
-    CampaignEntity campaign,
-  ) => _guard(() => remoteDataSource.createCampaign(campaign));
+  Future<Either<CampaignError, CampaignEntity>> createCampaign(CampaignEntity campaign) =>
+      _guard(() => remoteDataSource.createCampaign(campaign));
 
   @override
-  Future<Either<MarketingError, CampaignEntity>> updateCampaign(
-    CampaignEntity campaign,
-  ) => _guard(() => remoteDataSource.updateCampaign(campaign));
+  Future<Either<CampaignError, CampaignEntity>> updateCampaign(CampaignEntity campaign) =>
+      _guard(() => remoteDataSource.updateCampaign(campaign));
 
   @override
-  Future<Either<MarketingError, void>> deleteCampaign(
-    CampaignEntity campaign,
-  ) => _guard<void>(() => remoteDataSource.deleteCampaign(campaign));
+  Future<Either<CampaignError, void>> deleteCampaign(CampaignEntity campaign) =>
+      _guard<void>(() => remoteDataSource.deleteCampaign(campaign));
 }

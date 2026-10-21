@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -62,33 +63,37 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
 
       body: BlocConsumer<ContentBloc, ContentState>(
         listener: (context, state) {
-          if (state is ContentSuccess && state.message != null) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message!)));
-          }
-
-          if (state is ContentFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-          }
+          state.whenOrNull(
+            success: (_, message) {
+              if (message != null) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+              }
+            },
+            failure: (error) =>
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.text(context)))),
+          );
         },
 
         builder: (context, state) {
-          if (state is ContentInitial || state is ContentLoading) {
+          final isLoading = state.maybeWhen(initial: () => true, loading: () => true, orElse: () => false);
+          if (isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (state is ContentFailure && state.contents == null) {
+          final failureError = state.maybeWhen(failure: (e) => e, orElse: () => null);
+          if (failureError != null) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(state.message, textAlign: TextAlign.center),
+                    Text(failureError.text(context), textAlign: TextAlign.center),
                     const SizedBox(height: 10),
                     ElevatedButton(
-                      onPressed: () {
-                        context.read<ContentBloc>().add(LoadContents(campaignId: widget.campaignId));
-                      },
+                      onPressed: () => context.read<ContentBloc>().add(
+                        ContentEvent.getAllCampaignContents(campaignId: widget.campaignId),
+                      ),
                       child: const Text("Retry"),
                     ),
                   ],
@@ -97,13 +102,7 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
             );
           }
 
-          final contents = switch (state) {
-            ContentSuccess(:final contents) => contents,
-            ContentSubmitting(:final contents) => contents,
-            ContentFailure(:final contents) => contents ?? const [],
-            _ => const <ContentEntity>[],
-          };
-
+          final contents = state.maybeWhen(success: (contents, _) => contents, orElse: () => const <ContentEntity>[]);
           if (contents.isEmpty) {
             return Center(
               child: Padding(
@@ -153,7 +152,6 @@ class _ContentKanbanScreenState extends State<ContentKanbanScreen> {
                             .toList(),
                       ),
                     ),
-                    if (state is ContentSubmitting) const LinearProgressIndicator(minHeight: 2),
                     Expanded(
                       child: ListView(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),

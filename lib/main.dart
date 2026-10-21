@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
 import 'package:optima_sync_v2/core/constants/theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/check_selected_org/cubit/check_selected_org_cubit.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/campaign/bloc/campaign_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/capture/bloc/capture_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/capture/bloc/public_capture_bloc.dart';

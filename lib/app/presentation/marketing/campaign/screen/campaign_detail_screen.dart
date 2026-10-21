@@ -4,8 +4,6 @@ import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.da
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_event.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_state.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/campaign/bloc/campaign_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/campaign/pages/campaign_detail_widgets.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/content/bloc/content_bloc.dart';
@@ -47,7 +45,9 @@ class _CampaignDetailViewState extends State<_CampaignDetailView> {
   Future<void> _refresh() async {
     context.read<AnalyticsBloc>().add(LoadCampaignAnalytics(campaign: widget.campaign));
     context.read<ContentBloc>().add(ContentEvent.getAllCampaignContents(campaignId: widget.campaign.id!));
-    await context.read<AnalyticsBloc>().stream.firstWhere((s) => s is CampaignAnalyticsLoaded || s is AnalyticsFailure);
+    await context.read<AnalyticsBloc>().stream.firstWhere(
+      (s) => s.maybeWhen(campaignAnalyticsLoaded: (_) => true, failure: (_) => true, orElse: () => false),
+    );
   }
 
   void _openAddContent(String campaignId) {
@@ -86,9 +86,8 @@ class _CampaignDetailViewState extends State<_CampaignDetailView> {
             listener: (context, state) {
               state.whenOrNull(
                 success: (_, message) {
-                  if (message != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-                  }
+                  if (message == null) return;
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
                 },
                 failure: (error) =>
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.text(context)))),
@@ -96,9 +95,11 @@ class _CampaignDetailViewState extends State<_CampaignDetailView> {
             },
             child: BlocBuilder<AnalyticsBloc, AnalyticsState>(
               builder: (context, analyticsState) {
-                final analytics = analyticsState is CampaignAnalyticsLoaded ? analyticsState.analytics : null;
-                final loading = analyticsState is AnalyticsLoading || analyticsState is AnalyticsInitial;
-
+                final analytics = analyticsState.maybeWhen(
+                  campaignAnalyticsLoaded: (analytics) => analytics,
+                  orElse: () => null,
+                );
+                final loading = analyticsState.maybeWhen(initial: () => true, loading: () => true, orElse: () => false);
                 return BlocBuilder<ContentBloc, ContentState>(
                   builder: (context, contentState) {
                     final contentsLoading = contentState.maybeWhen(

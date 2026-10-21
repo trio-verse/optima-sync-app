@@ -1,18 +1,8 @@
-import 'package:equatable/equatable.dart';
-import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
+part of 'analytics_bloc.dart';
 
-abstract class AnalyticsEvent extends Equatable {
-  const AnalyticsEvent();
+@freezed
+class AnalyticsEvent with _$AnalyticsEvent {
+  const factory AnalyticsEvent.loadDashboard() = LoadMarketingDashboard;
 
-  @override
-  List<Object?> get props => [];
-}
-
-class LoadMarketingDashboard extends AnalyticsEvent {}
-
-class LoadCampaignAnalytics extends AnalyticsEvent {
-  final CampaignEntity campaign;
-  const LoadCampaignAnalytics({required this.campaign});
-  @override
-  List<Object?> get props => [campaign.id];
+  const factory AnalyticsEvent.loadCampaignAnalytics({required CampaignEntity campaign}) = LoadCampaignAnalytics;
 }

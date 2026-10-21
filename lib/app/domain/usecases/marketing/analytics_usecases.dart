@@ -10,15 +10,15 @@ class AnalyticsUsecases {
 
   AnalyticsUsecases({required this.repo});
 
-  Future<Either<MarketingError, MarketingDashboardEntity>> getDashboard() {
+  Future<Either<AnalyticsError, MarketingDashboardEntity>> getDashboard() {
     return repo.getDashboard();
   }
 
-  Future<Either<MarketingError, List<EffectiveCampaignEntity>>> getEffectiveCampaigns() {
+  Future<Either<AnalyticsError, List<EffectiveCampaignEntity>>> getEffectiveCampaigns() {
     return repo.getEffectiveCampaigns();
   }
 
-  Future<Either<MarketingError, CampaignAnalyticsEntity>> getCampaignAnalytics(CampaignEntity campaign) {
+  Future<Either<AnalyticsError, CampaignAnalyticsEntity>> getCampaignAnalytics(CampaignEntity campaign) {
     return repo.getCampaignAnalytics(campaign);
   }
 }

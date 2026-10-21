@@ -33,11 +33,8 @@ class _CampaignScreenState extends State<CampaignScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) =>
-          BlocProvider.value(value: bloc, child: const AddCampaignForm()),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => BlocProvider.value(value: bloc, child: const AddCampaignForm()),
     );
   }
 
@@ -47,9 +44,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (_) => BlocProvider.value(
         value: bloc,
         child: EditCampaignForm(campaign: campaign),
@@ -58,23 +53,15 @@ class _CampaignScreenState extends State<CampaignScreen> {
   }
 
   List<CampaignEntity> _visibleCampaigns(List<CampaignEntity> source) {
-    final filtered = source
-        .where(
-          (campaign) => statusFilter == null || campaign.status == statusFilter,
-        )
-        .toList();
+    final filtered = source.where((campaign) => statusFilter == null || campaign.status == statusFilter).toList();
 
     double cpl(CampaignEntity c) => c.cpl ?? double.infinity;
     switch (sortBy) {
       case 'name':
-        filtered.sort(
-          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-        );
+        filtered.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         break;
       case 'budget':
-        filtered.sort(
-          (a, b) => (a.expectedBudget ?? 0).compareTo(b.expectedBudget ?? 0),
-        );
+        filtered.sort((a, b) => (a.expectedBudget ?? 0).compareTo(b.expectedBudget ?? 0));
         break;
       case 'spent':
         filtered.sort((a, b) => (a.spent ?? 0).compareTo(b.spent ?? 0));
@@ -108,10 +95,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Marketing Campaigns',
-          style: TextStyle(fontWeight: FontWeight.w800),
-        ),
+        title: const Text('Marketing Campaigns', style: TextStyle(fontWeight: FontWeight.w800)),
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppPallete.salesPrimary,
@@ -122,22 +106,17 @@ class _CampaignScreenState extends State<CampaignScreen> {
       ),
       body: BlocConsumer<CampaignBloc, CampaignState>(
         buildWhen: (previous, current) => current.maybeWhen(
-          failure: (_) =>
-              previous.maybeWhen(loading: () => true, orElse: () => false),
+          failure: (_) => previous.maybeWhen(loading: () => true, orElse: () => false),
           orElse: () => true,
         ),
         listener: (context, state) {
           state.whenOrNull(
             success: (_, successType) {
               if (successType == null) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(successType.text(context))),
-              );
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(successType.text(context))));
             },
             failure: (error) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(error.text(context))));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.text(context))));
             },
           );
         },
@@ -162,17 +141,14 @@ class _CampaignScreenState extends State<CampaignScreen> {
       onRefresh: () async {
         context.read<CampaignBloc>().add(LoadCampaigns());
         await context.read<CampaignBloc>().stream.firstWhere(
-          (next) => next is CampaignSuccess || next is CampaignFailure,
+          (next) => next.maybeWhen(success: (_, _) => true, failure: (_) => true, orElse: () => false),
         );
       },
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 100),
         children: [
-          const Text(
-            'Track campaign budgets, CPL, and deal ROI.',
-            style: TextStyle(color: AppPallete.textSecondary),
-          ),
+          const Text('Track campaign budgets, CPL, and deal ROI.', style: TextStyle(color: AppPallete.textSecondary)),
           const SizedBox(height: 14),
           _FilterBar(
             selected: statusFilter,
@@ -199,10 +175,7 @@ class _CampaignScreenState extends State<CampaignScreen> {
                     ),
                   ),
                   onEdit: () => _openEditCampaignForm(campaign),
-                  onDelete: () => showDeleteCampaignDialog(
-                    context: context,
-                    campaign: campaign,
-                  ),
+                  onDelete: () => showDeleteCampaignDialog(context: context, campaign: campaign),
                 ),
               ),
             ),
@@ -215,18 +188,13 @@ class _CampaignScreenState extends State<CampaignScreen> {
     final selected = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(18))),
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const ListTile(
-              title: Text(
-                'Sort campaigns',
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
+              title: Text('Sort campaigns', style: TextStyle(fontWeight: FontWeight.w800)),
             ),
             _SortTile(value: 'cpl', label: 'Lowest CPL'),
             _SortTile(value: 'name', label: 'Name'),
@@ -263,19 +231,11 @@ class _FilterBar extends StatelessWidget {
   final String sortLabel;
   final VoidCallback onSort;
 
-  const _FilterBar({
-    required this.selected,
-    required this.onChanged,
-    required this.sortLabel,
-    required this.onSort,
-  });
+  const _FilterBar({required this.selected, required this.onChanged, required this.sortLabel, required this.onSort});
 
   @override
   Widget build(BuildContext context) {
-    final labels = <String?, String>{
-      null: 'All',
-      for (final s in CampaignStatus.values) s: CampaignStatus.label(s),
-    };
+    final labels = <String?, String>{null: 'All', for (final s in CampaignStatus.values) s: CampaignStatus.label(s)};
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,11 +259,7 @@ class _FilterBar extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
                 backgroundColor: Colors.white,
-                side: BorderSide(
-                  color: isSelected
-                      ? AppPallete.salesPrimary
-                      : AppPallete.cardBorder,
-                ),
+                side: BorderSide(color: isSelected ? AppPallete.salesPrimary : AppPallete.cardBorder),
               );
             },
           ),
@@ -331,11 +287,7 @@ class _EmptyCampaigns extends StatelessWidget {
       alignment: Alignment.center,
       child: Column(
         children: [
-          const Icon(
-            Icons.campaign_outlined,
-            size: 44,
-            color: AppPallete.placeholderIcon,
-          ),
+          const Icon(Icons.campaign_outlined, size: 44, color: AppPallete.placeholderIcon),
           const SizedBox(height: 12),
           Text(
             isFiltered ? 'No campaigns match your filters' : 'No campaigns yet',

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
+import 'package:optima_sync_v2/core/errors/marketing/marketing_errors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_event.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_state.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/analytics/widgets/kpi_json_view.dart';
 
 class MarketingAnalyticsScreen extends StatefulWidget {
@@ -30,77 +30,80 @@ class _MarketingAnalyticsScreenState extends State<MarketingAnalyticsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Marketing Analytics')),
       body: BlocBuilder<AnalyticsBloc, AnalyticsState>(
-        builder: (context, state) {
-          if (state is AnalyticsLoading || state is AnalyticsInitial) {
-            return const Center(child: CircularProgressIndicator());
-          }
+        builder: (context, state) => state.when(
+          initial: () => _buildLoading(),
+          loading: () => _buildLoading(),
+          failure: (error) => _buildError(context, error),
+          dashboardLoaded: (dashboard, effectiveCampaigns) => _buildDashboard(dashboard, effectiveCampaigns),
 
-          if (state is AnalyticsFailure) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      state.failure.text(context),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.red.shade700),
-                    ),
-                    const SizedBox(height: 12),
-                    OutlinedButton(onPressed: _refresh, child: const Text('Retry')),
-                  ],
+          campaignAnalyticsLoaded: (_) => const SizedBox.shrink(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
+
+  Widget _buildError(BuildContext context, AnalyticsError error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              error.text(context),
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.red.shade700),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(onPressed: _refresh, child: const Text('Retry')),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashboard(MarketingDashboardEntity dashboard, List<EffectiveCampaignEntity> effectiveCampaigns) {
+    return RefreshIndicator(
+      onRefresh: _refresh,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const Text('Overview', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          KpiJsonView(data: dashboard.toMap()),
+          const SizedBox(height: 24),
+          const Text('Most Effective Campaigns', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          if (effectiveCampaigns.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Text('No campaign data yet.', style: TextStyle(color: AppPallete.textSecondary)),
+            )
+          else
+            ...effectiveCampaigns.map((campaign) {
+              return Card(
+                elevation: 0,
+                margin: const EdgeInsets.only(bottom: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: AppPallete.cardBorder),
                 ),
-              ),
-            );
-          }
-
-          if (state is MarketingDashboardLoaded) {
-            return RefreshIndicator(
-              onRefresh: _refresh,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  const Text('Overview', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
-                  KpiJsonView(data: state.dashboard.toMap()),
-                  const SizedBox(height: 24),
-                  const Text('Most Effective Campaigns', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
-                  if (state.effectiveCampaigns.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Text('No campaign data yet.', style: TextStyle(color: AppPallete.textSecondary)),
-                    )
-                  else
-                    ...state.effectiveCampaigns.map((campaign) {
-                      return Card(
-                        elevation: 0,
-                        margin: const EdgeInsets.only(bottom: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(color: AppPallete.cardBorder),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(campaign.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-                              const SizedBox(height: 8),
-                              KpiJsonView(data: campaign.toMap()),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-                ],
-              ),
-            );
-          }
-
-          return const SizedBox.shrink();
-        },
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(campaign.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+                      const SizedBox(height: 8),
+                      KpiJsonView(data: campaign.toMap()),
+                    ],
+                  ),
+                ),
+              );
+            }),
+        ],
       ),
     );
   }

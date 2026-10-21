@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
 import 'package:optima_sync_v2/app/domain/usecases/marketing/campaign_usecases.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/utils/marketing_report_exporter.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_event.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_state.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/analytics/utils/marketing_report_exporter.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/campaign/screen/campaign_screen.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
@@ -31,7 +29,7 @@ class _MarketingOverviewScreenState extends State<MarketingOverviewScreen> {
   Future<void> _refresh() async {
     context.read<AnalyticsBloc>().add(LoadMarketingDashboard());
     await context.read<AnalyticsBloc>().stream.firstWhere(
-      (state) => state is MarketingDashboardLoaded || state is AnalyticsFailure,
+      (state) => state.maybeWhen(dashboardLoaded: (_, _) => true, failure: (_) => true, orElse: () => false),
     );
   }
 
@@ -66,30 +64,22 @@ class _MarketingOverviewScreenState extends State<MarketingOverviewScreen> {
         title: const Text('Marketing Overview', style: TextStyle(fontWeight: FontWeight.w800)),
       ),
       body: BlocBuilder<AnalyticsBloc, AnalyticsState>(
-        builder: (context, state) {
-          if (state is AnalyticsInitial || state is AnalyticsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state is AnalyticsFailure) {
-            return _ErrorView(message: state.failure.text(context), onRetry: _refresh);
-          }
-
-          if (state is MarketingDashboardLoaded) {
-            return RefreshIndicator(
-              onRefresh: _refresh,
-              child: _OverviewContent(
-                dashboard: state.dashboard,
-                onManageCampaigns: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const CampaignScreen()));
-                },
-                onExport: () => _export(state.dashboard, state.effectiveCampaigns),
-              ),
-            );
-          }
-
-          return const SizedBox.shrink();
-        },
+        builder: (context, state) => state.when(
+          initial: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          failure: (error) => _ErrorView(message: error.text(context), onRetry: _refresh),
+          dashboardLoaded: (dashboard, effectiveCampaigns) => RefreshIndicator(
+            onRefresh: _refresh,
+            child: _OverviewContent(
+              dashboard: dashboard,
+              onManageCampaigns: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const CampaignScreen()));
+              },
+              onExport: () => _export(dashboard, effectiveCampaigns),
+            ),
+          ),
+          campaignAnalyticsLoaded: (_) => const SizedBox.shrink(),
+        ),
       ),
     );
   }

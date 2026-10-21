@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_bloc.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_event.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/analytics/bloc/analytics_state.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/analytics/widgets/kpi_json_view.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
 
