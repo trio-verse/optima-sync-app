@@ -8,9 +8,7 @@ class ConnectionUsecases {
 
   ConnectionUsecases({required this.repo});
 
-  Future<Either<ConnectionError, List<ConnectionEntity>>> getClientConnections(
-    String clientId,
-  ) {
+  Future<Either<ConnectionError, List<ConnectionEntity>>> getClientConnections(String clientId) {
     return repo.getClientConnections(clientId);
   }
 
@@ -18,20 +16,11 @@ class ConnectionUsecases {
     return repo.getAllConnections();
   }
 
-  // Future<Either<ConnectionError, ConnectionEntity>> getConnection(
-  //   String connectionId,
-  // ) {
-  //   return repo.getConnection(connectionId);
-  // }
-  Future<Either<ConnectionError, ConnectionEntity>> createConnection(
-    ConnectionEntity connection,
-  ) {
+  Future<Either<ConnectionError, ConnectionEntity>> createConnection(ConnectionEntity connection) {
     return repo.createConnection(connection);
   }
 
-  Future<Either<ConnectionError, ConnectionEntity>> updateConnection(
-    ConnectionEntity connection,
-  ) {
+  Future<Either<ConnectionError, ConnectionEntity>> updateConnection(ConnectionEntity connection) {
     return repo.updateConnection(connection);
   }
 

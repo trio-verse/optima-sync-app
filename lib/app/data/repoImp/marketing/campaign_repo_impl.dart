@@ -2,56 +2,44 @@ import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/data/sources/remote_data/marketing/campaign_remote_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/marketing/campaign/campaign_repo.dart';
-import 'package:optima_sync_v2/core/errors/failures/failures.dart';
+import 'package:optima_sync_v2/core/errors/exceptions/exceptions.dart';
+import 'package:optima_sync_v2/core/errors/marketing/marketing_errors.dart';
 
 class CampaignRepositoryImpl implements CampaignRepository {
   final CampaignRemoteDataSource remoteDataSource;
 
   CampaignRepositoryImpl({required this.remoteDataSource});
 
-  @override
-  Future<Either<WhateverFailure, List<CampaignEntity>>> getCampaigns() async {
+  Future<Either<CampaignError, T>> _guard<T>(Future<T> Function() call) async {
     try {
-      final res = await remoteDataSource.getCampaigns();
-      return Right(res);
+      return Right(await call());
+    } on OfflineException {
+      return const Left(CampaignError.offline());
+    } on UnauthorizedException {
+      return const Left(CampaignError.sessionExpired());
+    } on NoOrganizationException {
+      return const Left(CampaignError.noOrganization());
+    } on BadRequestException {
+      return const Left(CampaignError.invalidData());
+    } on NotFoundException {
+      return const Left(CampaignError.notFound());
     } catch (e) {
-      return Left(WhateverFailure.whatoffline());
+      return const Left(CampaignError.serverError());
     }
   }
 
   @override
-  Future<Either<WhateverFailure, CampaignEntity>> createCampaign(
-    CampaignEntity campaign,
-  ) async {
-    try {
-      final res = await remoteDataSource.createCampaign(campaign);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  Future<Either<CampaignError, List<CampaignEntity>>> getCampaigns() => _guard(() => remoteDataSource.getCampaigns());
 
   @override
-  Future<Either<WhateverFailure, CampaignEntity>> updateCampaign(
-    CampaignEntity campaign,
-  ) async {
-    try {
-      final res = await remoteDataSource.updateCampaign(campaign);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  Future<Either<CampaignError, CampaignEntity>> createCampaign(CampaignEntity campaign) =>
+      _guard(() => remoteDataSource.createCampaign(campaign));
 
   @override
-  Future<Either<WhateverFailure, void>> deleteCampaign(
-    CampaignEntity campaign,
-  ) async {
-    try {
-      final res = await remoteDataSource.deleteCampaign(campaign);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  Future<Either<CampaignError, CampaignEntity>> updateCampaign(CampaignEntity campaign) =>
+      _guard(() => remoteDataSource.updateCampaign(campaign));
+
+  @override
+  Future<Either<CampaignError, void>> deleteCampaign(CampaignEntity campaign) =>
+      _guard<void>(() => remoteDataSource.deleteCampaign(campaign));
 }

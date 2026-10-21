@@ -3,24 +3,22 @@ import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.da
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/marketing/analytics/analytics_repo.dart';
 import 'package:optima_sync_v2/core/errors/failures/failures.dart';
+import 'package:optima_sync_v2/core/errors/marketing/marketing_errors.dart';
 
 class AnalyticsUsecases {
   final AnalyticsRepository repo;
 
   AnalyticsUsecases({required this.repo});
 
-  Future<Either<WhateverFailure, MarketingDashboardEntity>> getDashboard() {
+  Future<Either<AnalyticsError, MarketingDashboardEntity>> getDashboard() {
     return repo.getDashboard();
   }
 
-  Future<Either<WhateverFailure, List<EffectiveCampaignEntity>>>
-  getEffectiveCampaigns() {
+  Future<Either<AnalyticsError, List<EffectiveCampaignEntity>>> getEffectiveCampaigns() {
     return repo.getEffectiveCampaigns();
   }
 
-  Future<Either<WhateverFailure, CampaignAnalyticsEntity>> getCampaignAnalytics(
-    CampaignEntity campaign,
-  ) {
+  Future<Either<AnalyticsError, CampaignAnalyticsEntity>> getCampaignAnalytics(CampaignEntity campaign) {
     return repo.getCampaignAnalytics(campaign);
   }
 }
