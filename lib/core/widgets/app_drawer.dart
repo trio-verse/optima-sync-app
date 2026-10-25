@@ -7,7 +7,7 @@ import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bl
 import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_event.dart';
 import 'package:optima_sync_v2/app/presentation/Org/blocs/select_organization_bloc/select_organization_state.dart';
 import 'package:optima_sync_v2/app/presentation/Org/screens/create_and_apdate_Org_screen.dart';
-import 'package:optima_sync_v2/app/presentation/analytics/screen/marketing_overview_screen.dart';
+import 'package:optima_sync_v2/app/presentation/marketing/analytics/screen/marketing_overview_screen.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_event.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_state.dart';
@@ -122,7 +122,8 @@ class AppDrawer extends StatelessWidget {
                     onTap: () => _navigate(
                       context,
                       BlocProvider(
-                        create: (_) => TaskBloc(usecases: sl(), memberUsecases: sl()),
+                        create: (_) =>
+                            TaskBloc(usecases: sl(), memberUsecases: sl()),
                         child: const TaskManagerScreen(),
                       ),
                       'Task Manager',

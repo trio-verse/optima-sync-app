@@ -3,70 +3,45 @@ import 'package:optima_sync_v2/app/data/sources/remote_data/marketing/content_re
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/marketing/content/content_repo.dart';
-import 'package:optima_sync_v2/core/errors/failures/failures.dart';
+import 'package:optima_sync_v2/core/errors/exceptions/exceptions.dart';
+import 'package:optima_sync_v2/core/errors/marketing/marketing_errors.dart';
 
 class ContentRepositoryImpl implements ContentRepository {
   final ContentRemoteDataSource remoteDataSource;
 
   ContentRepositoryImpl({required this.remoteDataSource});
 
-  @override
-  Future<Either<WhateverFailure, List<ContentEntity>>> getCampaignContents(
-    CampaignEntity campaign,
-  ) async {
+  Future<Either<ContentError, T>> _guard<T>(Future<T> Function() call) async {
     try {
-      final res = await remoteDataSource.getCampaignContents(campaign);
-      return Right(res);
+      return Right(await call());
+    } on OfflineException {
+      return const Left(ContentError.offline());
+    } on UnauthorizedException {
+      return const Left(ContentError.sessionExpired());
+    } on NoOrganizationException {
+      return const Left(ContentError.noOrganization());
+    } on BadRequestException {
+      return const Left(ContentError.invalidData());
+    } on NotFoundException {
+      return const Left(ContentError.notFound());
     } catch (e) {
-      return Left(WhateverFailure.whatoffline());
+      return const Left(ContentError.serverError());
     }
   }
 
   @override
-  Future<Either<WhateverFailure, ContentEntity>> getContent(
-    ContentEntity content,
-  ) async {
-    try {
-      final res = await remoteDataSource.getContent(content);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  Future<Either<ContentError, List<ContentEntity>>> getCampaignContents(String campaignId) =>
+      _guard(() => remoteDataSource.getCampaignContents(campaignId));
 
   @override
-  Future<Either<WhateverFailure, ContentEntity>> createContent(
-    ContentEntity content,
-  ) async {
-    try {
-      final res = await remoteDataSource.createContent(content);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  Future<Either<ContentError, ContentEntity>> createContent(ContentEntity content) =>
+      _guard(() => remoteDataSource.createContent(content));
 
   @override
-  Future<Either<WhateverFailure, ContentEntity>> updateContent(
-    ContentEntity content,
-  ) async {
-    try {
-      final res = await remoteDataSource.updateContent(content);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  Future<Either<ContentError, ContentEntity>> updateContent(ContentEntity content) =>
+      _guard(() => remoteDataSource.updateContent(content));
 
   @override
-  Future<Either<WhateverFailure, void>> deleteContent(
-    ContentEntity content,
-  ) async {
-    try {
-      final res = await remoteDataSource.deleteContent(content);
-      return Right(res);
-    } catch (e) {
-      return Left(WhateverFailure.whatoffline());
-    }
-  }
+  Future<Either<ContentError, void>> deleteContent(ContentEntity content) =>
+      _guard<void>(() => remoteDataSource.deleteContent(content));
 }
