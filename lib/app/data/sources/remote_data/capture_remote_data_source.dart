@@ -1,6 +1,6 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/capture_settings_entity.dart';
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
 Map<String, dynamic> _unwrap(Map<String, dynamic> json) {
@@ -13,10 +13,7 @@ class CaptureRemoteDataSource {
   final HttpClientHelper client;
   final OrgLocalDataSource orgLocalDataSource;
 
-  CaptureRemoteDataSource({
-    required this.client,
-    required this.orgLocalDataSource,
-  });
+  CaptureRemoteDataSource({required this.client, required this.orgLocalDataSource});
 
   Future<String> _requireOrganizationId() async {
     final organizationId = await orgLocalDataSource.getSelectedOrganization();
@@ -32,7 +29,7 @@ class CaptureRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.get<CaptureSettingsEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaignId/capture",
+      "${ApiPaths.baseUrl}/api/v1/campaigns/$campaignId/capture",
       (json) => CaptureSettingsEntity.fromJson(_unwrap(json)),
       organizationId: organizationId,
     );
@@ -40,14 +37,11 @@ class CaptureRemoteDataSource {
     return result!;
   }
 
-  Future<CaptureSettingsEntity> setCaptureEnabled({
-    required String campaignId,
-    required bool enabled,
-  }) async {
+  Future<CaptureSettingsEntity> setCaptureEnabled({required String campaignId, required bool enabled}) async {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.patch<CaptureSettingsEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaignId/capture",
+      "${ApiPaths.baseUrl}/api/v1/campaigns/$campaignId/capture",
       {"enabled": enabled},
       (json) => CaptureSettingsEntity.fromJson(_unwrap(json)),
       organizationId: organizationId,
@@ -60,7 +54,7 @@ class CaptureRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.post<CaptureSettingsEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaignId/capture/regenerate",
+      "${ApiPaths.baseUrl}/api/v1/campaigns/$campaignId/capture/regenerate",
       const {},
       (json) => CaptureSettingsEntity.fromJson(_unwrap(json)),
       organizationId: organizationId,

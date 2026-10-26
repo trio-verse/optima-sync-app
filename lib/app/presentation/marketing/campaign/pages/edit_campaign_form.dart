@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/campaign/bloc/campaign_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/marketing/marketing_messages.dart';
-import 'package:optima_sync_v2/app/presentation/marketing/campaign/pages/campaign_status_style.dart';
 
 class EditCampaignForm extends StatefulWidget {
   final CampaignEntity campaign;
@@ -44,23 +43,13 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
     descriptionController = TextEditingController(text: campaign.description);
     targetController = TextEditingController(text: campaign.target);
     budgetController = TextEditingController(
-      text: campaign.expectedBudget == null
-          ? ''
-          : campaign.expectedBudget!.toString(),
+      text: campaign.expectedBudget == null ? '' : campaign.expectedBudget!.toString(),
     );
-    contentCountController = TextEditingController(
-      text: campaign.estimatedContentCount?.toString() ?? '',
-    );
+    contentCountController = TextEditingController(text: campaign.estimatedContentCount?.toString() ?? '');
 
-    startDate = campaign.startDate == null
-        ? null
-        : DateTime.tryParse(campaign.startDate!);
-    endDate = campaign.endDate == null
-        ? null
-        : DateTime.tryParse(campaign.endDate!);
-    status = CampaignStatus.values.contains(campaign.status)
-        ? campaign.status
-        : CampaignStatus.draft;
+    startDate = campaign.startDate == null ? null : DateTime.tryParse(campaign.startDate!);
+    endDate = campaign.endDate == null ? null : DateTime.tryParse(campaign.endDate!);
+    status = CampaignStatus.values.contains(campaign.status) ? campaign.status : CampaignStatus.draft;
   }
 
   @override
@@ -100,9 +89,7 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
     if (!formKey.currentState!.validate()) return;
 
     if (startDate != null && endDate != null && !endDate!.isAfter(startDate!)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('End date must be after start date')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('End date must be after start date')));
       return;
     }
 
@@ -117,12 +104,8 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
           description: descriptionController.text.trim(),
           startDate: startDate == null ? null : _formatDate(startDate!),
           endDate: endDate == null ? null : _formatDate(endDate!),
-          expectedBudget: budgetText.isEmpty
-              ? null
-              : double.tryParse(budgetText),
-          estimatedContentCount: contentCountText.isEmpty
-              ? null
-              : int.tryParse(contentCountText),
+          expectedBudget: budgetText.isEmpty ? null : double.tryParse(budgetText),
+          estimatedContentCount: contentCountText.isEmpty ? null : int.tryParse(contentCountText),
           status: status,
           target: targetController.text.trim(),
         ),
@@ -133,12 +116,7 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-      ),
+      padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: MediaQuery.of(context).viewInsets.bottom + 20),
       child: BlocListener<CampaignBloc, CampaignState>(
         listener: (context, state) {
           state.whenOrNull(
@@ -149,14 +127,8 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
         },
         child: BlocBuilder<CampaignBloc, CampaignState>(
           builder: (context, state) {
-            final isSubmitting = state.maybeWhen(
-              submitting: (_) => true,
-              orElse: () => false,
-            );
-            final errorMessage = state.maybeWhen(
-              failure: (error) => error.text(context),
-              orElse: () => null,
-            );
+            final isSubmitting = state.maybeWhen(submitting: (_) => true, orElse: () => false);
+            final errorMessage = state.maybeWhen(failure: (error) => error.text(context), orElse: () => null);
 
             return SingleChildScrollView(
               child: Form(
@@ -165,13 +137,7 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Edit Campaign",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    const Text("Edit Campaign", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
 
                     const SizedBox(height: 15),
 
@@ -240,32 +206,17 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
                       children: [
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: isSubmitting
-                                ? null
-                                : () => _pickDate(isStart: true),
-                            icon: const Icon(
-                              Icons.calendar_today_outlined,
-                              size: 18,
-                            ),
-                            label: Text(
-                              startDate == null
-                                  ? 'Start Date'
-                                  : _formatDate(startDate!),
-                            ),
+                            onPressed: isSubmitting ? null : () => _pickDate(isStart: true),
+                            icon: const Icon(Icons.calendar_today_outlined, size: 18),
+                            label: Text(startDate == null ? 'Start Date' : _formatDate(startDate!)),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: isSubmitting
-                                ? null
-                                : () => _pickDate(isStart: false),
+                            onPressed: isSubmitting ? null : () => _pickDate(isStart: false),
                             icon: const Icon(Icons.event_outlined, size: 18),
-                            label: Text(
-                              endDate == null
-                                  ? 'End Date'
-                                  : _formatDate(endDate!),
-                            ),
+                            label: Text(endDate == null ? 'End Date' : _formatDate(endDate!)),
                           ),
                         ),
                       ],
@@ -279,12 +230,9 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
                           child: TextFormField(
                             controller: budgetController,
                             enabled: !isSubmitting,
-                            keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true,
-                            ),
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             validator: (value) {
-                              if (value == null || value.trim().isEmpty)
-                                return null;
+                              if (value == null || value.trim().isEmpty) return null;
                               final budget = double.tryParse(value.trim());
                               if (budget == null || budget < 0) {
                                 return "Enter a valid budget";
@@ -293,9 +241,7 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
                             },
                             decoration: _borderedInput.copyWith(
                               label: const Text('Expected Budget'),
-                              prefixIcon: const Icon(
-                                Icons.attach_money_outlined,
-                              ),
+                              prefixIcon: const Icon(Icons.attach_money_outlined),
                             ),
                           ),
                         ),
@@ -306,8 +252,7 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
                             enabled: !isSubmitting,
                             keyboardType: TextInputType.number,
                             validator: (value) {
-                              if (value == null || value.trim().isEmpty)
-                                return null;
+                              if (value == null || value.trim().isEmpty) return null;
                               final count = int.tryParse(value.trim());
                               if (count == null || count < 0) {
                                 return "Enter a valid count";
@@ -325,13 +270,7 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
 
                     const SizedBox(height: 15),
 
-                    const Text(
-                      'Status',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    const Text('Status', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
@@ -342,19 +281,13 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
                         return ChoiceChip(
                           label: Text(CampaignStatus.label(value)),
                           selected: selected,
-                          onSelected: isSubmitting
-                              ? null
-                              : (_) => setState(() => status = value),
+                          onSelected: isSubmitting ? null : (_) => setState(() => status = value),
                           selectedColor: color.withOpacity(.14),
                           labelStyle: TextStyle(
                             color: selected ? color : AppPallete.textSecondary,
-                            fontWeight: selected
-                                ? FontWeight.w700
-                                : FontWeight.w500,
+                            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                           ),
-                          side: BorderSide(
-                            color: selected ? color : AppPallete.cardBorder,
-                          ),
+                          side: BorderSide(color: selected ? color : AppPallete.cardBorder),
                         );
                       }).toList(),
                     ),
@@ -366,13 +299,7 @@ class _EditCampaignFormState extends State<EditCampaignForm> {
                       child: ElevatedButton(
                         onPressed: isSubmitting ? null : _submit,
                         child: isSubmitting
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                             : const Text("Save Changes"),
                       ),
                     ),

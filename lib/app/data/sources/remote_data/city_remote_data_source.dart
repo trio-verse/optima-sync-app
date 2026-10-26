@@ -1,16 +1,13 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/refrence-data/city_entity.dart';
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
 class CityRemoteDataSource {
   final HttpClientHelper client;
   final OrgLocalDataSource orgLocalDataSource;
 
-  CityRemoteDataSource({
-    required this.client,
-    required this.orgLocalDataSource,
-  });
+  CityRemoteDataSource({required this.client, required this.orgLocalDataSource});
 
   Future<List<CityEntity>> getCities() async {
     final organizationId = await orgLocalDataSource.getSelectedOrganization();
@@ -19,46 +16,30 @@ class CityRemoteDataSource {
       throw Exception('No selected organization found');
     }
 
-    final result = await client.get<List<CityEntity>>(
-      "${ApiConstants.baseUrl}/api/v1/cities",
-      (json) {
-        return (json["data"] as List)
-            .map((e) => CityEntity.fromJson(e))
-            .toList();
-      },
-      organizationId: organizationId,
-    );
+    final result = await client.get<List<CityEntity>>("${ApiPaths.baseUrl}/api/v1/cities", (json) {
+      return (json["data"] as List).map((e) => CityEntity.fromJson(e)).toList();
+    }, organizationId: organizationId);
 
     return result!;
   }
 
-  Future<CityEntity> createCity({
-    required String name,
-    required String color,
-  }) async {
+  Future<CityEntity> createCity({required String name, required String color}) async {
     final organizationId = await orgLocalDataSource.getSelectedOrganization();
 
     if (organizationId == null) {
       throw Exception('No selected organization found');
     }
 
-    final result = await client.post<CityEntity>(
-      "${ApiConstants.baseUrl}/api/v1/cities",
-      {"name": name, "color": color},
-      (json) {
-        return CityEntity.fromJson(json["data"]);
-      },
-      organizationId: organizationId,
-    );
+    final result = await client.post<CityEntity>("${ApiPaths.baseUrl}/api/v1/cities", {"name": name, "color": color}, (
+      json,
+    ) {
+      return CityEntity.fromJson(json["data"]);
+    }, organizationId: organizationId);
 
     return result!;
   }
 
-  Future<CityEntity> updateCity({
-    required String id,
-    required String name,
-    required String color,
-  }) async {
+  Future<CityEntity> updateCity({required String id, required String name, required String color}) async {
     final organizationId = await orgLocalDataSource.getSelectedOrganization();
 
     if (organizationId == null) {
@@ -66,7 +47,7 @@ class CityRemoteDataSource {
     }
 
     final result = await client.patch<CityEntity>(
-      "${ApiConstants.baseUrl}/api/v1/cities/$id",
+      "${ApiPaths.baseUrl}/api/v1/cities/$id",
       {"name": name, "color": color},
       (json) => CityEntity.fromJson(json["data"]),
       organizationId: organizationId,
@@ -82,9 +63,6 @@ class CityRemoteDataSource {
       throw Exception('No selected organization found');
     }
 
-    await client.delete(
-      "${ApiConstants.baseUrl}/api/v1/cities/$id",
-      organizationId: organizationId,
-    );
+    await client.delete("${ApiPaths.baseUrl}/api/v1/cities/$id", organizationId: organizationId);
   }
 }

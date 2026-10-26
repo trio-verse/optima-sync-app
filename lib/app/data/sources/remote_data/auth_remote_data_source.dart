@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 
 class AuthRemoteDataSource {
   final http.Client client;
@@ -11,18 +11,15 @@ class AuthRemoteDataSource {
   Future<void> signUp(String email) async {
     print(' RemoteDataSource: signUp called');
     print(' Email: $email');
-    // final url = Uri.parse("${ApiConstants.baseUrl}/api/v1/register-email");
+    // final url = Uri.parse("${ApiPaths.baseUrl}/api/v1/register-email");
 
     // print(' URL: $url');
     // print(' Sending request...');
     // final response = await client.post(
     //   url,
     final response = await client.post(
-      Uri.parse("${ApiConstants.baseUrl}/api/v1/register-email"),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
+      Uri.parse("${ApiPaths.baseUrl}/api/v1/register-email"),
+      headers: {"Content-Type": "application/json", "Accept": "application/json"},
       body: jsonEncode({"email": email}),
     );
     print(' Request finished!');
@@ -37,12 +34,9 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<String> verifyCode({
-    required String email,
-    required String code,
-  }) async {
+  Future<String> verifyCode({required String email, required String code}) async {
     final response = await client.post(
-      Uri.parse("${ApiConstants.baseUrl}/api/v1/verify-otp"),
+      Uri.parse("${ApiPaths.baseUrl}/api/v1/verify-otp"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"email": email, "otp": code}),
     );

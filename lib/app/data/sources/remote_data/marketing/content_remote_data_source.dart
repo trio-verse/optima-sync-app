@@ -1,7 +1,6 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
-import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
 class ContentRemoteDataSource {
@@ -20,47 +19,28 @@ class ContentRemoteDataSource {
     return organizationId;
   }
 
-  List<ContentEntity> _parseList(Map<String, dynamic> json) {
-    final data = json["data"];
-    final list = data is List ? data : (data == null ? [] : [data]);
-
-    return list.whereType<Map>().map((e) => ContentEntity.fromJson(Map<String, dynamic>.from(e))).toList();
-  }
-
-  ContentEntity _parseSingle(Map<String, dynamic> json) {
-    final data = json["data"];
-
-    if (data is Map) {
-      return ContentEntity.fromJson(Map<String, dynamic>.from(data));
-    }
-
-    if (data is List && data.isNotEmpty) {
-      return ContentEntity.fromJson(Map<String, dynamic>.from(data.first as Map));
-    }
-
-    throw Exception('Expected content data but received none');
-  }
-
   Future<List<ContentEntity>> getCampaignContents(String campaign) async {
     final organizationId = await _requireOrganizationId();
 
-    final result = await client.get<List<ContentEntity>>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaign/contents",
-      _parseList,
-      organizationId: organizationId,
-    );
+    final result = await client.get<List<ContentEntity>>("${ApiPaths.baseUrl}/api/v1/campaigns/$campaign/contents", (
+      json,
+    ) {
+      final data = json["data"];
+
+      return data.whereType<Map>().map((e) => ContentEntity.fromJson(Map<String, dynamic>.from(e))).toList();
+    }, organizationId: organizationId);
 
     return result!;
   }
 
-  Future<ContentEntity> getContent(ContentEntity content) async {
+  Future<ContentEntity> getContent(String contentId, String campaignId) async {
     final organizationId = await _requireOrganizationId();
 
-    final result = await client.get<ContentEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
-      _parseSingle,
-      organizationId: organizationId,
-    );
+    final result = await client.get<ContentEntity>(ApiPaths.contentEdit(campaignId, contentId), (json) {
+      final data = json["data"];
+
+      return ContentEntity.fromJson(Map<String, dynamic>.from(data));
+    }, organizationId: organizationId);
 
     return result!;
   }
@@ -69,9 +49,13 @@ class ContentRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.post<ContentEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents",
+      "${ApiPaths.baseUrl}/api/v1/campaigns/${content.campaignId}/contents",
       content.toJson(),
-      _parseSingle,
+      (json) {
+        final data = json["data"];
+
+        return ContentEntity.fromJson(Map<String, dynamic>.from(data));
+      },
       organizationId: organizationId,
     );
 
@@ -81,36 +65,23 @@ class ContentRemoteDataSource {
   Future<ContentEntity> updateContent(ContentEntity content) async {
     final organizationId = await _requireOrganizationId();
 
-    final localFallback = content;
-
     final result = await client.patch<ContentEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
+      ApiPaths.contentEdit(content.campaignId, content.contentId!),
       content.toJson(),
       (json) {
         final data = json["data"];
 
-        if (data is Map && data.isNotEmpty) {
-          return ContentEntity.fromJson(Map<String, dynamic>.from(data));
-        }
-
-        if (data is List && data.isNotEmpty) {
-          return ContentEntity.fromJson(Map<String, dynamic>.from(data.first as Map));
-        }
-
-        return localFallback;
+        return ContentEntity.fromJson(Map<String, dynamic>.from(data));
       },
       organizationId: organizationId,
     );
 
-    return result ?? localFallback;
+    return result!;
   }
 
-  Future<void> deleteContent(ContentEntity content) async {
+  Future<void> deleteContent(String contentId, String campaignId) async {
     final organizationId = await _requireOrganizationId();
 
-    await client.delete(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
-      organizationId: organizationId,
-    );
+    await client.delete(ApiPaths.contentEdit(campaignId, contentId), organizationId: organizationId);
   }
 }

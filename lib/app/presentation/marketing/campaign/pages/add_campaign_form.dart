@@ -24,7 +24,7 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
 
   DateTime? startDate;
   DateTime? endDate;
-  String status = CampaignStatus.draft;
+  CampaignStatus status = CampaignStatus.draft;
   static const _borderedInput = InputDecoration(
     enabledBorder: AppTheme.inputBorder,
     focusedBorder: AppTheme.focusedInputBorder,
@@ -79,8 +79,8 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
         campaign: CampaignEntity(
           name: nameController.text.trim(),
           description: descriptionController.text.trim(),
-          startDate: startDate == null ? null : _formatDate(startDate!),
-          endDate: endDate == null ? null : _formatDate(endDate!),
+          startDate: startDate,
+          endDate: endDate,
           expectedBudget: budgetText.isEmpty ? null : double.tryParse(budgetText),
           estimatedContentCount: contentCountText.isEmpty ? null : int.tryParse(contentCountText),
           status: status,
@@ -257,10 +257,10 @@ class _AddCampaignFormState extends State<AddCampaignForm> {
                       runSpacing: 8,
                       children: CampaignStatus.values.map((value) {
                         final selected = status == value;
-                        final color = CampaignStatus.color(value);
+                        final color = value.color;
 
                         return ChoiceChip(
-                          label: Text(CampaignStatus.label(value)),
+                          label: Text(value.englishStatus),
                           selected: selected,
                           onSelected: isSubmitting ? null : (_) => setState(() => status = value),
                           selectedColor: color.withOpacity(.14),

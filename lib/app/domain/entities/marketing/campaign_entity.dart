@@ -1,76 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
 
-class CampaignStatus {
-  CampaignStatus._();
+enum CampaignStatus {
+  active('نشط', 'Active', AppPallete.success),
+  draft('مسودة', 'Draft', AppPallete.textSecondary),
+  paused('متوقف مؤقتاً', 'Paused', AppPallete.warning),
+  completed('مكتملة', 'Completed', AppPallete.primary),
+  cancelled('ملغية', 'Cancelled', AppPallete.danger);
 
-  static const String active = 'active';
-  static const String draft = 'draft';
-  static const String paused = 'paused';
-  static const String completed = 'completed';
-  static const String cancelled = 'cancelled';
-
-  static const List<String> values = [
-    active,
-    draft,
-    paused,
-    completed,
-    cancelled,
-  ];
-
-  static String label(String status) {
-    switch (status) {
-      case active:
-        return 'Active';
-      case paused:
-        return 'Paused';
-      case completed:
-        return 'Completed';
-      case cancelled:
-        return 'Cancelled';
-      case draft:
-      default:
-        return 'Draft';
-    }
-  }
-
-  static Color color(String status) {
-    switch (status) {
-      case active:
-        return AppPallete.success;
-      case paused:
-        return AppPallete.warning;
-      case completed:
-        return AppPallete.primary;
-      case cancelled:
-        return AppPallete.danger;
-      case draft:
-      default:
-        return AppPallete.textSecondary;
-    }
-  }
+  final String arabicStatus, englishStatus;
+  final Color color;
+  const CampaignStatus(this.arabicStatus, this.englishStatus, this.color);
 }
 
 class CampaignEntity {
   final String? id;
   final String name;
   final String description;
-  final String? startDate;
-  final String? endDate;
+  final DateTime? startDate;
+  final DateTime? endDate;
   final double? expectedBudget;
   final int? estimatedContentCount;
-  final String status;
+  final CampaignStatus status;
   final String target;
-
-  final double? spent;
-  final int? connections;
-  final double? cpl;
-  final double? roi;
-
-  final String? updatedAt;
-  final int? wins;
-  final double? winRate;
-  final double? revenue;
 
   const CampaignEntity({
     this.id,
@@ -82,90 +34,36 @@ class CampaignEntity {
     this.estimatedContentCount,
     this.status = CampaignStatus.draft,
     required this.target,
-    this.spent,
-    this.connections,
-    this.cpl,
-    this.roi,
-    this.updatedAt,
-    this.wins,
-    this.winRate,
-    this.revenue,
   });
 
-  static double? _toDouble(dynamic value) {
-    if (value == null) return null;
-    if (value is num) return value.toDouble();
-    return double.tryParse(
-      value.toString().replaceAll('%', '').replaceAll('\$', '').trim(),
-    );
-  }
-
-  static int? _toInt(dynamic value) {
-    if (value == null) return null;
-    if (value is int) return value;
-    if (value is num) return value.toInt();
-    return int.tryParse(value.toString());
-  }
-
-  static String? _asString(dynamic value) {
-    if (value == null) return null;
-    final str = value.toString().trim();
-    return str.isEmpty ? null : str;
-  }
-
-  static dynamic _first(Map<String, dynamic> json, List<String> keys) {
-    for (final key in keys) {
-      if (json.containsKey(key) && json[key] != null) return json[key];
-    }
-    return null;
-  }
-
   factory CampaignEntity.fromJson(Map<String, dynamic> json) {
-    final metrics = json['metrics'] is Map
-        ? Map<String, dynamic>.from(json['metrics'] as Map)
-        : <String, dynamic>{};
-    final data = <String, dynamic>{...json, ...metrics};
+    final metrics = json['metrics'] is Map ? Map<String, dynamic>.from(json['metrics']) : <String, dynamic>{};
 
     return CampaignEntity(
-      id: data['id']?.toString(),
-      name: data['name']?.toString() ?? data['title']?.toString() ?? '',
-      description: data['description']?.toString() ?? '',
-      startDate: _asString(data['start_date']),
-      endDate: _asString(data['end_date']),
-      expectedBudget: _toDouble(data['expected_budget'] ?? data['budget']),
-      estimatedContentCount: _toInt(
-        data['estimated_content_count'] ?? data['content_count'],
-      ),
-      status: _asString(data['status']) ?? CampaignStatus.draft,
-      target:
-          data['target']?.toString() ??
-          data['target_audience']?.toString() ??
-          '',
-      spent: _toDouble(_first(data, ['spent', 'total_spent', 'spend'])),
-      connections: _toInt(_first(data, ['connections', 'total_connections'])),
-      cpl: _toDouble(
-        _first(data, ['cpl', 'cost_per_lead', 'cost_per_connection']),
-      ),
-      roi: _toDouble(_first(data, ['roi', 'return_on_investment'])),
-      updatedAt: _asString(data['updated_at'] ?? data['updatedAt']),
-      wins: _toInt(_first(data, ['wins', 'won_deals', 'won', 'won_count'])),
-      winRate: _toDouble(_first(data, ['win_rate', 'winRate'])),
-      revenue: _toDouble(
-        _first(data, ['revenue', 'total_revenue', 'won_revenue']),
-      ),
+      id: metrics['id']?.toString(),
+      name: metrics['name']?.toString() ?? '',
+      description: metrics['description']?.toString() ?? '',
+      startDate: DateTime.tryParse(metrics['start_date'] ?? ''),
+      endDate: DateTime.tryParse(metrics['end_date'] ?? ""),
+      expectedBudget: (metrics['expected_budget'] as num?)?.toDouble(),
+      estimatedContentCount: (metrics['estimated_content_count'] as num?)?.toInt(),
+      status: _statusParser(metrics['status'].toString()),
+      target: metrics['target']?.toString() ?? '',
     );
   }
+
+  static CampaignStatus _statusParser(String source) =>
+      CampaignStatus.values.firstWhere((status) => status.name == source.toLowerCase(), orElse: () => .draft);
 
   Map<String, dynamic> toJson() {
     return {
       "name": name,
       "description": description,
-      if (startDate != null && startDate!.isNotEmpty) "start_date": startDate,
-      if (endDate != null && endDate!.isNotEmpty) "end_date": endDate,
+      if (startDate != null) "start_date": startDate?.toIso8601String(),
+      if (endDate != null) "end_date": endDate?.toIso8601String(),
       if (expectedBudget != null) "expected_budget": expectedBudget,
-      if (estimatedContentCount != null)
-        "estimated_content_count": estimatedContentCount,
-      "status": status,
+      if (estimatedContentCount != null) "estimated_content_count": estimatedContentCount,
+      "status": status.name,
       "target": target,
     };
   }
@@ -174,20 +72,12 @@ class CampaignEntity {
     String? id,
     String? name,
     String? description,
-    String? startDate,
-    String? endDate,
+    DateTime? startDate,
+    DateTime? endDate,
     double? expectedBudget,
     int? estimatedContentCount,
-    String? status,
+    CampaignStatus? status,
     String? target,
-    double? spent,
-    int? connections,
-    double? cpl,
-    double? roi,
-    String? updatedAt,
-    int? wins,
-    double? winRate,
-    double? revenue,
   }) {
     return CampaignEntity(
       id: id ?? this.id,
@@ -196,18 +86,9 @@ class CampaignEntity {
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
       expectedBudget: expectedBudget ?? this.expectedBudget,
-      estimatedContentCount:
-          estimatedContentCount ?? this.estimatedContentCount,
+      estimatedContentCount: estimatedContentCount ?? this.estimatedContentCount,
       status: status ?? this.status,
       target: target ?? this.target,
-      spent: spent ?? this.spent,
-      connections: connections ?? this.connections,
-      cpl: cpl ?? this.cpl,
-      roi: roi ?? this.roi,
-      updatedAt: updatedAt ?? this.updatedAt,
-      wins: wins ?? this.wins,
-      winRate: winRate ?? this.winRate,
-      revenue: revenue ?? this.revenue,
     );
   }
 }

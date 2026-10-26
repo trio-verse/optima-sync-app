@@ -1,17 +1,14 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/analytics_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
 class AnalyticsRemoteDataSource {
   final HttpClientHelper client;
   final OrgLocalDataSource orgLocalDataSource;
 
-  AnalyticsRemoteDataSource({
-    required this.client,
-    required this.orgLocalDataSource,
-  });
+  AnalyticsRemoteDataSource({required this.client, required this.orgLocalDataSource});
 
   Future<String> _requireOrganizationId() async {
     final organizationId = await orgLocalDataSource.getSelectedOrganization();
@@ -33,7 +30,7 @@ class AnalyticsRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final data = await client.get<Map<String, dynamic>>(
-      "${ApiConstants.baseUrl}/api/v1/marketing/analytics",
+      "${ApiPaths.baseUrl}/api/v1/marketing/analytics",
       (json) => _unwrap(json),
       organizationId: organizationId,
     );
@@ -49,22 +46,16 @@ class AnalyticsRemoteDataSource {
 
   Future<int> _sumExpectedContent(String organizationId) async {
     try {
-      final total = await client.get<int>(
-        "${ApiConstants.baseUrl}/api/v1/campaigns",
-        (json) {
-          final data = json['data'];
-          final list = data is List ? data : const [];
-          var sum = 0;
-          for (final item in list.whereType<Map>()) {
-            final value = item['estimated_content_count'];
-            sum += value is num
-                ? value.toInt()
-                : int.tryParse(value?.toString() ?? '') ?? 0;
-          }
-          return sum;
-        },
-        organizationId: organizationId,
-      );
+      final total = await client.get<int>("${ApiPaths.baseUrl}/api/v1/campaigns", (json) {
+        final data = json['data'];
+        final list = data is List ? data : const [];
+        var sum = 0;
+        for (final item in list.whereType<Map>()) {
+          final value = item['estimated_content_count'];
+          sum += value is num ? value.toInt() : int.tryParse(value?.toString() ?? '') ?? 0;
+        }
+        return sum;
+      }, organizationId: organizationId);
       return total ?? 0;
     } catch (_) {
       return 0;
@@ -75,18 +66,14 @@ class AnalyticsRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.get<List<EffectiveCampaignEntity>>(
-      "${ApiConstants.baseUrl}/api/v1/marketing/analytics/effective-campaigns",
+      "${ApiPaths.baseUrl}/api/v1/marketing/analytics/effective-campaigns",
       (json) {
         final data = json['data'] ?? json['campaigns'] ?? json;
         final list = data is List ? data : [data];
 
         return list
             .whereType<Map>()
-            .map(
-              (e) => EffectiveCampaignEntity.fromJson(
-                Map<String, dynamic>.from(e),
-              ),
-            )
+            .map((e) => EffectiveCampaignEntity.fromJson(Map<String, dynamic>.from(e)))
             .toList();
       },
       organizationId: organizationId,
@@ -95,13 +82,11 @@ class AnalyticsRemoteDataSource {
     return result!;
   }
 
-  Future<CampaignAnalyticsEntity> getCampaignAnalytics(
-    CampaignEntity campaign,
-  ) async {
+  Future<CampaignAnalyticsEntity> getCampaignAnalytics(CampaignEntity campaign) async {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.get<CampaignAnalyticsEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/${campaign.id}/analytics",
+      "${ApiPaths.baseUrl}/api/v1/campaigns/${campaign.id}/analytics",
       (json) => CampaignAnalyticsEntity.fromJson(_unwrap(json)),
       organizationId: organizationId,
     );

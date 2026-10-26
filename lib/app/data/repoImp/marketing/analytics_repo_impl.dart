@@ -18,8 +18,6 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       return const Left(AnalyticsError.offline());
     } on UnauthorizedException {
       return const Left(AnalyticsError.sessionExpired());
-    } on NoOrganizationException {
-      return const Left(AnalyticsError.noOrganization());
     } on BadRequestException {
       return const Left(AnalyticsError.invalidData());
     } on NotFoundException {

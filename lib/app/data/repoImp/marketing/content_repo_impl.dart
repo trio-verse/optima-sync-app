@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:optima_sync_v2/app/data/sources/remote_data/marketing/content_remote_data_source.dart';
-import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
 import 'package:optima_sync_v2/app/domain/repo/marketing/content/content_repo.dart';
 import 'package:optima_sync_v2/core/errors/exceptions/exceptions.dart';
@@ -18,8 +17,6 @@ class ContentRepositoryImpl implements ContentRepository {
       return const Left(ContentError.offline());
     } on UnauthorizedException {
       return const Left(ContentError.sessionExpired());
-    } on NoOrganizationException {
-      return const Left(ContentError.noOrganization());
     } on BadRequestException {
       return const Left(ContentError.invalidData());
     } on NotFoundException {
@@ -43,5 +40,5 @@ class ContentRepositoryImpl implements ContentRepository {
 
   @override
   Future<Either<ContentError, void>> deleteContent(ContentEntity content) =>
-      _guard<void>(() => remoteDataSource.deleteContent(content));
+      _guard<void>(() => remoteDataSource.deleteContent(content.contentId!, content.campaignId));
 }

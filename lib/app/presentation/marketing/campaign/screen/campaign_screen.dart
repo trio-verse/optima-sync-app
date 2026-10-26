@@ -55,22 +55,22 @@ class _CampaignScreenState extends State<CampaignScreen> {
   List<CampaignEntity> _visibleCampaigns(List<CampaignEntity> source) {
     final filtered = source.where((campaign) => statusFilter == null || campaign.status == statusFilter).toList();
 
-    double cpl(CampaignEntity c) => c.cpl ?? double.infinity;
-    switch (sortBy) {
-      case 'name':
-        filtered.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-        break;
-      case 'budget':
-        filtered.sort((a, b) => (a.expectedBudget ?? 0).compareTo(b.expectedBudget ?? 0));
-        break;
-      case 'spent':
-        filtered.sort((a, b) => (a.spent ?? 0).compareTo(b.spent ?? 0));
-        break;
-      case 'cpl':
-      default:
-        filtered.sort((a, b) => cpl(a).compareTo(cpl(b)));
-        break;
-    }
+    // double cpl(CampaignEntity c) => c.cpl ?? double.infinity;
+    // switch (sortBy) {
+    //   case 'name':
+    //     filtered.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    //     break;
+    //   case 'budget':
+    //     filtered.sort((a, b) => (a.expectedBudget ?? 0).compareTo(b.expectedBudget ?? 0));
+    //     break;
+    //   case 'spent':
+    //     filtered.sort((a, b) => (a.spent ?? 0).compareTo(b.spent ?? 0));
+    //     break;
+    //   case 'cpl':
+    //   default:
+    //     filtered.sort((a, b) => cpl(a).compareTo(cpl(b)));
+    //     break;
+    // }
     return filtered;
   }
 

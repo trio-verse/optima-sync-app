@@ -19,8 +19,6 @@ class CampaignRepositoryImpl implements CampaignRepository {
       return const Left(CampaignError.sessionExpired());
     } on NoOrganizationException {
       return const Left(CampaignError.noOrganization());
-    } on BadRequestException {
-      return const Left(CampaignError.invalidData());
     } on NotFoundException {
       return const Left(CampaignError.notFound());
     } catch (e) {
@@ -29,7 +27,7 @@ class CampaignRepositoryImpl implements CampaignRepository {
   }
 
   @override
-  Future<Either<CampaignError, List<CampaignEntity>>> getCampaigns() => _guard(() => remoteDataSource.getCampaigns());
+  Future<Either<CampaignError, List<CampaignEntity>>> getCampaigns() => _guard(remoteDataSource.getCampaigns);
 
   @override
   Future<Either<CampaignError, CampaignEntity>> createCampaign(CampaignEntity campaign) =>
