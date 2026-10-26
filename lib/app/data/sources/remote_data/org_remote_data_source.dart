@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:optima_sync_v2/app/domain/entities/org_entity.dart';
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
 class CreateOrgRemoteDataSource {
@@ -10,31 +10,24 @@ class CreateOrgRemoteDataSource {
 
   Future<String> createOrg(OrgEntity org) async {
     print(org.toJson());
-    final res = await client.post<String>(
-      "${ApiConstants.baseUrl}/api/v1/organizations",
-      org.toJson(),
-      (json) {
-        print(json);
-        return json['data']['id'].toString();
-      },
-    );
+    final res = await client.post<String>("${ApiPaths.baseUrl}/api/v1/organizations", org.toJson(), (json) {
+      print(json);
+      return json['data']['id'].toString();
+    });
 
     return res!;
   }
 
   Future<void> updateOrg(OrgEntity org) async {
     await client.patch<void>(
-      "${ApiConstants.baseUrl}/api/v1/organizations/${org.id}",
+      "${ApiPaths.baseUrl}/api/v1/organizations/${org.id}",
       org.toJson(),
       (json) => null,
       organizationId: org.id,
     );
   }
 
-  Future<void> uploadLogo({
-    required String organizationId,
-    required XFile image,
-  }) async {
+  Future<void> uploadLogo({required String organizationId, required XFile image}) async {
     final token = await client.getToken();
 
     print("================================");
@@ -42,9 +35,7 @@ class CreateOrgRemoteDataSource {
     print("================================");
     final request = http.MultipartRequest(
       "POST",
-      Uri.parse(
-        "${ApiConstants.baseUrl}/api/v1/organizations/$organizationId/logo",
-      ),
+      Uri.parse("${ApiPaths.baseUrl}/api/v1/organizations/$organizationId/logo"),
     );
 
     request.headers["Authorization"] = "Bearer $token";
@@ -60,38 +51,26 @@ class CreateOrgRemoteDataSource {
   }
 
   Future<void> selectOrganization({required String organizationId}) async {
-    await client.post<void>(
-      "${ApiConstants.baseUrl}/api/v1/organizations/myOrgs",
-      {"organization_id": organizationId},
-      (json) => null,
-    );
+    await client.post<void>("${ApiPaths.baseUrl}/api/v1/organizations/myOrgs", {
+      "organization_id": organizationId,
+    }, (json) => null);
   }
 
   Future<List<OrgEntity>> getOrganizations() async {
-    final result = await client.get<List<OrgEntity>>(
-      "${ApiConstants.baseUrl}/api/v1/organizations/myOrgs",
-      (json) {
-        print("MY ORGS RESPONSE:");
-        print(json);
+    final result = await client.get<List<OrgEntity>>("${ApiPaths.baseUrl}/api/v1/organizations/myOrgs", (json) {
+      print("MY ORGS RESPONSE:");
+      print(json);
 
-        return (json["data"] as List)
-            .map((e) => OrgEntity.fromJson(e))
-            .toList();
-      },
-    );
+      return (json["data"] as List).map((e) => OrgEntity.fromJson(e)).toList();
+    });
 
     return result!;
   }
 
   Future<List<OrgEntity>> getMyOrganizations() async {
-    final result = await client.get<List<OrgEntity>>(
-      "${ApiConstants.baseUrl}/api/v1/organizations/myOrgs",
-      (json) {
-        return (json["data"] as List)
-            .map((e) => OrgEntity.fromJson(e))
-            .toList();
-      },
-    );
+    final result = await client.get<List<OrgEntity>>("${ApiPaths.baseUrl}/api/v1/organizations/myOrgs", (json) {
+      return (json["data"] as List).map((e) => OrgEntity.fromJson(e)).toList();
+    });
 
     return result!;
   }

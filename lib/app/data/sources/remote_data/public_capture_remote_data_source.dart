@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:optima_sync_v2/app/domain/entities/public_capture_form_entity.dart';
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 
 class PublicCaptureRemoteDataSource {
   final http.Client client;
@@ -17,7 +17,7 @@ class PublicCaptureRemoteDataSource {
 
   Future<PublicCaptureFormEntity> getForm(String token) async {
     final res = await client.get(
-      Uri.parse("${ApiConstants.baseUrl}/capture/$token"),
+      Uri.parse("${ApiPaths.baseUrl}/capture/$token"),
       headers: const {"Accept": "application/json"},
     );
 
@@ -29,16 +29,10 @@ class PublicCaptureRemoteDataSource {
     throw Exception("${res.statusCode} ${res.body}");
   }
 
-  Future<void> submitForm({
-    required String token,
-    required Map<String, dynamic> data,
-  }) async {
+  Future<void> submitForm({required String token, required Map<String, dynamic> data}) async {
     final res = await client.post(
-      Uri.parse("${ApiConstants.baseUrl}/capture/$token"),
-      headers: const {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
+      Uri.parse("${ApiPaths.baseUrl}/capture/$token"),
+      headers: const {"Content-Type": "application/json", "Accept": "application/json"},
       body: jsonEncode(data),
     );
 

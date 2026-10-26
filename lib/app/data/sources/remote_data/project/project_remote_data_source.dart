@@ -4,17 +4,14 @@ import 'package:optima_sync_v2/app/domain/entities/project/project_details_entit
 import 'package:optima_sync_v2/app/domain/entities/project/project_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/project/project_feature_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/project/project_meeting_entity.dart';
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
 class ProjectRemoteDataSource {
   final HttpClientHelper client;
   final OrgLocalDataSource orgLocalDataSource;
 
-  ProjectRemoteDataSource({
-    required this.client,
-    required this.orgLocalDataSource,
-  });
+  ProjectRemoteDataSource({required this.client, required this.orgLocalDataSource});
 
   Future<String> _requireOrganizationId() async {
     final organizationId = await orgLocalDataSource.getSelectedOrganization();
@@ -39,16 +36,11 @@ class ProjectRemoteDataSource {
 
   Future<ProjectListResult> getProjects(ProjectFilter filter) async {
     final organizationId = await _requireOrganizationId();
-    final uri = Uri.parse(
-      '${ApiConstants.baseUrl}/api/v1/projects',
-    ).replace(queryParameters: filter.toQueryParameters());
+    final uri = Uri.parse('${ApiPaths.baseUrl}/api/v1/projects').replace(queryParameters: filter.toQueryParameters());
     final result = await client.get<ProjectListResult>(uri.toString(), (json) {
-      final projects = _dataList(json)
-          .whereType<Map>()
-          .map(
-            (item) => ProjectEntity.fromJson(Map<String, dynamic>.from(item)),
-          )
-          .toList();
+      final projects = _dataList(
+        json,
+      ).whereType<Map>().map((item) => ProjectEntity.fromJson(Map<String, dynamic>.from(item))).toList();
       final raw = json['data'];
       final nestedMeta = raw is Map ? raw : null;
       final meta = json['meta'] is Map
@@ -57,13 +49,8 @@ class ProjectRemoteDataSource {
           ? json
           : Map<String, dynamic>.from(nestedMeta);
       final currentPage = int.tryParse('${meta['current_page'] ?? 1}') ?? 1;
-      final lastPage =
-          int.tryParse('${meta['last_page'] ?? currentPage}') ?? currentPage;
-      return ProjectListResult(
-        projects: projects,
-        currentPage: currentPage,
-        lastPage: lastPage,
-      );
+      final lastPage = int.tryParse('${meta['last_page'] ?? currentPage}') ?? currentPage;
+      return ProjectListResult(projects: projects, currentPage: currentPage, lastPage: lastPage);
     }, organizationId: organizationId);
     return result!;
   }
@@ -71,15 +58,14 @@ class ProjectRemoteDataSource {
   Future<List<ProjectClientOption>> getClients() async {
     final organizationId = await _requireOrganizationId();
     final result = await client.get<List<ProjectClientOption>>(
-      '${ApiConstants.baseUrl}/api/v1/clients?per_page=100',
+      '${ApiPaths.baseUrl}/api/v1/clients?per_page=100',
       (json) => _dataList(json)
           .whereType<Map>()
           .map((item) {
             final map = Map<String, dynamic>.from(item);
             return ProjectClientOption(
               id: '${map['id'] ?? ''}',
-              name:
-                  '${map['name'] ?? map['company_name'] ?? map['email'] ?? 'Client'}',
+              name: '${map['name'] ?? map['company_name'] ?? map['email'] ?? 'Client'}',
             );
           })
           .where((option) => option.id.isNotEmpty)
@@ -92,7 +78,7 @@ class ProjectRemoteDataSource {
   Future<ProjectEntity> createProject(ProjectInput input) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.post<ProjectEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects',
+      '${ApiPaths.baseUrl}/api/v1/projects',
       input.toJson(),
       (json) => ProjectEntity.fromJson(_dataMap(json)),
       organizationId: organizationId,
@@ -101,23 +87,17 @@ class ProjectRemoteDataSource {
     return result!;
   }
 
-  Future<ProjectEntity> updateProject(
-    String projectId,
-    ProjectUpdateInput input,
-  ) async {
+  Future<ProjectEntity> updateProject(String projectId, ProjectUpdateInput input) async {
     final organizationId = await _requireOrganizationId();
     final updated = await client.patch<ProjectEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId',
       input.toProjectJson(),
       (json) => ProjectEntity.fromJson(_dataMap(json)),
       organizationId: organizationId,
     );
     var versionId = input.versionId ?? updated?.currentVersionId;
     if (versionId == null || versionId.isEmpty) {
-      final versions = await _orDefault(
-        getVersions(projectId),
-        const <ProjectVersionEntity>[],
-      );
+      final versions = await _orDefault(getVersions(projectId), const <ProjectVersionEntity>[]);
       for (final version in versions) {
         if (version.isActive) versionId = version.id;
       }
@@ -127,7 +107,7 @@ class ProjectRemoteDataSource {
     }
     if (versionId != null && versionId.isNotEmpty) {
       await client.patch<Object?>(
-        '${ApiConstants.baseUrl}/api/v1/projects/$projectId/versions/$versionId',
+        '${ApiPaths.baseUrl}/api/v1/projects/$projectId/versions/$versionId',
         input.toVersionJson(),
         (json) => json,
         organizationId: organizationId,
@@ -138,16 +118,13 @@ class ProjectRemoteDataSource {
 
   Future<void> deleteProject(String projectId) async {
     final organizationId = await _requireOrganizationId();
-    await client.delete(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId',
-      organizationId: organizationId,
-    );
+    await client.delete('${ApiPaths.baseUrl}/api/v1/projects/$projectId', organizationId: organizationId);
   }
 
   Future<ProjectEntity> getProject(String projectId) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.get<ProjectEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId',
       (json) => ProjectEntity.fromJson(_dataMap(json)),
       organizationId: organizationId,
     );
@@ -157,14 +134,10 @@ class ProjectRemoteDataSource {
   Future<List<ProjectVersionEntity>> getVersions(String projectId) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.get<List<ProjectVersionEntity>>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/versions',
-      (json) => _dataList(json)
-          .whereType<Map>()
-          .map(
-            (item) =>
-                ProjectVersionEntity.fromJson(Map<String, dynamic>.from(item)),
-          )
-          .toList(),
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/versions',
+      (json) => _dataList(
+        json,
+      ).whereType<Map>().map((item) => ProjectVersionEntity.fromJson(Map<String, dynamic>.from(item))).toList(),
       organizationId: organizationId,
     );
     return result ?? [];
@@ -173,48 +146,34 @@ class ProjectRemoteDataSource {
   Future<List<ProjectFeatureEntity>> getFeatures(String projectId) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.get<List<ProjectFeatureEntity>>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/features',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/features',
       (json) => _dataList(json)
           .whereType<Map>()
-          .map(
-            (item) => ProjectFeatureEntity.fromJson(
-              Map<String, dynamic>.from(item),
-              projectId: projectId,
-            ),
-          )
+          .map((item) => ProjectFeatureEntity.fromJson(Map<String, dynamic>.from(item), projectId: projectId))
           .toList(),
       organizationId: organizationId,
     );
     return result ?? [];
   }
 
-  Future<ProjectFeatureEntity> createFeature(
-    String projectId,
-    ProjectFeatureInput input,
-  ) async {
+  Future<ProjectFeatureEntity> createFeature(String projectId, ProjectFeatureInput input) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.post<ProjectFeatureEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/features',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/features',
       input.toJson(),
-      (json) =>
-          ProjectFeatureEntity.fromJson(_dataMap(json), projectId: projectId),
+      (json) => ProjectFeatureEntity.fromJson(_dataMap(json), projectId: projectId),
       organizationId: organizationId,
       acceptedStatusCodes: const [200, 201],
     );
     return result!;
   }
 
-  Future<ProjectFeatureEntity> updateFeature(
-    String projectId,
-    String featureId,
-    ProjectFeatureInput input,
-  ) async {
+  Future<ProjectFeatureEntity> updateFeature(String projectId, String featureId, ProjectFeatureInput input) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.patch<ProjectFeatureEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/features/$featureId',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/features/$featureId',
       input.toJson(),
-      (json) =>
-          ProjectFeatureEntity.fromJson(_dataMap(json), projectId: projectId),
+      (json) => ProjectFeatureEntity.fromJson(_dataMap(json), projectId: projectId),
       organizationId: organizationId,
     );
     return result!;
@@ -223,7 +182,7 @@ class ProjectRemoteDataSource {
   Future<void> deleteFeature(String projectId, String featureId) async {
     final organizationId = await _requireOrganizationId();
     await client.delete(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/features/$featureId',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/features/$featureId',
       organizationId: organizationId,
     );
   }
@@ -231,26 +190,19 @@ class ProjectRemoteDataSource {
   Future<List<ProjectCostEntity>> getCosts(String projectId) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.get<List<ProjectCostEntity>>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/costs',
-      (json) => _dataList(json)
-          .whereType<Map>()
-          .map(
-            (item) =>
-                ProjectCostEntity.fromJson(Map<String, dynamic>.from(item)),
-          )
-          .toList(),
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/costs',
+      (json) => _dataList(
+        json,
+      ).whereType<Map>().map((item) => ProjectCostEntity.fromJson(Map<String, dynamic>.from(item))).toList(),
       organizationId: organizationId,
     );
     return result ?? [];
   }
 
-  Future<ProjectCostEntity> createCost(
-    String projectId,
-    ProjectCostInput input,
-  ) async {
+  Future<ProjectCostEntity> createCost(String projectId, ProjectCostInput input) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.post<ProjectCostEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/costs',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/costs',
       input.toJson(),
       (json) => ProjectCostEntity.fromJson(_dataMap(json)),
       organizationId: organizationId,
@@ -259,14 +211,10 @@ class ProjectRemoteDataSource {
     return result!;
   }
 
-  Future<ProjectCostEntity> updateCost(
-    String projectId,
-    String costId,
-    ProjectCostInput input,
-  ) async {
+  Future<ProjectCostEntity> updateCost(String projectId, String costId, ProjectCostInput input) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.patch<ProjectCostEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/costs/$costId',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/costs/$costId',
       input.toJson(),
       (json) => ProjectCostEntity.fromJson(_dataMap(json)),
       organizationId: organizationId,
@@ -276,25 +224,16 @@ class ProjectRemoteDataSource {
 
   Future<void> deleteCost(String projectId, String costId) async {
     final organizationId = await _requireOrganizationId();
-    await client.delete(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/costs/$costId',
-      organizationId: organizationId,
-    );
+    await client.delete('${ApiPaths.baseUrl}/api/v1/projects/$projectId/costs/$costId', organizationId: organizationId);
   }
 
-  Future<List<ProjectEmployeeEntity>> getProjectEmployees(
-    String projectId,
-  ) async {
+  Future<List<ProjectEmployeeEntity>> getProjectEmployees(String projectId) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.get<List<ProjectEmployeeEntity>>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/employees',
-      (json) => _dataList(json)
-          .whereType<Map>()
-          .map(
-            (item) =>
-                ProjectEmployeeEntity.fromJson(Map<String, dynamic>.from(item)),
-          )
-          .toList(),
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/employees',
+      (json) => _dataList(
+        json,
+      ).whereType<Map>().map((item) => ProjectEmployeeEntity.fromJson(Map<String, dynamic>.from(item))).toList(),
       organizationId: organizationId,
     );
     return result ?? [];
@@ -303,30 +242,20 @@ class ProjectRemoteDataSource {
   Future<List<EmployeeEntity>> getAvailableEmployees() async {
     final organizationId = await _requireOrganizationId();
     final result = await client.get<List<EmployeeEntity>>(
-      '${ApiConstants.baseUrl}/api/v1/hr/employees',
-      (json) => _dataList(json)
-          .whereType<Map>()
-          .map(
-            (item) => EmployeeEntity.fromJson(Map<String, dynamic>.from(item)),
-          )
-          .toList(),
+      '${ApiPaths.baseUrl}/api/v1/hr/employees',
+      (json) => _dataList(
+        json,
+      ).whereType<Map>().map((item) => EmployeeEntity.fromJson(Map<String, dynamic>.from(item))).toList(),
       organizationId: organizationId,
     );
     return result ?? [];
   }
 
-  Future<ProjectEmployeeEntity> addProjectEmployee(
-    String projectId,
-    String employeeId,
-    int totalPoints,
-  ) async {
+  Future<ProjectEmployeeEntity> addProjectEmployee(String projectId, String employeeId, int totalPoints) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.post<ProjectEmployeeEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/employees',
-      {
-        'employee_id': int.tryParse(employeeId) ?? employeeId,
-        'total_points': totalPoints,
-      },
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/employees',
+      {'employee_id': int.tryParse(employeeId) ?? employeeId, 'total_points': totalPoints},
       (json) => ProjectEmployeeEntity.fromJson(_dataMap(json)),
       organizationId: organizationId,
       acceptedStatusCodes: const [200, 201],
@@ -334,14 +263,10 @@ class ProjectRemoteDataSource {
     return result!;
   }
 
-  Future<ProjectEmployeeEntity> updateProjectEmployee(
-    String projectId,
-    String assignmentId,
-    int totalPoints,
-  ) async {
+  Future<ProjectEmployeeEntity> updateProjectEmployee(String projectId, String assignmentId, int totalPoints) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.patch<ProjectEmployeeEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/employees/$assignmentId',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/employees/$assignmentId',
       {'total_points': totalPoints},
       (json) => ProjectEmployeeEntity.fromJson(_dataMap(json)),
       organizationId: organizationId,
@@ -349,13 +274,10 @@ class ProjectRemoteDataSource {
     return result!;
   }
 
-  Future<void> deleteProjectEmployee(
-    String projectId,
-    String assignmentId,
-  ) async {
+  Future<void> deleteProjectEmployee(String projectId, String assignmentId) async {
     final organizationId = await _requireOrganizationId();
     await client.delete(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/employees/$assignmentId',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/employees/$assignmentId',
       organizationId: organizationId,
     );
   }
@@ -363,48 +285,34 @@ class ProjectRemoteDataSource {
   Future<List<ProjectMeetingEntity>> getMeetings(String projectId) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.get<List<ProjectMeetingEntity>>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/meetings',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/meetings',
       (json) => _dataList(json)
           .whereType<Map>()
-          .map(
-            (item) => ProjectMeetingEntity.fromJson(
-              Map<String, dynamic>.from(item),
-              projectId: projectId,
-            ),
-          )
+          .map((item) => ProjectMeetingEntity.fromJson(Map<String, dynamic>.from(item), projectId: projectId))
           .toList(),
       organizationId: organizationId,
     );
     return result ?? [];
   }
 
-  Future<ProjectMeetingEntity> createMeeting(
-    String projectId,
-    ProjectMeetingInput input,
-  ) async {
+  Future<ProjectMeetingEntity> createMeeting(String projectId, ProjectMeetingInput input) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.post<ProjectMeetingEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/meetings',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/meetings',
       input.toJson(),
-      (json) =>
-          ProjectMeetingEntity.fromJson(_dataMap(json), projectId: projectId),
+      (json) => ProjectMeetingEntity.fromJson(_dataMap(json), projectId: projectId),
       organizationId: organizationId,
       acceptedStatusCodes: const [200, 201],
     );
     return result!;
   }
 
-  Future<ProjectMeetingEntity> updateMeeting(
-    String projectId,
-    String meetingId,
-    ProjectMeetingInput input,
-  ) async {
+  Future<ProjectMeetingEntity> updateMeeting(String projectId, String meetingId, ProjectMeetingInput input) async {
     final organizationId = await _requireOrganizationId();
     final result = await client.patch<ProjectMeetingEntity>(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/meetings/$meetingId',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/meetings/$meetingId',
       input.toJson(),
-      (json) =>
-          ProjectMeetingEntity.fromJson(_dataMap(json), projectId: projectId),
+      (json) => ProjectMeetingEntity.fromJson(_dataMap(json), projectId: projectId),
       organizationId: organizationId,
     );
     return result!;
@@ -413,7 +321,7 @@ class ProjectRemoteDataSource {
   Future<void> deleteMeeting(String projectId, String meetingId) async {
     final organizationId = await _requireOrganizationId();
     await client.delete(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/meetings/$meetingId',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/meetings/$meetingId',
       organizationId: organizationId,
     );
   }
@@ -421,18 +329,15 @@ class ProjectRemoteDataSource {
   Future<String> previewQuotation(String projectId, String versionId) async {
     final organizationId = await _requireOrganizationId();
     return client.getText(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/versions/$versionId/quotations/preview',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/versions/$versionId/quotations/preview',
       organizationId: organizationId,
     );
   }
 
-  Future<String> generateQuotationPdf(
-    String projectId,
-    String versionId,
-  ) async {
+  Future<String> generateQuotationPdf(String projectId, String versionId) async {
     final organizationId = await _requireOrganizationId();
     return client.postText(
-      '${ApiConstants.baseUrl}/api/v1/projects/$projectId/versions/$versionId/quotations/generate-pdf',
+      '${ApiPaths.baseUrl}/api/v1/projects/$projectId/versions/$versionId/quotations/generate-pdf',
       organizationId: organizationId,
     );
   }
@@ -447,33 +352,14 @@ class ProjectRemoteDataSource {
 
   Future<ProjectDetailsData> getProjectDetails(String projectId) async {
     final project = await getProject(projectId);
-    final versions = await _orDefault(
-      getVersions(projectId),
-      const <ProjectVersionEntity>[],
-    );
-    final features = await _orDefault(
-      getFeatures(projectId),
-      const <ProjectFeatureEntity>[],
-    );
-    final costs = await _orDefault(
-      getCosts(projectId),
-      const <ProjectCostEntity>[],
-    );
-    final team = await _orDefault(
-      getProjectEmployees(projectId),
-      const <ProjectEmployeeEntity>[],
-    );
-    final meetings = await _orDefault(
-      getMeetings(projectId),
-      const <ProjectMeetingEntity>[],
-    );
-    final employees = await _orDefault(
-      getAvailableEmployees(),
-      const <EmployeeEntity>[],
-    );
+    final versions = await _orDefault(getVersions(projectId), const <ProjectVersionEntity>[]);
+    final features = await _orDefault(getFeatures(projectId), const <ProjectFeatureEntity>[]);
+    final costs = await _orDefault(getCosts(projectId), const <ProjectCostEntity>[]);
+    final team = await _orDefault(getProjectEmployees(projectId), const <ProjectEmployeeEntity>[]);
+    final meetings = await _orDefault(getMeetings(projectId), const <ProjectMeetingEntity>[]);
+    final employees = await _orDefault(getAvailableEmployees(), const <EmployeeEntity>[]);
     String? selectedVersionId = project.currentVersionId;
-    if (selectedVersionId != null &&
-        !versions.any((version) => version.id == selectedVersionId)) {
+    if (selectedVersionId != null && !versions.any((version) => version.id == selectedVersionId)) {
       selectedVersionId = null;
     }
     if (selectedVersionId == null) {

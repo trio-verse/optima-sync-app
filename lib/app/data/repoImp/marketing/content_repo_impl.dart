@@ -18,8 +18,6 @@ class ContentRepositoryImpl implements ContentRepository {
       return const Left(ContentError.offline());
     } on UnauthorizedException {
       return const Left(ContentError.sessionExpired());
-    } on NoOrganizationException {
-      return const Left(ContentError.noOrganization());
     } on BadRequestException {
       return const Left(ContentError.invalidData());
     } on NotFoundException {

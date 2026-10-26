@@ -1,6 +1,6 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/product_entity.dart';
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
 class _ProductPage {
@@ -8,21 +8,14 @@ class _ProductPage {
   final int currentPage;
   final int lastPage;
 
-  const _ProductPage({
-    required this.products,
-    required this.currentPage,
-    required this.lastPage,
-  });
+  const _ProductPage({required this.products, required this.currentPage, required this.lastPage});
 }
 
 class ProductRemoteDataSource {
   final HttpClientHelper client;
   final OrgLocalDataSource orgLocalDataSource;
 
-  ProductRemoteDataSource({
-    required this.client,
-    required this.orgLocalDataSource,
-  });
+  ProductRemoteDataSource({required this.client, required this.orgLocalDataSource});
 
   Future<String> _requireOrganizationId() async {
     final organizationId = await orgLocalDataSource.getSelectedOrganization();
@@ -42,7 +35,7 @@ class ProductRemoteDataSource {
 
     do {
       final uri = Uri.parse(
-        "${ApiConstants.baseUrl}/api/v1/products",
+        "${ApiPaths.baseUrl}/api/v1/products",
       ).replace(queryParameters: {"per_page": "100", "page": page.toString()});
 
       final result = await client.get<_ProductPage>(uri.toString(), (json) {
@@ -53,19 +46,11 @@ class ProductRemoteDataSource {
             .map((e) => ProductEntity.fromJson(Map<String, dynamic>.from(e)))
             .toList();
 
-        final meta = json["meta"] is Map
-            ? Map<String, dynamic>.from(json["meta"] as Map)
-            : json;
-        final currentPage =
-            int.tryParse('${meta["current_page"] ?? page}') ?? page;
-        final parsedLastPage =
-            int.tryParse('${meta["last_page"] ?? currentPage}') ?? currentPage;
+        final meta = json["meta"] is Map ? Map<String, dynamic>.from(json["meta"] as Map) : json;
+        final currentPage = int.tryParse('${meta["current_page"] ?? page}') ?? page;
+        final parsedLastPage = int.tryParse('${meta["last_page"] ?? currentPage}') ?? currentPage;
 
-        return _ProductPage(
-          products: products,
-          currentPage: currentPage,
-          lastPage: parsedLastPage,
-        );
+        return _ProductPage(products: products, currentPage: currentPage, lastPage: parsedLastPage);
       }, organizationId: organizationId);
 
       if (result == null) break;
@@ -88,7 +73,7 @@ class ProductRemoteDataSource {
     ProductEntity? fallback;
 
     final result = await client.post<ProductEntity>(
-      "${ApiConstants.baseUrl}/api/v1/products",
+      "${ApiPaths.baseUrl}/api/v1/products",
       {"name": name, "price": price, "description": description},
       (json) {
         final data = json["data"];
@@ -98,16 +83,10 @@ class ProductRemoteDataSource {
         }
 
         if (data is List && data.isNotEmpty) {
-          return ProductEntity.fromJson(
-            Map<String, dynamic>.from(data.first as Map),
-          );
+          return ProductEntity.fromJson(Map<String, dynamic>.from(data.first as Map));
         }
 
-        fallback = ProductEntity(
-          name: name,
-          price: price,
-          description: description,
-        );
+        fallback = ProductEntity(name: name, price: price, description: description);
 
         return fallback!;
       },
@@ -125,15 +104,10 @@ class ProductRemoteDataSource {
   }) async {
     final organizationId = await _requireOrganizationId();
 
-    final localFallback = ProductEntity(
-      id: id,
-      name: name,
-      price: price,
-      description: description,
-    );
+    final localFallback = ProductEntity(id: id, name: name, price: price, description: description);
 
     final result = await client.patch<ProductEntity>(
-      "${ApiConstants.baseUrl}/api/v1/products/$id",
+      "${ApiPaths.baseUrl}/api/v1/products/$id",
       {"name": name, "price": price, "description": description},
       (json) {
         final data = json["data"];
@@ -143,9 +117,7 @@ class ProductRemoteDataSource {
         }
 
         if (data is List && data.isNotEmpty) {
-          return ProductEntity.fromJson(
-            Map<String, dynamic>.from(data.first as Map),
-          );
+          return ProductEntity.fromJson(Map<String, dynamic>.from(data.first as Map));
         }
 
         return localFallback;
@@ -159,9 +131,6 @@ class ProductRemoteDataSource {
   Future<void> deleteProduct(String id) async {
     final organizationId = await _requireOrganizationId();
 
-    await client.delete(
-      "${ApiConstants.baseUrl}/api/v1/products/$id",
-      organizationId: organizationId,
-    );
+    await client.delete("${ApiPaths.baseUrl}/api/v1/products/$id", organizationId: organizationId);
   }
 }

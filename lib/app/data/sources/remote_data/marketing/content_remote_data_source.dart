@@ -1,7 +1,7 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/campaign_entity.dart';
 import 'package:optima_sync_v2/app/domain/entities/marketing/content_entity.dart';
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
 class ContentRemoteDataSource {
@@ -45,7 +45,7 @@ class ContentRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.get<List<ContentEntity>>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/$campaign/contents",
+      "${ApiPaths.baseUrl}/api/v1/campaigns/$campaign/contents",
       _parseList,
       organizationId: organizationId,
     );
@@ -57,7 +57,7 @@ class ContentRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.get<ContentEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
+      "${ApiPaths.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
       _parseSingle,
       organizationId: organizationId,
     );
@@ -69,7 +69,7 @@ class ContentRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.post<ContentEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents",
+      "${ApiPaths.baseUrl}/api/v1/campaigns/${content.campaignId}/contents",
       content.toJson(),
       _parseSingle,
       organizationId: organizationId,
@@ -84,7 +84,7 @@ class ContentRemoteDataSource {
     final localFallback = content;
 
     final result = await client.patch<ContentEntity>(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
+      "${ApiPaths.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
       content.toJson(),
       (json) {
         final data = json["data"];
@@ -109,7 +109,7 @@ class ContentRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     await client.delete(
-      "${ApiConstants.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
+      "${ApiPaths.baseUrl}/api/v1/campaigns/${content.campaignId}/contents/${content.id}",
       organizationId: organizationId,
     );
   }

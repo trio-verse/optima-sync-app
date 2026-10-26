@@ -1,6 +1,6 @@
 import 'package:optima_sync_v2/app/data/sources/local_data/org_local_data_source.dart';
 import 'package:optima_sync_v2/app/domain/entities/sales/connection_entity.dart';
-import 'package:optima_sync_v2/core/constants/api_constant.dart';
+import 'package:optima_sync_v2/core/constants/api_paths.dart';
 import 'package:optima_sync_v2/core/errors/exceptions/exceptions.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 
@@ -9,21 +9,14 @@ class _ConnectionPage {
   final int currentPage;
   final int lastPage;
 
-  const _ConnectionPage({
-    required this.connections,
-    required this.currentPage,
-    required this.lastPage,
-  });
+  const _ConnectionPage({required this.connections, required this.currentPage, required this.lastPage});
 }
 
 class ConnectionRemoteDataSource {
   final HttpClientHelper client;
   final OrgLocalDataSource orgLocalDataSource;
 
-  ConnectionRemoteDataSource({
-    required this.client,
-    required this.orgLocalDataSource,
-  });
+  ConnectionRemoteDataSource({required this.client, required this.orgLocalDataSource});
 
   Future<String> _requireOrganizationId() async {
     final organizationId = await orgLocalDataSource.getSelectedOrganization();
@@ -39,9 +32,7 @@ class ConnectionRemoteDataSource {
     final data = json['data'];
     final list = data is List ? data : (data == null ? [] : [data]);
 
-    final connections = list
-        .map((e) => ConnectionEntity.fromJson(e as Map<String, dynamic>))
-        .toList();
+    final connections = list.map((e) => ConnectionEntity.fromJson(e as Map<String, dynamic>)).toList();
 
     _sortNewestFirst(connections);
     return connections;
@@ -49,19 +40,12 @@ class ConnectionRemoteDataSource {
 
   _ConnectionPage _parsePage(Map<String, dynamic> json) {
     final connections = _parseList(json);
-    final meta = json['meta'] is Map
-        ? Map<String, dynamic>.from(json['meta'] as Map)
-        : json;
+    final meta = json['meta'] is Map ? Map<String, dynamic>.from(json['meta'] as Map) : json;
 
     final currentPage = int.tryParse('${meta['current_page'] ?? 1}') ?? 1;
-    final lastPage =
-        int.tryParse('${meta['last_page'] ?? currentPage}') ?? currentPage;
+    final lastPage = int.tryParse('${meta['last_page'] ?? currentPage}') ?? currentPage;
 
-    return _ConnectionPage(
-      connections: connections,
-      currentPage: currentPage,
-      lastPage: lastPage,
-    );
+    return _ConnectionPage(connections: connections, currentPage: currentPage, lastPage: lastPage);
   }
 
   void _sortNewestFirst(List<ConnectionEntity> connections) {
@@ -77,7 +61,7 @@ class ConnectionRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.get<List<ConnectionEntity>>(
-      '${ApiConstants.baseUrl}/api/v1/clients/$clientId/connections',
+      '${ApiPaths.baseUrl}/api/v1/clients/$clientId/connections',
       _parseList,
       organizationId: organizationId,
     );
@@ -98,15 +82,9 @@ class ConnectionRemoteDataSource {
     var lastPage = 1;
 
     do {
-      final uri = Uri.parse('${ApiConstants.baseUrl}/api/v1/connections')
-          .replace(
-            queryParameters: {
-              'per_page': '100',
-              'page': page.toString(),
-              'sort': 'desc',
-              'order': 'created_at',
-            },
-          );
+      final uri = Uri.parse(
+        '${ApiPaths.baseUrl}/api/v1/connections',
+      ).replace(queryParameters: {'per_page': '100', 'page': page.toString(), 'sort': 'desc', 'order': 'created_at'});
 
       print('========== CONNECTION REQUEST ==========');
       print('Page: $page');
@@ -161,11 +139,9 @@ class ConnectionRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.post<ConnectionEntity>(
-      '${ApiConstants.baseUrl}/api/v1/clients/${connection.clientId}/connections',
+      '${ApiPaths.baseUrl}/api/v1/clients/${connection.clientId}/connections',
       connection.toJson(),
-      (json) => ConnectionEntity.fromJson(
-        Map<String, dynamic>.from(json['data'] as Map),
-      ),
+      (json) => ConnectionEntity.fromJson(Map<String, dynamic>.from(json['data'] as Map)),
       organizationId: organizationId,
     );
     return result!;
@@ -175,11 +151,9 @@ class ConnectionRemoteDataSource {
     final organizationId = await _requireOrganizationId();
 
     final result = await client.patch<ConnectionEntity>(
-      '${ApiConstants.baseUrl}/api/v1/connections/${connection.id}',
+      '${ApiPaths.baseUrl}/api/v1/connections/${connection.id}',
       connection.toJson(),
-      (json) => ConnectionEntity.fromJson(
-        Map<String, dynamic>.from(json['data'] as Map),
-      ),
+      (json) => ConnectionEntity.fromJson(Map<String, dynamic>.from(json['data'] as Map)),
       organizationId: organizationId,
     );
     return result!;
@@ -188,9 +162,6 @@ class ConnectionRemoteDataSource {
   Future<void> deleteConnection(String id) async {
     final organizationId = await _requireOrganizationId();
 
-    await client.delete(
-      '${ApiConstants.baseUrl}/api/v1/connections/$id',
-      organizationId: organizationId,
-    );
+    await client.delete('${ApiPaths.baseUrl}/api/v1/connections/$id', organizationId: organizationId);
   }
 }
