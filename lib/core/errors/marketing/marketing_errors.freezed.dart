@@ -437,13 +437,12 @@ extension ContentErrorPatterns on ContentError {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _ContentOffline value)?  offline,TResult Function( _ContentSessionExpired value)?  sessionExpired,TResult Function( _ContentNoOrganization value)?  noOrganization,TResult Function( _ContentInvalidData value)?  invalidData,TResult Function( _ContentNotFound value)?  notFound,TResult Function( _ContentServerError value)?  serverError,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _ContentOffline value)?  offline,TResult Function( _ContentSessionExpired value)?  sessionExpired,TResult Function( _ContentInvalidData value)?  invalidData,TResult Function( _ContentNotFound value)?  notFound,TResult Function( _ContentServerError value)?  serverError,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _ContentOffline() when offline != null:
 return offline(_that);case _ContentSessionExpired() when sessionExpired != null:
-return sessionExpired(_that);case _ContentNoOrganization() when noOrganization != null:
-return noOrganization(_that);case _ContentInvalidData() when invalidData != null:
+return sessionExpired(_that);case _ContentInvalidData() when invalidData != null:
 return invalidData(_that);case _ContentNotFound() when notFound != null:
 return notFound(_that);case _ContentServerError() when serverError != null:
 return serverError(_that);case _:
@@ -464,13 +463,12 @@ return serverError(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _ContentOffline value)  offline,required TResult Function( _ContentSessionExpired value)  sessionExpired,required TResult Function( _ContentNoOrganization value)  noOrganization,required TResult Function( _ContentInvalidData value)  invalidData,required TResult Function( _ContentNotFound value)  notFound,required TResult Function( _ContentServerError value)  serverError,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _ContentOffline value)  offline,required TResult Function( _ContentSessionExpired value)  sessionExpired,required TResult Function( _ContentInvalidData value)  invalidData,required TResult Function( _ContentNotFound value)  notFound,required TResult Function( _ContentServerError value)  serverError,}){
 final _that = this;
 switch (_that) {
 case _ContentOffline():
 return offline(_that);case _ContentSessionExpired():
-return sessionExpired(_that);case _ContentNoOrganization():
-return noOrganization(_that);case _ContentInvalidData():
+return sessionExpired(_that);case _ContentInvalidData():
 return invalidData(_that);case _ContentNotFound():
 return notFound(_that);case _ContentServerError():
 return serverError(_that);case _:
@@ -490,13 +488,12 @@ return serverError(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _ContentOffline value)?  offline,TResult? Function( _ContentSessionExpired value)?  sessionExpired,TResult? Function( _ContentNoOrganization value)?  noOrganization,TResult? Function( _ContentInvalidData value)?  invalidData,TResult? Function( _ContentNotFound value)?  notFound,TResult? Function( _ContentServerError value)?  serverError,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _ContentOffline value)?  offline,TResult? Function( _ContentSessionExpired value)?  sessionExpired,TResult? Function( _ContentInvalidData value)?  invalidData,TResult? Function( _ContentNotFound value)?  notFound,TResult? Function( _ContentServerError value)?  serverError,}){
 final _that = this;
 switch (_that) {
 case _ContentOffline() when offline != null:
 return offline(_that);case _ContentSessionExpired() when sessionExpired != null:
-return sessionExpired(_that);case _ContentNoOrganization() when noOrganization != null:
-return noOrganization(_that);case _ContentInvalidData() when invalidData != null:
+return sessionExpired(_that);case _ContentInvalidData() when invalidData != null:
 return invalidData(_that);case _ContentNotFound() when notFound != null:
 return notFound(_that);case _ContentServerError() when serverError != null:
 return serverError(_that);case _:
@@ -516,12 +513,11 @@ return serverError(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  offline,TResult Function()?  sessionExpired,TResult Function()?  noOrganization,TResult Function()?  invalidData,TResult Function()?  notFound,TResult Function()?  serverError,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  offline,TResult Function()?  sessionExpired,TResult Function()?  invalidData,TResult Function()?  notFound,TResult Function()?  serverError,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ContentOffline() when offline != null:
 return offline();case _ContentSessionExpired() when sessionExpired != null:
-return sessionExpired();case _ContentNoOrganization() when noOrganization != null:
-return noOrganization();case _ContentInvalidData() when invalidData != null:
+return sessionExpired();case _ContentInvalidData() when invalidData != null:
 return invalidData();case _ContentNotFound() when notFound != null:
 return notFound();case _ContentServerError() when serverError != null:
 return serverError();case _:
@@ -542,12 +538,11 @@ return serverError();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  offline,required TResult Function()  sessionExpired,required TResult Function()  noOrganization,required TResult Function()  invalidData,required TResult Function()  notFound,required TResult Function()  serverError,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  offline,required TResult Function()  sessionExpired,required TResult Function()  invalidData,required TResult Function()  notFound,required TResult Function()  serverError,}) {final _that = this;
 switch (_that) {
 case _ContentOffline():
 return offline();case _ContentSessionExpired():
-return sessionExpired();case _ContentNoOrganization():
-return noOrganization();case _ContentInvalidData():
+return sessionExpired();case _ContentInvalidData():
 return invalidData();case _ContentNotFound():
 return notFound();case _ContentServerError():
 return serverError();case _:
@@ -567,12 +562,11 @@ return serverError();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  offline,TResult? Function()?  sessionExpired,TResult? Function()?  noOrganization,TResult? Function()?  invalidData,TResult? Function()?  notFound,TResult? Function()?  serverError,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  offline,TResult? Function()?  sessionExpired,TResult? Function()?  invalidData,TResult? Function()?  notFound,TResult? Function()?  serverError,}) {final _that = this;
 switch (_that) {
 case _ContentOffline() when offline != null:
 return offline();case _ContentSessionExpired() when sessionExpired != null:
-return sessionExpired();case _ContentNoOrganization() when noOrganization != null:
-return noOrganization();case _ContentInvalidData() when invalidData != null:
+return sessionExpired();case _ContentInvalidData() when invalidData != null:
 return invalidData();case _ContentNotFound() when notFound != null:
 return notFound();case _ContentServerError() when serverError != null:
 return serverError();case _:
@@ -639,38 +633,6 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'ContentError.sessionExpired()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class _ContentNoOrganization implements ContentError {
-  const _ContentNoOrganization();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ContentNoOrganization);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'ContentError.noOrganization()';
 }
 
 
@@ -819,13 +781,12 @@ extension AnalyticsErrorPatterns on AnalyticsError {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _AnalyticsOffline value)?  offline,TResult Function( _AnalyticsSessionExpired value)?  sessionExpired,TResult Function( _AnalyticsNoOrganization value)?  noOrganization,TResult Function( _AnalyticsInvalidData value)?  invalidData,TResult Function( _AnalyticsNotFound value)?  notFound,TResult Function( _AnalyticsServerError value)?  serverError,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _AnalyticsOffline value)?  offline,TResult Function( _AnalyticsSessionExpired value)?  sessionExpired,TResult Function( _AnalyticsInvalidData value)?  invalidData,TResult Function( _AnalyticsNotFound value)?  notFound,TResult Function( _AnalyticsServerError value)?  serverError,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _AnalyticsOffline() when offline != null:
 return offline(_that);case _AnalyticsSessionExpired() when sessionExpired != null:
-return sessionExpired(_that);case _AnalyticsNoOrganization() when noOrganization != null:
-return noOrganization(_that);case _AnalyticsInvalidData() when invalidData != null:
+return sessionExpired(_that);case _AnalyticsInvalidData() when invalidData != null:
 return invalidData(_that);case _AnalyticsNotFound() when notFound != null:
 return notFound(_that);case _AnalyticsServerError() when serverError != null:
 return serverError(_that);case _:
@@ -846,13 +807,12 @@ return serverError(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _AnalyticsOffline value)  offline,required TResult Function( _AnalyticsSessionExpired value)  sessionExpired,required TResult Function( _AnalyticsNoOrganization value)  noOrganization,required TResult Function( _AnalyticsInvalidData value)  invalidData,required TResult Function( _AnalyticsNotFound value)  notFound,required TResult Function( _AnalyticsServerError value)  serverError,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _AnalyticsOffline value)  offline,required TResult Function( _AnalyticsSessionExpired value)  sessionExpired,required TResult Function( _AnalyticsInvalidData value)  invalidData,required TResult Function( _AnalyticsNotFound value)  notFound,required TResult Function( _AnalyticsServerError value)  serverError,}){
 final _that = this;
 switch (_that) {
 case _AnalyticsOffline():
 return offline(_that);case _AnalyticsSessionExpired():
-return sessionExpired(_that);case _AnalyticsNoOrganization():
-return noOrganization(_that);case _AnalyticsInvalidData():
+return sessionExpired(_that);case _AnalyticsInvalidData():
 return invalidData(_that);case _AnalyticsNotFound():
 return notFound(_that);case _AnalyticsServerError():
 return serverError(_that);case _:
@@ -872,13 +832,12 @@ return serverError(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _AnalyticsOffline value)?  offline,TResult? Function( _AnalyticsSessionExpired value)?  sessionExpired,TResult? Function( _AnalyticsNoOrganization value)?  noOrganization,TResult? Function( _AnalyticsInvalidData value)?  invalidData,TResult? Function( _AnalyticsNotFound value)?  notFound,TResult? Function( _AnalyticsServerError value)?  serverError,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _AnalyticsOffline value)?  offline,TResult? Function( _AnalyticsSessionExpired value)?  sessionExpired,TResult? Function( _AnalyticsInvalidData value)?  invalidData,TResult? Function( _AnalyticsNotFound value)?  notFound,TResult? Function( _AnalyticsServerError value)?  serverError,}){
 final _that = this;
 switch (_that) {
 case _AnalyticsOffline() when offline != null:
 return offline(_that);case _AnalyticsSessionExpired() when sessionExpired != null:
-return sessionExpired(_that);case _AnalyticsNoOrganization() when noOrganization != null:
-return noOrganization(_that);case _AnalyticsInvalidData() when invalidData != null:
+return sessionExpired(_that);case _AnalyticsInvalidData() when invalidData != null:
 return invalidData(_that);case _AnalyticsNotFound() when notFound != null:
 return notFound(_that);case _AnalyticsServerError() when serverError != null:
 return serverError(_that);case _:
@@ -898,12 +857,11 @@ return serverError(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  offline,TResult Function()?  sessionExpired,TResult Function()?  noOrganization,TResult Function()?  invalidData,TResult Function()?  notFound,TResult Function()?  serverError,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  offline,TResult Function()?  sessionExpired,TResult Function()?  invalidData,TResult Function()?  notFound,TResult Function()?  serverError,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AnalyticsOffline() when offline != null:
 return offline();case _AnalyticsSessionExpired() when sessionExpired != null:
-return sessionExpired();case _AnalyticsNoOrganization() when noOrganization != null:
-return noOrganization();case _AnalyticsInvalidData() when invalidData != null:
+return sessionExpired();case _AnalyticsInvalidData() when invalidData != null:
 return invalidData();case _AnalyticsNotFound() when notFound != null:
 return notFound();case _AnalyticsServerError() when serverError != null:
 return serverError();case _:
@@ -924,12 +882,11 @@ return serverError();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  offline,required TResult Function()  sessionExpired,required TResult Function()  noOrganization,required TResult Function()  invalidData,required TResult Function()  notFound,required TResult Function()  serverError,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  offline,required TResult Function()  sessionExpired,required TResult Function()  invalidData,required TResult Function()  notFound,required TResult Function()  serverError,}) {final _that = this;
 switch (_that) {
 case _AnalyticsOffline():
 return offline();case _AnalyticsSessionExpired():
-return sessionExpired();case _AnalyticsNoOrganization():
-return noOrganization();case _AnalyticsInvalidData():
+return sessionExpired();case _AnalyticsInvalidData():
 return invalidData();case _AnalyticsNotFound():
 return notFound();case _AnalyticsServerError():
 return serverError();case _:
@@ -949,12 +906,11 @@ return serverError();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  offline,TResult? Function()?  sessionExpired,TResult? Function()?  noOrganization,TResult? Function()?  invalidData,TResult? Function()?  notFound,TResult? Function()?  serverError,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  offline,TResult? Function()?  sessionExpired,TResult? Function()?  invalidData,TResult? Function()?  notFound,TResult? Function()?  serverError,}) {final _that = this;
 switch (_that) {
 case _AnalyticsOffline() when offline != null:
 return offline();case _AnalyticsSessionExpired() when sessionExpired != null:
-return sessionExpired();case _AnalyticsNoOrganization() when noOrganization != null:
-return noOrganization();case _AnalyticsInvalidData() when invalidData != null:
+return sessionExpired();case _AnalyticsInvalidData() when invalidData != null:
 return invalidData();case _AnalyticsNotFound() when notFound != null:
 return notFound();case _AnalyticsServerError() when serverError != null:
 return serverError();case _:
@@ -1021,38 +977,6 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'AnalyticsError.sessionExpired()';
-}
-
-
-}
-
-
-
-
-/// @nodoc
-
-
-class _AnalyticsNoOrganization implements AnalyticsError {
-  const _AnalyticsNoOrganization();
-  
-
-
-
-
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AnalyticsNoOrganization);
-}
-
-
-@override
-int get hashCode => runtimeType.hashCode;
-
-@override
-String toString() {
-  return 'AnalyticsError.noOrganization()';
 }
 
 

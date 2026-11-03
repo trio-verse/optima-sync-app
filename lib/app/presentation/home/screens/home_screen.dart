@@ -7,7 +7,7 @@ import 'package:optima_sync_v2/app/presentation/home/bloc/home_bloc.dart';
 import 'package:optima_sync_v2/app/presentation/home/bloc/home_event.dart';
 import 'package:optima_sync_v2/app/presentation/home/bloc/home_state.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
-import 'package:optima_sync_v2/core/widgets/app_drawer.dart';
+import 'package:optima_sync_v2/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,10 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _openSales() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const AllConnectionsLogScreen()),
-    );
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const AllConnectionsLogScreen()));
 
     if (!mounted) return;
     context.read<HomeBloc>().add(const LoadHomeDashboard());
@@ -35,45 +32,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppPallete.pageBackground,
-      appBar: AppBar(
-        backgroundColor: AppPallete.cardBackground,
-        surfaceTintColor: AppPallete.cardBackground,
-        elevation: 0,
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        if (state is HomeInitial || state is HomeLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-        iconTheme: const IconThemeData(color: AppPallete.textPrimary),
-      ),
-      drawer: const AppDrawer(selectedItem: 'Home'),
-      body: BlocBuilder<HomeBloc, HomeState>(
-        builder: (context, state) {
-          if (state is HomeInitial || state is HomeLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state is HomeFailure) {
-            return _DashboardError(
-              message: state.message,
-              onRetry: () =>
-                  context.read<HomeBloc>().add(const LoadHomeDashboard()),
-            );
-          }
-
-          final dashboard = (state as HomeSuccess).dashboard;
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<HomeBloc>().add(const LoadHomeDashboard());
-              await context.read<HomeBloc>().stream.firstWhere(
-                (next) => next is HomeSuccess || next is HomeFailure,
-              );
-            },
-            child: _DashboardContent(
-              dashboard: dashboard,
-              onViewAllConnections: _openSales,
-            ),
+        if (state is HomeFailure) {
+          return _DashboardError(
+            message: state.message,
+            onRetry: () => context.read<HomeBloc>().add(const LoadHomeDashboard()),
           );
-        },
-      ),
+        }
+
+        final dashboard = (state as HomeSuccess).dashboard;
+        return RefreshIndicator(
+          onRefresh: () async {
+            context.read<HomeBloc>().add(const LoadHomeDashboard());
+            await context.read<HomeBloc>().stream.firstWhere((next) => next is HomeSuccess || next is HomeFailure);
+          },
+          child: _DashboardContent(dashboard: dashboard, onViewAllConnections: _openSales),
+        );
+      },
     );
   }
 }
@@ -82,10 +62,7 @@ class _DashboardContent extends StatelessWidget {
   final SalesDashboardEntity dashboard;
   final VoidCallback onViewAllConnections;
 
-  const _DashboardContent({
-    required this.dashboard,
-    required this.onViewAllConnections,
-  });
+  const _DashboardContent({required this.dashboard, required this.onViewAllConnections});
 
   @override
   Widget build(BuildContext context) {
@@ -134,9 +111,7 @@ class _DashboardContent extends StatelessWidget {
               );
             }
 
-            return Column(
-              children: [stageCard, const SizedBox(height: 12), productsCard],
-            );
+            return Column(children: [stageCard, const SizedBox(height: 12), productsCard]);
           },
         ),
         const SizedBox(height: 12),
@@ -170,16 +145,11 @@ class _DashboardContent extends StatelessWidget {
               );
             }
 
-            return Column(
-              children: [cityCard, const SizedBox(height: 12), industryCard],
-            );
+            return Column(children: [cityCard, const SizedBox(height: 12), industryCard]);
           },
         ),
         const SizedBox(height: 12),
-        _RecentConnectionsCard(
-          connections: dashboard.recentConnections,
-          onViewAll: onViewAllConnections,
-        ),
+        _RecentConnectionsCard(connections: dashboard.recentConnections, onViewAll: onViewAllConnections),
       ],
     );
   }
@@ -197,12 +167,7 @@ class _DashboardIntro extends StatelessWidget {
       children: [
         Text(
           "Here's how the pipeline looks",
-          style: TextStyle(
-            fontSize: 22,
-            height: 1.15,
-            fontWeight: FontWeight.w800,
-            color: AppPallete.textPrimary,
-          ),
+          style: TextStyle(fontSize: 22, height: 1.15, fontWeight: FontWeight.w800, color: AppPallete.textPrimary),
         ),
         SizedBox(height: 6),
         Text(
@@ -286,11 +251,7 @@ class _WinRateCard extends StatelessWidget {
                   children: [
                     Text(
                       '$percent%',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: AppPallete.textPrimary,
-                      ),
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: AppPallete.textPrimary),
                     ),
                     const Text(
                       'WIN RATE',
@@ -313,27 +274,17 @@ class _WinRateCard extends StatelessWidget {
               children: [
                 Text(
                   '${dashboard.wonConnections} / ${dashboard.totalConnections}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 4),
                 const Text(
                   'connections closed as Won',
-                  style: TextStyle(
-                    color: AppPallete.textSecondary,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: AppPallete.textSecondary, fontSize: 12),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   '\$ ${_money(dashboard.wonRevenue)} in won revenue',
-                  style: const TextStyle(
-                    color: AppPallete.salesGreen,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: const TextStyle(color: AppPallete.salesGreen, fontSize: 12, fontWeight: FontWeight.w700),
                 ),
               ],
             ),
@@ -405,12 +356,7 @@ class _MetricData {
   final String label;
   final Color accent;
 
-  const _MetricData({
-    required this.icon,
-    required this.value,
-    required this.label,
-    required this.accent,
-  });
+  const _MetricData({required this.icon, required this.value, required this.label, required this.accent});
 }
 
 class _MetricCard extends StatelessWidget {
@@ -427,10 +373,7 @@ class _MetricCard extends StatelessWidget {
           Container(
             width: 36,
             height: 36,
-            decoration: BoxDecoration(
-              color: data.accent.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(10),
-            ),
+            decoration: BoxDecoration(color: data.accent.withOpacity(0.08), borderRadius: BorderRadius.circular(10)),
             child: Icon(data.icon, color: data.accent, size: 19),
           ),
           const SizedBox(width: 11),
@@ -438,21 +381,9 @@ class _MetricCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  data.value,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+                Text(data.value, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 2),
-                Text(
-                  data.label,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppPallete.textSecondary,
-                  ),
-                ),
+                Text(data.label, style: const TextStyle(fontSize: 12, color: AppPallete.textSecondary)),
               ],
             ),
           ),
@@ -473,23 +404,16 @@ class _StageBreakdownCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionHeader(
-            eyebrow: 'PIPELINE',
-            title: 'Connections by stage',
-            icon: Icons.trending_up_rounded,
-          ),
+          const _SectionHeader(eyebrow: 'PIPELINE', title: 'Connections by stage', icon: Icons.trending_up_rounded),
           const SizedBox(height: 14),
           for (final stage in ConnectionStage.values) ...[
             _ProgressRow(
               label: ConnectionStage.label(stage),
               count: dashboard.stageCounts[stage] ?? 0,
               total: dashboard.totalConnections,
-              color: stage == ConnectionStage.won
-                  ? AppPallete.salesGreen
-                  : ConnectionStage.color(stage),
+              color: stage == ConnectionStage.won ? AppPallete.salesGreen : ConnectionStage.color(stage),
             ),
-            if (stage != ConnectionStage.values.last)
-              const SizedBox(height: 12),
+            if (stage != ConnectionStage.values.last) const SizedBox(height: 12),
           ],
         ],
       ),
@@ -504,31 +428,20 @@ class _TopProductsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maxDeals = dashboard.topProducts.isEmpty
-        ? 1
-        : dashboard.topProducts.first.deals;
+    final maxDeals = dashboard.topProducts.isEmpty ? 1 : dashboard.topProducts.first.deals;
 
     return _CardShell(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SectionHeader(
-            eyebrow: 'DEMAND',
-            title: 'Top products',
-            icon: Icons.inventory_2_outlined,
-          ),
+          const _SectionHeader(eyebrow: 'DEMAND', title: 'Top products', icon: Icons.inventory_2_outlined),
           const SizedBox(height: 14),
           if (dashboard.topProducts.isEmpty)
             const _SmallEmpty(text: 'No product activity yet')
           else
             for (var i = 0; i < dashboard.topProducts.length; i++) ...[
-              _ProductRow(
-                index: i + 1,
-                product: dashboard.topProducts[i],
-                maxDeals: maxDeals,
-              ),
-              if (i != dashboard.topProducts.length - 1)
-                const SizedBox(height: 14),
+              _ProductRow(index: i + 1, product: dashboard.topProducts[i], maxDeals: maxDeals),
+              if (i != dashboard.topProducts.length - 1) const SizedBox(height: 14),
             ],
         ],
       ),
@@ -541,11 +454,7 @@ class _ProductRow extends StatelessWidget {
   final DashboardTopProduct product;
   final int maxDeals;
 
-  const _ProductRow({
-    required this.index,
-    required this.product,
-    required this.maxDeals,
-  });
+  const _ProductRow({required this.index, required this.product, required this.maxDeals});
 
   @override
   Widget build(BuildContext context) {
@@ -558,10 +467,7 @@ class _ProductRow extends StatelessWidget {
           radius: 14,
           backgroundColor: AppPallete.salesOrange,
           foregroundColor: Colors.white,
-          child: Text(
-            '$index',
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
-          ),
+          child: Text('$index', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -573,19 +479,13 @@ class _ProductRow extends StatelessWidget {
                     child: Text(
                       '${product.name}  \$${_money(product.price)}',
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Text(
                     '${product.deals} deals · ${product.clients} clients',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppPallete.textSecondary,
-                    ),
+                    style: const TextStyle(fontSize: 12, color: AppPallete.textSecondary),
                   ),
                 ],
               ),
@@ -639,12 +539,7 @@ class _BreakdownCard extends StatelessWidget {
               Builder(
                 builder: (context) {
                   final item = items[i];
-                  return _ProgressRow(
-                    label: item.label,
-                    count: item.count,
-                    total: total,
-                    color: accent,
-                  );
+                  return _ProgressRow(label: item.label, count: item.count, total: total, color: accent);
                 },
               ),
               if (i != items.take(5).length - 1) const SizedBox(height: 12),
@@ -659,10 +554,7 @@ class _RecentConnectionsCard extends StatelessWidget {
   final List<ConnectionEntity> connections;
   final VoidCallback onViewAll;
 
-  const _RecentConnectionsCard({
-    required this.connections,
-    required this.onViewAll,
-  });
+  const _RecentConnectionsCard({required this.connections, required this.onViewAll});
 
   @override
   Widget build(BuildContext context) {
@@ -688,8 +580,7 @@ class _RecentConnectionsCard extends StatelessWidget {
           else
             for (var i = 0; i < connections.length; i++) ...[
               _RecentConnectionRow(connection: connections[i]),
-              if (i != connections.length - 1)
-                const Divider(height: 18, color: AppPallete.cardBorder),
+              if (i != connections.length - 1) const Divider(height: 18, color: AppPallete.cardBorder),
             ],
         ],
       ),
@@ -704,9 +595,7 @@ class _RecentConnectionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = connection.clientName?.trim().isNotEmpty == true
-        ? connection.clientName!.trim()
-        : 'Client';
+    final name = connection.clientName?.trim().isNotEmpty == true ? connection.clientName!.trim() : 'Client';
     final initial = name.isEmpty ? '?' : name[0].toUpperCase();
     final stageColor = ConnectionStage.color(connection.stage);
 
@@ -716,10 +605,7 @@ class _RecentConnectionRow extends StatelessWidget {
           radius: 17,
           backgroundColor: AppPallete.salesGreen.withOpacity(0.12),
           foregroundColor: AppPallete.salesGreen,
-          child: Text(
-            initial,
-            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
-          ),
+          child: Text(initial, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -732,29 +618,19 @@ class _RecentConnectionRow extends StatelessWidget {
                     child: Text(
                       name,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
                     ),
                   ),
                   const SizedBox(width: 7),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 7,
-                      vertical: 3,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                     decoration: BoxDecoration(
                       color: stageColor.withOpacity(0.10),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       ConnectionStage.label(connection.stage),
-                      style: TextStyle(
-                        color: stageColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: TextStyle(color: stageColor, fontSize: 12, fontWeight: FontWeight.w700),
                     ),
                   ),
                 ],
@@ -763,19 +639,13 @@ class _RecentConnectionRow extends StatelessWidget {
               Text(
                 connection.productName ?? 'Product',
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppPallete.textSecondary,
-                ),
+                style: const TextStyle(fontSize: 12, color: AppPallete.textSecondary),
               ),
             ],
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          _dateLabel(connection.createdAt),
-          style: const TextStyle(fontSize: 12, color: AppPallete.textSecondary),
-        ),
+        Text(_dateLabel(connection.createdAt), style: const TextStyle(fontSize: 12, color: AppPallete.textSecondary)),
       ],
     );
   }
@@ -787,18 +657,11 @@ class _ProgressRow extends StatelessWidget {
   final int total;
   final Color color;
 
-  const _ProgressRow({
-    required this.label,
-    required this.count,
-    required this.total,
-    required this.color,
-  });
+  const _ProgressRow({required this.label, required this.count, required this.total, required this.color});
 
   @override
   Widget build(BuildContext context) {
-    final progress = total == 0
-        ? 0.0
-        : (count / total).clamp(0.0, 1.0).toDouble();
+    final progress = total == 0 ? 0.0 : (count / total).clamp(0.0, 1.0).toDouble();
     final percent = total == 0 ? 0 : ((count / total) * 100).round();
 
     return Column(
@@ -806,21 +669,9 @@ class _ProgressRow extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
             ),
-            Text(
-              '$count · $percent%',
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppPallete.textSecondary,
-              ),
-            ),
+            Text('$count · $percent%', style: const TextStyle(fontSize: 12, color: AppPallete.textSecondary)),
           ],
         ),
         const SizedBox(height: 6),
@@ -843,11 +694,7 @@ class _SectionHeader extends StatelessWidget {
   final String title;
   final IconData icon;
 
-  const _SectionHeader({
-    required this.eyebrow,
-    required this.title,
-    required this.icon,
-  });
+  const _SectionHeader({required this.eyebrow, required this.title, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -856,10 +703,7 @@ class _SectionHeader extends StatelessWidget {
         Container(
           width: 32,
           height: 32,
-          decoration: BoxDecoration(
-            color: AppPallete.salesPrimarySoft,
-            borderRadius: BorderRadius.circular(9),
-          ),
+          decoration: BoxDecoration(color: AppPallete.salesPrimarySoft, borderRadius: BorderRadius.circular(9)),
           child: Icon(icon, color: AppPallete.salesPrimary, size: 17),
         ),
         const SizedBox(width: 9),
@@ -877,13 +721,7 @@ class _SectionHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              Text(title, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
             ],
           ),
         ),
@@ -896,10 +734,7 @@ class _CardShell extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
 
-  const _CardShell({
-    required this.child,
-    this.padding = const EdgeInsets.all(16),
-  });
+  const _CardShell({required this.child, this.padding = const EdgeInsets.all(16)});
 
   @override
   Widget build(BuildContext context) {
@@ -909,13 +744,7 @@ class _CardShell extends StatelessWidget {
         color: AppPallete.cardBackground,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppPallete.cardBorder),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x09000000),
-            blurRadius: 12,
-            offset: Offset(0, 4),
-          ),
-        ],
+        boxShadow: const [BoxShadow(color: Color(0x09000000), blurRadius: 12, offset: Offset(0, 4))],
       ),
       child: child,
     );
@@ -932,10 +761,7 @@ class _SmallEmpty extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(color: AppPallete.textSecondary, fontSize: 12),
-        ),
+        child: Text(text, style: const TextStyle(color: AppPallete.textSecondary, fontSize: 12)),
       ),
     );
   }
@@ -955,19 +781,13 @@ class _DashboardError extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
-              size: 48,
-              color: AppPallete.textSecondary,
-            ),
+            const Icon(Icons.cloud_off_rounded, size: 48, color: AppPallete.textSecondary),
             const SizedBox(height: 14),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 14),
             FilledButton(
               onPressed: onRetry,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppPallete.salesPrimary,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: AppPallete.salesPrimary),
               child: const Text('Retry'),
             ),
           ],
@@ -984,20 +804,7 @@ String _money(double value) {
 
 String _dateLabel(DateTime? date) {
   if (date == null) return '';
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   final local = date.toLocal();
   return '${months[local.month - 1]} ${local.day}, ${local.year}';
 }

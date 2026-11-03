@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:optima_sync_v2/core/widgets/app_drawer.dart';
+import 'package:optima_sync_v2/app_drawer.dart';
 import 'package:optima_sync_v2/core/widgets/app_mobile_widgets.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,12 +49,7 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
   void _submitAddMember() {
     if (!_formKey.currentState!.validate()) return;
 
-    context.read<MemberBloc>().add(
-      AddMemberSubmitted(
-        email: _emailController.text.trim(),
-        role: _selectedRole,
-      ),
-    );
+    context.read<MemberBloc>().add(AddMemberSubmitted(email: _emailController.text.trim(), role: _selectedRole));
   }
 
   void _openChangeRoleSheet(MemberEntity member) {
@@ -63,9 +58,7 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (_) {
         return BlocProvider.value(
           value: bloc,
@@ -83,218 +76,182 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
       final name = member.name?.toLowerCase() ?? '';
       final role = member.role.toLowerCase();
 
-      return email.contains(_query) ||
-          name.contains(_query) ||
-          role.contains(_query);
+      return email.contains(_query) || name.contains(_query) || role.contains(_query);
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppPallete.pageBackground,
-      appBar: AppBar(title: const Text('Team Members')),
-      drawer: const AppDrawer(selectedItem: 'Member'),
-      body: BlocConsumer<MemberBloc, MemberState>(
-        listenWhen: (previous, current) {
-          final wasSubmittingNewMember =
-              previous is MemberSubmitting && previous.updatingId == null;
+    return BlocConsumer<MemberBloc, MemberState>(
+      listenWhen: (previous, current) {
+        final wasSubmittingNewMember = previous is MemberSubmitting && previous.updatingId == null;
 
-          return (wasSubmittingNewMember && current is MemberSuccess) ||
-              (wasSubmittingNewMember && current is MemberFailure);
-        },
-        listener: (context, state) {
-          if (state is MemberSuccess) {
-            _emailController.clear();
-            setState(() {
-              _selectedRole = 'member';
-            });
+        return (wasSubmittingNewMember && current is MemberSuccess) ||
+            (wasSubmittingNewMember && current is MemberFailure);
+      },
+      listener: (context, state) {
+        if (state is MemberSuccess) {
+          _emailController.clear();
+          setState(() {
+            _selectedRole = 'member';
+          });
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('The member was added successfully')),
-            );
-          }
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('The member was added successfully')));
+        }
 
-          if (state is MemberFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
-          }
-        },
-        builder: (context, state) {
-          if (state is MemberInitial || state is MemberLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+        if (state is MemberFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+      },
+      builder: (context, state) {
+        if (state is MemberInitial || state is MemberLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          if (state is MemberFailure && state.members == null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(state.message, textAlign: TextAlign.center),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<MemberBloc>().add(LoadMembers());
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
+        if (state is MemberFailure && state.members == null) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(state.message, textAlign: TextAlign.center),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<MemberBloc>().add(LoadMembers());
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final members = switch (state) {
+          MemberSuccess(:final members) => members,
+          MemberSubmitting(:final members) => members,
+          MemberFailure(:final members) => members ?? const <MemberEntity>[],
+          _ => const <MemberEntity>[],
+        };
+
+        final isAdding = state is MemberSubmitting && state.updatingId == null;
+        final errorMessage = state is MemberFailure ? state.message : null;
+
+        final filteredMembers = _filter(members);
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            context.read<MemberBloc>().add(LoadMembers());
+          },
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+            children: [
+              _HeaderCard(),
+              const SizedBox(height: 12),
+
+              _MemberSummary(total: members.length),
+              const SizedBox(height: 12),
+
+              _AddMemberCard(
+                formKey: _formKey,
+                emailController: _emailController,
+                selectedRole: _selectedRole,
+                isSubmitting: isAdding,
+                errorMessage: errorMessage,
+                onRoleChanged: (value) {
+                  if (value == null) return;
+                  setState(() {
+                    _selectedRole = value;
+                  });
+                },
+                onSubmit: _submitAddMember,
+              ),
+              const SizedBox(height: 12),
+
+              Container(
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search members by email or role...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _query.isEmpty
+                        ? null
+                        : IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                            },
+                          ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                  ),
                 ),
               ),
-            );
-          }
+              const SizedBox(height: 12),
 
-          final members = switch (state) {
-            MemberSuccess(:final members) => members,
-            MemberSubmitting(:final members) => members,
-            MemberFailure(:final members) => members ?? const <MemberEntity>[],
-            _ => const <MemberEntity>[],
-          };
-
-          final isAdding = state is MemberSubmitting && state.updatingId == null;
-          final errorMessage = state is MemberFailure ? state.message : null;
-
-          final filteredMembers = _filter(members);
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<MemberBloc>().add(LoadMembers());
-            },
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
-              children: [
-                _HeaderCard(),
-                const SizedBox(height: 12),
-
-                _MemberSummary(total: members.length),
-                const SizedBox(height: 12),
-
-                _AddMemberCard(
-                  formKey: _formKey,
-                  emailController: _emailController,
-                  selectedRole: _selectedRole,
-                  isSubmitting: isAdding,
-                  errorMessage: errorMessage,
-                  onRoleChanged: (value) {
-                    if (value == null) return;
-                    setState(() {
-                      _selectedRole = value;
-                    });
-                  },
-                  onSubmit: _submitAddMember,
-                ),
-                const SizedBox(height: 12),
-
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search members by email or role...',
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: _query.isEmpty
-                          ? null
-                          : IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                _searchController.clear();
-                              },
-                            ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      if (MediaQuery.sizeOf(context).width >= 600 &&
-                          MediaQuery.textScalerOf(context).scale(14) <= 20) ...[
+              Container(
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+                child: Column(
+                  children: [
+                    if (MediaQuery.sizeOf(context).width >= 600 &&
+                        MediaQuery.textScalerOf(context).scale(14) <= 20) ...[
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
                         child: Row(
                           children: [
-                            Expanded(
-                              flex: 3,
-                              child: _TableHeaderLabel('NAME'),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: _TableHeaderLabel('ROLE'),
-                            ),
+                            Expanded(flex: 3, child: _TableHeaderLabel('NAME')),
+                            Expanded(flex: 2, child: _TableHeaderLabel('ROLE')),
                             const SizedBox(width: 44),
                           ],
                         ),
                       ),
                       const Divider(height: 1),
-
-                      ],
-                      if (members.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 32),
-                          child: Center(
-                            child: Text(
-                              'No members found.',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        )
-                      else if (filteredMembers.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 32),
-                          child: Center(
-                            child: Text(
-                              'No members match your search.',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ),
-                        )
-                      else
-                        ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: filteredMembers.length,
-                          separatorBuilder: (_, __) =>
-                              const Divider(height: 1),
-                          itemBuilder: (context, index) {
-                            final member = filteredMembers[index];
-
-                            final isUpdatingThisMember =
-                                state is MemberSubmitting &&
-                                state.updatingId == member.id;
-
-                            return MemberListItem(
-                              member: member,
-                              isLoading: isUpdatingThisMember,
-                              onChangeRole: () =>
-                                  _openChangeRoleSheet(member),
-                            );
-                          },
-                        ),
                     ],
-                  ),
+                    if (members.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 32),
+                        child: Center(
+                          child: Text('No members found.', style: TextStyle(color: Colors.grey)),
+                        ),
+                      )
+                    else if (filteredMembers.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 32),
+                        child: Center(
+                          child: Text('No members match your search.', style: TextStyle(color: Colors.grey)),
+                        ),
+                      )
+                    else
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: filteredMembers.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          final member = filteredMembers[index];
+
+                          final isUpdatingThisMember = state is MemberSubmitting && state.updatingId == member.id;
+
+                          return MemberListItem(
+                            member: member,
+                            isLoading: isUpdatingThisMember,
+                            onChangeRole: () => _openChangeRoleSheet(member),
+                          );
+                        },
+                      ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -308,12 +265,7 @@ class _TableHeaderLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.5,
-        color: AppPallete.textSecondary,
-      ),
+      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 0.5, color: AppPallete.textSecondary),
     );
   }
 }
@@ -324,10 +276,7 @@ class _HeaderCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -342,11 +291,7 @@ class _HeaderCard extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(
-              Icons.groups_rounded,
-              color: Colors.white,
-              size: 26,
-            ),
+            child: const Icon(Icons.groups_rounded, color: Colors.white, size: 26),
           ),
           const SizedBox(width: 14),
 
@@ -356,19 +301,11 @@ class _HeaderCard extends StatelessWidget {
               children: [
                 const Row(
                   children: [
-                    Expanded(child: Text(
-                      'Team Members',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
-                    SizedBox(width: 6),
-                    Icon(
-                      Icons.auto_awesome,
-                      color: AppPallete.primary,
-                      size: 18,
+                    Expanded(
+                      child: Text('Team Members', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     ),
+                    SizedBox(width: 6),
+                    Icon(Icons.auto_awesome, color: AppPallete.primary, size: 18),
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -390,22 +327,32 @@ class _MemberSummary extends StatelessWidget {
   const _MemberSummary({required this.total});
 
   @override
-  Widget build(BuildContext context) => AppSurface(child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(children: [
-        const Icon(Icons.groups_outlined, color: AppPallete.primary),
-        const SizedBox(width: 10),
-        const Expanded(child: Text('Total Members', style: TextStyle(fontWeight: FontWeight.w700))),
-        Text('$total', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
-      ]),
-      const Divider(height: 24),
-      const Wrap(spacing: 14, runSpacing: 8, children: [
-        Text('Active & Verified', style: TextStyle(fontSize: 12, color: AppPallete.success)),
-        Text('Role-Based Access', style: TextStyle(fontSize: 12, color: AppPallete.primary)),
-      ]),
-    ],
-  ));
+  Widget build(BuildContext context) => AppSurface(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.groups_outlined, color: AppPallete.primary),
+            const SizedBox(width: 10),
+            const Expanded(
+              child: Text('Total Members', style: TextStyle(fontWeight: FontWeight.w700)),
+            ),
+            Text('$total', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+          ],
+        ),
+        const Divider(height: 24),
+        const Wrap(
+          spacing: 14,
+          runSpacing: 8,
+          children: [
+            Text('Active & Verified', style: TextStyle(fontSize: 12, color: AppPallete.success)),
+            Text('Role-Based Access', style: TextStyle(fontSize: 12, color: AppPallete.primary)),
+          ],
+        ),
+      ],
+    ),
+  );
 }
 
 class _AddMemberCard extends StatelessWidget {
@@ -432,10 +379,7 @@ class _AddMemberCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
       child: Form(
         key: formKey,
         child: Column(
@@ -447,35 +391,19 @@ class _AddMemberCard extends StatelessWidget {
                 Container(
                   width: 36,
                   height: 36,
-                  decoration: BoxDecoration(
-                    color: AppPallete.primarySoft,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    color: AppPallete.primary,
-                    size: 20,
-                  ),
+                  decoration: BoxDecoration(color: AppPallete.primarySoft, borderRadius: BorderRadius.circular(10)),
+                  child: const Icon(Icons.add, color: AppPallete.primary, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Add New Member',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      const Text('Add New Member', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 2),
                       Text(
                         'Enter member email and select their role.',
-                        style: TextStyle(
-                          color: AppPallete.textSecondary,
-                          fontSize: 13,
-                        ),
+                        style: TextStyle(color: AppPallete.textSecondary, fontSize: 13),
                       ),
                     ],
                   ),
@@ -534,12 +462,7 @@ class _AddMemberCard extends StatelessWidget {
               value: selectedRole,
               onChanged: isSubmitting ? null : onRoleChanged,
               items: kMemberRoles
-                  .map(
-                    (role) => DropdownMenuItem(
-                      value: role,
-                      child: Text(MemberRoleStyle.label(role)),
-                    ),
-                  )
+                  .map((role) => DropdownMenuItem(value: role, child: Text(MemberRoleStyle.label(role))))
                   .toList(),
               decoration: InputDecoration(
                 filled: true,
@@ -568,24 +491,16 @@ class _AddMemberCard extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppPallete.primary,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: isSubmitting ? null : onSubmit,
                 child: isSubmitting
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text(
-                        'Save member',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                    : const Text('Save member', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
           ],

@@ -8,6 +8,7 @@ import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_event.dart';
 import 'package:optima_sync_v2/app/presentation/auth/bloc/auth_state.dart';
 import 'package:optima_sync_v2/app/presentation/auth/screens/auth_screen.dart';
 import 'package:optima_sync_v2/app/presentation/home/screens/home_screen.dart';
+import 'package:optima_sync_v2/app_shell.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -37,10 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
             }
 
             if (state is LoggedOut) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => AuthScreen()),
-              );
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => AuthScreen()));
             }
           },
         ),
@@ -49,15 +47,9 @@ class _SplashScreenState extends State<SplashScreen> {
           listener: (context, state) {
             if (state is CheckSelectedOrgSuccess) {
               if (state.hasSelected) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => HomeScreen()),
-                );
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => AppShell()));
               } else {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SelectOrgScreen()),
-                );
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const SelectOrgScreen()));
               }
             }
           },
@@ -72,11 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               Text(
                 "Optima Sync",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 40,
-                ),
+                style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w800, fontSize: 40),
               ),
               Text("Precision Enterprise Management"),
               SizedBox(

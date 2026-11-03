@@ -39,7 +39,7 @@ class AnalyticsBloc extends Bloc<AnalyticsEvent, AnalyticsState> {
   Future<void> _onLoadCampaignAnalytics(CampaignEntity campaign, Emitter<AnalyticsState> emit) async {
     emit(.loading());
 
-    final result = await usecases.getCampaignAnalytics(campaign);
+    final result = await usecases.getCampaignAnalytics(campaign.id!);
 
     result.fold(
       (failure) => emit(.failure(failure: failure)),

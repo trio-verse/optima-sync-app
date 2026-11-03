@@ -6,7 +6,7 @@ import 'package:optima_sync_v2/app/presentation/employee/bloc/employee_bloc.dart
 import 'package:optima_sync_v2/app/presentation/employee/bloc/employee_event.dart';
 import 'package:optima_sync_v2/app/presentation/employee/bloc/employee_state.dart';
 import 'package:optima_sync_v2/core/constants/appPallete.dart';
-import 'package:optima_sync_v2/core/widgets/app_drawer.dart';
+import 'package:optima_sync_v2/app_drawer.dart';
 
 class EmployeeScreen extends StatefulWidget {
   const EmployeeScreen({super.key});
@@ -37,10 +37,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
         title: const Text('Remove employee?'),
         content: Text('This will remove ${employee.name} from Employees.'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
             onPressed: () => Navigator.pop(context, true),
@@ -57,80 +54,61 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppPallete.pageBackground,
-      drawer: const AppDrawer(selectedItem: 'Employees'),
-      appBar: AppBar(
-        backgroundColor: AppPallete.cardBackground,
-        surfaceTintColor: AppPallete.cardBackground,
-        title: const Text(
-          'Employees',
-          style: TextStyle(fontWeight: FontWeight.w800),
-        ),
-      ),
-      body: BlocConsumer<EmployeeBloc, EmployeeState>(
-        listener: (context, state) {
-          if (state is EmployeeLoaded && state.message != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message!)));
-          }
-          if (state is EmployeeFailure && state.employees.isNotEmpty) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
-          }
-        },
-        builder: (context, state) {
-          if (state is EmployeeInitial || state is EmployeeLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return BlocConsumer<EmployeeBloc, EmployeeState>(
+      listener: (context, state) {
+        if (state is EmployeeLoaded && state.message != null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message!)));
+        }
+        if (state is EmployeeFailure && state.employees.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+      },
+      builder: (context, state) {
+        if (state is EmployeeInitial || state is EmployeeLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          if (state is EmployeeFailure && state.employees.isEmpty) {
-            return _EmployeeError(
-              message: state.message,
-              onRetry: () => context.read<EmployeeBloc>().add(
-                const LoadEmployees(),
-              ),
-            );
-          }
+        if (state is EmployeeFailure && state.employees.isEmpty) {
+          return _EmployeeError(
+            message: state.message,
+            onRetry: () => context.read<EmployeeBloc>().add(const LoadEmployees()),
+          );
+        }
 
-          final employees = switch (state) {
-            EmployeeLoaded(:final employees) => employees,
-            EmployeeWorking(:final employees) => employees,
-            EmployeeFailure(:final employees) => employees,
-            _ => const <EmployeeEntity>[],
-          };
+        final employees = switch (state) {
+          EmployeeLoaded(:final employees) => employees,
+          EmployeeWorking(:final employees) => employees,
+          EmployeeFailure(:final employees) => employees,
+          _ => const <EmployeeEntity>[],
+        };
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<EmployeeBloc>().add(const LoadEmployees());
-            },
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
-              children: [
-                _EmployeeHeader(onAdd: () => _openForm()),
-                const SizedBox(height: 16),
-                if (state is EmployeeWorking)
-                  const LinearProgressIndicator(minHeight: 2),
-                if (employees.isEmpty)
-                  const _EmployeeEmpty()
-                else
-                  ...employees.map(
-                    (employee) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: _EmployeeCard(
-                        employee: employee,
-                        onEdit: () => _openForm(employee),
-                        onDelete: () => _confirmDelete(employee),
-                      ),
+        return RefreshIndicator(
+          onRefresh: () async {
+            context.read<EmployeeBloc>().add(const LoadEmployees());
+          },
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+            children: [
+              _EmployeeHeader(onAdd: () => _openForm()),
+              const SizedBox(height: 16),
+              if (state is EmployeeWorking) const LinearProgressIndicator(minHeight: 2),
+              if (employees.isEmpty)
+                const _EmployeeEmpty()
+              else
+                ...employees.map(
+                  (employee) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _EmployeeCard(
+                      employee: employee,
+                      onEdit: () => _openForm(employee),
+                      onDelete: () => _confirmDelete(employee),
                     ),
                   ),
-              ],
-            ),
-          );
-        },
-      ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -153,10 +131,7 @@ class _EmployeeHeader extends StatelessWidget {
           const copy = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Employees',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
-              ),
+              Text('Employees', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
               SizedBox(height: 4),
               Text(
                 'Manage the people who work with your organization.',
@@ -193,11 +168,7 @@ class _EmployeeCard extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const _EmployeeCard({
-    required this.employee,
-    required this.onEdit,
-    required this.onDelete,
-  });
+  const _EmployeeCard({required this.employee, required this.onEdit, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -218,10 +189,7 @@ class _EmployeeCard extends StatelessWidget {
                 backgroundColor: AppPallete.salesPrimarySoft,
                 child: Text(
                   employee.name.isEmpty ? '?' : employee.name[0].toUpperCase(),
-                  style: const TextStyle(
-                    color: AppPallete.salesPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: const TextStyle(color: AppPallete.salesPrimary, fontWeight: FontWeight.w800),
                 ),
               ),
               const SizedBox(width: 12),
@@ -229,18 +197,9 @@ class _EmployeeCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      employee.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+                    Text(employee.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 3),
-                    Text(
-                      employee.position,
-                      style: const TextStyle(color: AppPallete.textSecondary),
-                    ),
+                    Text(employee.position, style: const TextStyle(color: AppPallete.textSecondary)),
                   ],
                 ),
               ),
@@ -260,14 +219,8 @@ class _EmployeeCard extends StatelessWidget {
             children: [
               _Info(label: 'Email', value: employee.email),
               _Info(label: 'Phone', value: employee.phone),
-              _Info(
-                label: 'Cost / Hour',
-                value: '\$${employee.costPerHour.toStringAsFixed(2)}',
-              ),
-              _Info(
-                label: 'Hours / Point',
-                value: '${employee.hoursPerPoint}',
-              ),
+              _Info(label: 'Cost / Hour', value: '\$${employee.costPerHour.toStringAsFixed(2)}'),
+              _Info(label: 'Hours / Point', value: '${employee.hoursPerPoint}'),
             ],
           ),
         ],
@@ -290,11 +243,7 @@ class _Info extends StatelessWidget {
         children: [
           Text(
             label.toUpperCase(),
-            style: const TextStyle(
-              color: AppPallete.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-            ),
+            style: const TextStyle(color: AppPallete.textSecondary, fontSize: 12, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 3),
           Text(value, maxLines: 2, overflow: TextOverflow.ellipsis),
@@ -331,12 +280,8 @@ class _EmployeeFormDialogState extends State<EmployeeFormDialog> {
     _email = TextEditingController(text: employee?.email ?? '');
     _phone = TextEditingController(text: employee?.phone ?? '');
     _position = TextEditingController(text: employee?.position ?? '');
-    _cost = TextEditingController(
-      text: employee == null ? '' : employee.costPerHour.toString(),
-    );
-    _hours = TextEditingController(
-      text: employee == null ? '' : employee.hoursPerPoint.toString(),
-    );
+    _cost = TextEditingController(text: employee == null ? '' : employee.costPerHour.toString());
+    _hours = TextEditingController(text: employee == null ? '' : employee.hoursPerPoint.toString());
   }
 
   @override
@@ -405,19 +350,13 @@ class _EmployeeFormDialogState extends State<EmployeeFormDialog> {
                             color: AppPallete.salesPrimarySoft,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(
-                            Icons.person_add_alt_1_outlined,
-                            color: AppPallete.salesPrimary,
-                          ),
+                          child: const Icon(Icons.person_add_alt_1_outlined, color: AppPallete.salesPrimary),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             _isEditing ? 'Edit Employee' : 'Add Employee',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                            ),
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
                           ),
                         ),
                         IconButton(
@@ -444,20 +383,14 @@ class _EmployeeFormDialogState extends State<EmployeeFormDialog> {
                       keyboardType: TextInputType.phone,
                       validator: _required,
                     ),
-                    _FormField(
-                      controller: _position,
-                      label: 'Position',
-                      validator: _required,
-                    ),
+                    _FormField(controller: _position, label: 'Position', validator: _required),
                     _FormField(
                       controller: _cost,
                       label: 'Cost Per Hour',
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
                         final number = double.tryParse(value?.trim() ?? '');
-                        return number == null || number < 0
-                            ? 'Enter a valid amount'
-                            : null;
+                        return number == null || number < 0 ? 'Enter a valid amount' : null;
                       },
                     ),
                     _FormField(
@@ -466,16 +399,11 @@ class _EmployeeFormDialogState extends State<EmployeeFormDialog> {
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         final number = int.tryParse(value?.trim() ?? '');
-                        return number == null || number < 1
-                            ? 'Enter at least 1'
-                            : null;
+                        return number == null || number < 1 ? 'Enter at least 1' : null;
                       },
                     ),
                     if (state is EmployeeFailure) ...[
-                      Text(
-                        state.message,
-                        style: const TextStyle(color: Colors.redAccent),
-                      ),
+                      Text(state.message, style: const TextStyle(color: Colors.redAccent)),
                       const SizedBox(height: 10),
                     ],
                     Row(
@@ -494,10 +422,7 @@ class _EmployeeFormDialogState extends State<EmployeeFormDialog> {
                                 ? const SizedBox(
                                     width: 18,
                                     height: 18,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                   )
                                 : Text(_isEditing ? 'Update Employee' : 'Add Employee'),
                           ),
@@ -521,12 +446,7 @@ class _FormField extends StatelessWidget {
   final TextInputType? keyboardType;
   final String? Function(String?) validator;
 
-  const _FormField({
-    required this.controller,
-    required this.label,
-    required this.validator,
-    this.keyboardType,
-  });
+  const _FormField({required this.controller, required this.label, required this.validator, this.keyboardType});
 
   @override
   Widget build(BuildContext context) {
