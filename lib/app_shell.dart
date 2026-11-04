@@ -8,7 +8,7 @@ import 'package:optima_sync_v2/app/presentation/member/screen/team_members_scree
 import 'package:optima_sync_v2/app/presentation/product/screen/product_screen.dart';
 import 'package:optima_sync_v2/app/presentation/project/screen/project_screen.dart';
 import 'package:optima_sync_v2/app/presentation/reference_data/screen/reference_data_screen.dart';
-import 'package:optima_sync_v2/app/presentation/task/screen/task_manager_screen.dart';
+import 'package:optima_sync_v2/app/presentation/workspaces/screens/workspace_screen.dart';
 import 'package:optima_sync_v2/app_drawer.dart';
 
 class AppShell extends StatefulWidget {
@@ -32,10 +32,11 @@ class _AppShellState extends State<AppShell> {
           Navigator.pop(context);
         }),
       ),
+      floatingActionButton: selectedPage == 2 ? FloatingActionButton(child: Icon(Icons.add), onPressed: () {}) : null,
       body: [
         HomeScreen(), // dashboard page
         ProjectScreen(),
-        TaskManagerScreen(),
+        WorkspaceScreen(),
         EmployeeScreen(),
         ConnectionScreen(),
         TeamMembersScreen(),
