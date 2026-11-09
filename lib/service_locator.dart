@@ -1,8 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:optima_sync_v2/app/data/repoImp/task_repo_impl.dart';
-import 'package:optima_sync_v2/app/data/sources/remote_data/task_remote_data_source.dart';
-import 'package:optima_sync_v2/app/domain/repo/task/task_repo.dart';
-import 'package:optima_sync_v2/app/domain/usecases/task_usecases.dart';
 import 'package:optima_sync_v2/app/data/repoImp/marketing/analytics_repo_impl.dart';
 import 'package:optima_sync_v2/app/data/repoImp/auth_repo_impl.dart';
 import 'package:optima_sync_v2/app/data/repoImp/marketing/campaign_repo_impl.dart';
@@ -70,6 +66,7 @@ import 'package:optima_sync_v2/app/domain/usecases/reference_data/industry_useca
 import 'package:optima_sync_v2/app/domain/usecases/member_usecases.dart';
 import 'package:optima_sync_v2/app/domain/usecases/org_usecases.dart';
 import 'package:optima_sync_v2/app/domain/usecases/product_usecases.dart';
+import 'package:optima_sync_v2/app/domain/usecases/task_manager/task_manager_usecase.dart';
 import 'package:optima_sync_v2/core/network/http_client_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -80,113 +77,48 @@ Future<void> init() async {
   final client = http.Client();
 
   final storage = await SharedPreferences.getInstance();
-  sl.registerLazySingleton(
-    () => HttpClientHelper(storage: storage, client: client),
-  );
+  sl.registerLazySingleton(() => HttpClientHelper(storage: storage, client: client));
 
   // Data Access Layer
   sl.registerLazySingleton(() => AuthRemoteDataSource(client: client));
   sl.registerLazySingleton(() => AuthLocalDataSource(storage: storage));
   sl.registerLazySingleton(() => OrgLocalDataSource(storage: storage));
   sl.registerLazySingleton(() => CreateOrgRemoteDataSource(client: sl()));
-  sl.registerLazySingleton(
-    () => CityRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => IndustryRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => MemberRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => ChannelRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => ClientRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => ProductRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => ConnectionRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => CampaignRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => ContentRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => CaptureRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
+  sl.registerLazySingleton(() => CityRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => IndustryRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => MemberRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => ChannelRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => ClientRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => ProductRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => ConnectionRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => CampaignRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => ContentRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => CaptureRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
   sl.registerLazySingleton(() => PublicCaptureRemoteDataSource(client: client));
-  sl.registerLazySingleton(
-    () => AnalyticsRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => EmployeeRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton(
-    () => ProjectRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
+  sl.registerLazySingleton(() => AnalyticsRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => EmployeeRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
+  sl.registerLazySingleton(() => ProjectRemoteDataSource(client: sl(), orgLocalDataSource: sl()));
   // Repository
-  sl.registerLazySingleton(
-    () => TaskRemoteDataSource(client: sl(), orgLocalDataSource: sl()),
-  );
-  sl.registerLazySingleton<TaskRepository>(
-    () => TaskRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
-  );
-  sl.registerLazySingleton<OrgRepository>(
-    () =>
-        CreateOrgRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
-  );
-  sl.registerLazySingleton<CityRepository>(
-    () => CityRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<IndustryRepository>(
-    () => IndustryRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<MemberRepository>(
-    () => MemberRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<ChannelRepository>(
-    () => ChannelRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<ClientRepository>(
-    () => ClientRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<ProductRepository>(
-    () => ProductRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<ConnectionRepository>(
-    () => ConnectionRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<CampaignRepository>(
-    () => CampaignRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<ContentRepository>(
-    () => ContentRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<CaptureRepository>(
-    () => CaptureRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<PublicCaptureRepository>(
-    () => PublicCaptureRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<AnalyticsRepository>(
-    () => AnalyticsRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<EmployeeRepository>(
-    () => EmployeeRepositoryImpl(remoteDataSource: sl()),
-  );
-  sl.registerLazySingleton<ProjectRepository>(
-    () => ProjectRepositoryImpl(remoteDataSource: sl()),
-  );
+
+  // sl.registerLazySingleton<TaskManagerRepo>(() => TaskManagerImp(remoteDataSource: sl()));
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()));
+  sl.registerLazySingleton<OrgRepository>(() => CreateOrgRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()));
+  sl.registerLazySingleton<CityRepository>(() => CityRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<IndustryRepository>(() => IndustryRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<MemberRepository>(() => MemberRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ChannelRepository>(() => ChannelRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ClientRepository>(() => ClientRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ProductRepository>(() => ProductRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ConnectionRepository>(() => ConnectionRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<CampaignRepository>(() => CampaignRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ContentRepository>(() => ContentRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<CaptureRepository>(() => CaptureRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<PublicCaptureRepository>(() => PublicCaptureRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<AnalyticsRepository>(() => AnalyticsRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<EmployeeRepository>(() => EmployeeRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ProjectRepository>(() => ProjectRepositoryImpl(remoteDataSource: sl()));
   // Usecases
-  sl.registerLazySingleton(() => TaskUsecases(repo: sl()));
+  sl.registerLazySingleton(() => TaskManagerUsecase(repo: sl()));
   sl.registerLazySingleton(() => AuthUsecases(repo: sl()));
   sl.registerLazySingleton(() => OrgUsecases(repo: sl()));
   sl.registerLazySingleton(() => CityUsecases(repo: sl()));

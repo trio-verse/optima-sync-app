@@ -7,7 +7,7 @@ import 'package:optima_sync_v2/app/presentation/marketing/analytics/screen/marke
 import 'package:optima_sync_v2/app/presentation/member/screen/team_members_screen.dart';
 import 'package:optima_sync_v2/app/presentation/product/screen/product_screen.dart';
 import 'package:optima_sync_v2/app/presentation/project/screen/project_screen.dart';
-import 'package:optima_sync_v2/app/presentation/reference_data/screen/reference_data_screen.dart';
+import 'package:optima_sync_v2/app/presentation/refrence_data/screen/refrence_data_screen.dart';
 import 'package:optima_sync_v2/app/presentation/workspaces/screens/workspace_screen.dart';
 import 'package:optima_sync_v2/app_drawer.dart';
 

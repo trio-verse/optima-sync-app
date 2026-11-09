@@ -1,5 +1,5 @@
 import 'package:optima_sync_v2/app/domain/entities/member_entity.dart';
-import 'package:optima_sync_v2/app/domain/entities/task_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/task_mamagement/task_entity.dart';
 
 class WorkspaceEntity {
   final String id;
