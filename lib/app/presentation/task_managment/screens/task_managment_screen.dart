@@ -50,19 +50,19 @@ class _TaskManagerScreenState extends State<TaskManagerScreen> {
 
   final TaskEntity taskEntity = TaskEntity(
     id: "id",
-    title: "title",
+    title: "kkkkkkkk",
     description: "description",
     status: .completed,
     priority: .high,
-    assignedBy: "assignedBy",
+    assignedBy: "areej",
   );
   TaskEntity fakeTask = TaskEntity(
     id: '0',
-    title: 'title',
+    title: 'kkkkkkkk',
     description: 'description',
     status: TaskStatus.pending,
     priority: .high,
-    assignedBy: '0',
+    assignedBy: 'areej',
   );
   final List<TaskEntity> list = [];
   @override

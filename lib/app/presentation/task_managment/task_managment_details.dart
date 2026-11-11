@@ -9,10 +9,20 @@ class TaskManagerDetails extends StatefulWidget {
 }
 
 class _TaskManagerDetailsState extends State<TaskManagerDetails> {
-  final TextEditingController _titleController = TextEditingController();
+  late final TextEditingController _titleController;
 
-  final TextEditingController _descController = TextEditingController();
-  final List<String> listMember = ["osama", "areej", "yazan", "chazal"];
+  late final TextEditingController _descController;
+  final List<String> listMember = ["osama", "areej", "yazan", "Ghazal"];
+  String selectedMember = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.task?.title ?? "");
+    _descController = TextEditingController(text: widget.task?.description ?? "");
+    selectedMember = widget.task?.assignedBy ?? "";
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -97,18 +107,21 @@ class _TaskManagerDetailsState extends State<TaskManagerDetails> {
                   ),
 
                   // Icon(Icons.keyboard_arrow_down_outlined),
-                  // DropdownButton(items:[
-
-                  // ], onChanged: () {}),
-                  // InkWell(child: Icon(Icons.edit),),
+                  DropdownButton(
+                    items: listMember.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                    value: selectedMember,
+                    onChanged: (val) {
+                      setState(() {
+                        selectedMember = val ?? '';
+                      });
+                    },
+                  ),
                 ],
               ),
             ),
 
             // Extra spacing at the bottom so content isn't blocked by the FABs
             const SizedBox(height: 80),
-
-            DropdownButton(items: [], onChanged: (value) => listMember),
           ],
         ),
       ),

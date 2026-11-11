@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:optima_sync_v2/app/domain/entities/member_entity.dart';
+import 'package:optima_sync_v2/app/domain/entities/task_mamagement/workspace_entity.dart';
+import 'package:optima_sync_v2/app/presentation/workspaces/screens/workspace_screen.dart';
+import 'package:optima_sync_v2/app/presentation/workspaces/widgets/member_card.dart';
 
 class WorkspaceDetailsScreen extends StatefulWidget {
   const WorkspaceDetailsScreen({super.key});
+  // final WorkspaceEntity workspaceEntity;
 
   @override
   State<WorkspaceDetailsScreen> createState() => _WorkspaceDetailsScreenState();
 }
 
 class _WorkspaceDetailsScreenState extends State<WorkspaceDetailsScreen> {
+  final entity = MemberEntity(id: "1", userId: "userId", role: "role", name: "areej", email: "areej@gmail.com");
+  final entity1 = MemberEntity(id: "2", userId: "userId", role: "role", name: "areej", email: "areej@gmail.com");
+  final entity2 = MemberEntity(id: "3", userId: "userId", role: "role", name: "areej", email: "areej@gmail.com");
+
   DateTime _selectedDeadline = DateTime.now();
   final TextEditingController _titleController = TextEditingController(text: 'Project Alpha');
   final TextEditingController _descController = TextEditingController(
@@ -52,6 +61,7 @@ class _WorkspaceDetailsScreenState extends State<WorkspaceDetailsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final formattedDate = '${_selectedDeadline.year}/${_selectedDeadline.month}/${_selectedDeadline.day}';
+    final List<MemberEntity> memberList = [entity, entity2, entity1, entity, entity2, entity1];
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -77,7 +87,14 @@ class _WorkspaceDetailsScreenState extends State<WorkspaceDetailsScreen> {
         children: [
           FloatingActionButton.small(
             onPressed: () {
-              // TODO: Add member action
+              showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                  child: SingleChildScrollView(
+                    child: Column(children: [...memberList.map((e) => MemberCard(entity: e, isExist: false))]),
+                  ),
+                ),
+              );
             },
             backgroundColor: theme.primaryColor,
             foregroundColor: Colors.white,
@@ -97,7 +114,6 @@ class _WorkspaceDetailsScreenState extends State<WorkspaceDetailsScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: .start,
-          spacing: 20,
           children: [
             // --- General Info Section ---
             Container(
@@ -155,59 +171,63 @@ class _WorkspaceDetailsScreenState extends State<WorkspaceDetailsScreen> {
             ),
 
             // --- Members Section Header ---
-            Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                const Text('Workspace Members', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('9 Members', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
-              ],
-            ),
-
-            // --- Members List ---
-            ...List.generate(
-              3,
-              (index) => Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: .circular(15),
-                  boxShadow: [BoxShadow(offset: const Offset(0, 2), color: Colors.grey.shade100, blurRadius: 4)],
-                  border: .all(width: 1, color: Colors.grey.shade200),
-                ),
-                child: Row(
-                  spacing: 12,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(color: Colors.blue.withAlpha(40), shape: .circle),
-                      padding: const EdgeInsets.all(10),
-                      child: const Icon(Icons.person, color: Colors.blue),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: .start,
-                        spacing: 2,
-                        children: const [
-                          Text('Sarah Jenkins', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                          Text('sarah.jenkins@example.com', style: TextStyle(color: Colors.grey, fontSize: 13)),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: .circular(20)),
-                      child: const Text(
-                        'Admin',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
-                      ),
-                    ),
-                  ],
-                ),
+            Padding(
+              padding: const .symmetric(horizontal: 8, vertical: 16),
+              child: Row(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  const Text('Workspace Members', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text('9 Members', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                ],
               ),
             ),
 
-            // Extra spacing at the bottom so content isn't blocked by the FABs
-            const SizedBox(height: 80),
+            // --- Members List ---
+            // ...List.generate(
+            //   3,
+            //   (index) => Container(
+            //     margin: const EdgeInsets.only(bottom: 12),
+            //     padding: const EdgeInsets.all(12),
+            //     decoration: BoxDecoration(
+            //       color: Colors.white,
+            //       borderRadius: .circular(15),
+            //       boxShadow: [BoxShadow(offset: const Offset(0, 2), color: Colors.grey.shade100, blurRadius: 4)],
+            //       border: .all(width: 1, color: Colors.grey.shade200),
+            //     ),
+            //     child: Row(
+            //       spacing: 12,
+            //       children: [
+            //         Container(
+            //           decoration: BoxDecoration(color: Colors.blue.withAlpha(40), shape: .circle),
+            //           padding: const EdgeInsets.all(10),
+            //           child: const Icon(Icons.person, color: Colors.blue),
+            //         ),
+            //         Expanded(
+            //           child: Column(
+            //             crossAxisAlignment: .start,
+            //             spacing: 2,
+            //             children: const [
+            //               Text('Sarah Jenkins', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            //               Text('sarah.jenkins@example.com', style: TextStyle(color: Colors.grey, fontSize: 13)),
+            //             ],
+            //           ),
+            //         ),
+            //         Container(
+            //           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            //           decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: .circular(20)),
+            //           child: const Text(
+            //             'Admin',
+            //             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black54),
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            ...memberList.map(
+              (e) => MemberCard(entity: e, isExist: true),
+            ), // Extra spacing at the bottom so content isn't blocked by the FABs
+            const SizedBox(height: 10),
           ],
         ),
       ),
