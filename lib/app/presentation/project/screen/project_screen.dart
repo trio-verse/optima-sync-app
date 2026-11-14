@@ -9,14 +9,9 @@ import 'package:optima_sync_v2/app/presentation/project/screen/project_details_s
 import 'package:optima_sync_v2/app/presentation/project/theme/project_colors.dart';
 import 'package:optima_sync_v2/app/presentation/project/widgets/project_form_dialog.dart';
 import 'package:optima_sync_v2/app/presentation/project/widgets/project_widgets.dart';
-import 'package:optima_sync_v2/core/widgets/app_drawer.dart';
+import 'package:optima_sync_v2/app_drawer.dart';
 
-const List<String> _kFilterStatuses = [
-  'new',
-  'under_review',
-  'in_progress',
-  'completed',
-];
+const List<String> _kFilterStatuses = ['new', 'under_review', 'in_progress', 'completed'];
 
 enum _ProjectSort {
   latest('Latest'),
@@ -81,9 +76,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
         result.sort((a, b) => _newestFirst(b, a));
         break;
       case _ProjectSort.name:
-        result.sort(
-          (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
-        );
+        result.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
         break;
     }
     return result;
@@ -99,18 +92,11 @@ class _ProjectScreenState extends State<ProjectScreen> {
     context.read<ProjectBloc>().add(CreateProjectSubmitted(result));
   }
 
-  Future<void> _openEdit(
-    ProjectEntity project,
-    List<ProjectClientOption> clients,
-  ) async {
+  Future<void> _openEdit(ProjectEntity project, List<ProjectClientOption> clients) async {
     final result = await showDialog<Object>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => ProjectFormDialog(
-        clients: clients,
-        project: project,
-        versionId: project.currentVersionId,
-      ),
+      builder: (_) => ProjectFormDialog(clients: clients, project: project, versionId: project.currentVersionId),
     );
     if (!mounted || result is! ProjectUpdateInput) return;
     context.read<ProjectBloc>().add(UpdateProjectSubmitted(project.id, result));
@@ -120,10 +106,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ProjectDetailsScreen(
-          projectId: project.id,
-          initialProject: project,
-        ),
+        builder: (_) => ProjectDetailsScreen(projectId: project.id, initialProject: project),
       ),
     );
     if (mounted) context.read<ProjectBloc>().add(const LoadProjects());
@@ -146,14 +129,10 @@ class _ProjectScreenState extends State<ProjectScreen> {
       backgroundColor: Colors.white,
       isScrollControlled: true,
       showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
       builder: (sheetContext) => SafeArea(
         child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(sheetContext).size.height * 0.8,
-          ),
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(sheetContext).size.height * 0.8),
           child: ListView(
             shrinkWrap: true,
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -162,11 +141,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
                 padding: EdgeInsets.only(bottom: 12),
                 child: Text(
                   'Filter by status',
-                  style: TextStyle(
-                    color: ProjectColors.title,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: TextStyle(color: ProjectColors.title, fontSize: 20, fontWeight: FontWeight.w800),
                 ),
               ),
               _FilterOption(
@@ -197,108 +172,80 @@ class _ProjectScreenState extends State<ProjectScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ProjectColors.background,
-      drawer: const AppDrawer(selectedItem: 'Projects'),
-      appBar: AppBar(
-        backgroundColor: ProjectColors.card,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: ProjectColors.title),
-        title: const Text(
-          'Projects',
-          style: TextStyle(
-            color: ProjectColors.title,
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ),
-      body: BlocConsumer<ProjectBloc, ProjectState>(
-        listener: (context, state) {
-          if (state is ProjectLoaded && state.message != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message!)));
-          }
-        },
-        builder: (context, state) {
-          if (state is ProjectInitial || state is ProjectLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: ProjectColors.primary),
-            );
-          }
-          if (state is ProjectFailure) {
-            return _ProjectError(
-              message: state.message,
-              onRetry: () =>
-                  context.read<ProjectBloc>().add(const LoadProjects()),
-            );
-          }
+    return BlocConsumer<ProjectBloc, ProjectState>(
+      listener: (context, state) {
+        if (state is ProjectLoaded && state.message != null) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message!)));
+        }
+      },
+      builder: (context, state) {
+        if (state is ProjectInitial || state is ProjectLoading) {
+          return const Center(child: CircularProgressIndicator(color: ProjectColors.primary));
+        }
+        if (state is ProjectFailure) {
+          return _ProjectError(
+            message: state.message,
+            onRetry: () => context.read<ProjectBloc>().add(const LoadProjects()),
+          );
+        }
 
-          final loaded = state as ProjectLoaded;
-          final projects = _filtered(loaded.projects);
-          return RefreshIndicator(
-            color: ProjectColors.primary,
-            onRefresh: () async {
-              context.read<ProjectBloc>().add(const LoadProjects());
-            },
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-              children: [
-                _ProjectStats(projects: loaded.projects),
-                const SizedBox(height: 16),
-                ProjectButton(
-                  label: 'Create Project',
-                  icon: Icons.add_circle_outline,
-                  height: 48,
-                  expand: true,
-                  onPressed: () => _openCreate(loaded.clients),
+        final loaded = state as ProjectLoaded;
+        final projects = _filtered(loaded.projects);
+        return RefreshIndicator(
+          color: ProjectColors.primary,
+          onRefresh: () async {
+            context.read<ProjectBloc>().add(const LoadProjects());
+          },
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+            children: [
+              _ProjectStats(projects: loaded.projects),
+              const SizedBox(height: 16),
+              ProjectButton(
+                label: 'Create Project',
+                icon: Icons.add_circle_outline,
+                height: 48,
+                expand: true,
+                onPressed: () => _openCreate(loaded.clients),
+              ),
+              const SizedBox(height: 16),
+              _SearchRow(
+                controller: _search,
+                filterActive: _status != null,
+                onFilter: () => _openFilterSheet(loaded.projects),
+              ),
+              if (loaded.isWorking)
+                const Padding(
+                  padding: EdgeInsets.only(top: 12),
+                  child: LinearProgressIndicator(
+                    minHeight: 3,
+                    color: ProjectColors.primary,
+                    backgroundColor: ProjectColors.primarySoft,
+                  ),
                 ),
-                const SizedBox(height: 16),
-                _SearchRow(
-                  controller: _search,
-                  filterActive: _status != null,
-                  onFilter: () => _openFilterSheet(loaded.projects),
-                ),
-                if (loaded.isWorking)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 12),
-                    child: LinearProgressIndicator(
-                      minHeight: 3,
-                      color: ProjectColors.primary,
-                      backgroundColor: ProjectColors.primarySoft,
+              const SizedBox(height: 22),
+              _PipelineHeader(count: projects.length, sort: _sort, onSort: (value) => setState(() => _sort = value)),
+              const SizedBox(height: 14),
+              if (projects.isEmpty)
+                _ProjectEmpty(hasProjects: loaded.projects.isNotEmpty)
+              else ...[
+                for (final project in projects)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    child: _ProjectCard(
+                      project: project,
+                      onOpen: () => _openDetails(project),
+                      onEdit: () => _openEdit(project, loaded.clients),
+                      onDelete: () => _confirmDelete(project),
                     ),
                   ),
-                const SizedBox(height: 22),
-                _PipelineHeader(
-                  count: projects.length,
-                  sort: _sort,
-                  onSort: (value) => setState(() => _sort = value),
-                ),
-                const SizedBox(height: 14),
-                if (projects.isEmpty)
-                  _ProjectEmpty(hasProjects: loaded.projects.isNotEmpty)
-                else ...[
-                  for (final project in projects)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
-                      child: _ProjectCard(
-                        project: project,
-                        onOpen: () => _openDetails(project),
-                        onEdit: () => _openEdit(project, loaded.clients),
-                        onDelete: () => _confirmDelete(project),
-                      ),
-                    ),
-                  const _CaughtUpCard(),
-                ],
+                const _CaughtUpCard(),
               ],
-            ),
-          );
-        },
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -311,9 +258,7 @@ class _ProjectStats extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = projects.length;
     final inProgress = projects.where((p) => p.status == 'in_progress').length;
-    final pending = projects
-        .where((p) => p.status == 'new' || p.status == 'under_review')
-        .length;
+    final pending = projects.where((p) => p.status == 'new' || p.status == 'under_review').length;
     final completed = projects.where((p) => p.status == 'completed').length;
     double share(int value) => total == 0 ? 0 : value / total;
     String percent(int value) => '${(share(value) * 100).round()}%';
@@ -357,11 +302,7 @@ class _SearchRow extends StatelessWidget {
   final bool filterActive;
   final VoidCallback onFilter;
 
-  const _SearchRow({
-    required this.controller,
-    required this.filterActive,
-    required this.onFilter,
-  });
+  const _SearchRow({required this.controller, required this.filterActive, required this.onFilter});
 
   @override
   Widget build(BuildContext context) {
@@ -369,43 +310,24 @@ class _SearchRow extends StatelessWidget {
       children: [
         Expanded(
           child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: ProjectColors.shadow,
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), boxShadow: ProjectColors.shadow),
             child: TextField(
               controller: controller,
-              style: const TextStyle(
-                color: ProjectColors.title,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(color: ProjectColors.title, fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: 'Search by project, client or ref...',
-                hintStyle: const TextStyle(
-                  color: ProjectColors.muted,
-                  fontWeight: FontWeight.w500,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: ProjectColors.muted,
-                ),
+                hintStyle: const TextStyle(color: ProjectColors.muted, fontWeight: FontWeight.w500),
+                prefixIcon: const Icon(Icons.search, color: ProjectColors.muted),
                 suffixIcon: controller.text.isEmpty
                     ? null
                     : IconButton(
                         onPressed: controller.clear,
-                        icon: const Icon(
-                          Icons.close,
-                          size: 18,
-                          color: ProjectColors.muted,
-                        ),
+                        icon: const Icon(Icons.close, size: 18, color: ProjectColors.muted),
                       ),
                 filled: true,
                 fillColor: Colors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
               ),
             ),
           ),
@@ -449,12 +371,7 @@ class _FilterOption extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _FilterOption({
-    required this.label,
-    required this.count,
-    required this.selected,
-    required this.onTap,
-  });
+  const _FilterOption({required this.label, required this.count, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -474,9 +391,7 @@ class _FilterOption extends StatelessWidget {
                   child: Text(
                     label,
                     style: TextStyle(
-                      color: selected
-                          ? ProjectColors.primary
-                          : ProjectColors.title,
+                      color: selected ? ProjectColors.primary : ProjectColors.title,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -484,18 +399,11 @@ class _FilterOption extends StatelessWidget {
                 ),
                 Text(
                   '$count',
-                  style: const TextStyle(
-                    color: ProjectColors.muted,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: const TextStyle(color: ProjectColors.muted, fontWeight: FontWeight.w700),
                 ),
                 if (selected) ...[
                   const SizedBox(width: 10),
-                  const Icon(
-                    Icons.check_circle,
-                    size: 20,
-                    color: ProjectColors.primary,
-                  ),
+                  const Icon(Icons.check_circle, size: 20, color: ProjectColors.primary),
                 ],
               ],
             ),
@@ -511,11 +419,7 @@ class _PipelineHeader extends StatelessWidget {
   final _ProjectSort sort;
   final ValueChanged<_ProjectSort> onSort;
 
-  const _PipelineHeader({
-    required this.count,
-    required this.sort,
-    required this.onSort,
-  });
+  const _PipelineHeader({required this.count, required this.sort, required this.onSort});
 
   @override
   Widget build(BuildContext context) {
@@ -528,11 +432,7 @@ class _PipelineHeader extends StatelessWidget {
           children: [
             const Text(
               'Active Pipeline',
-              style: TextStyle(
-                color: ProjectColors.title,
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-              ),
+              style: TextStyle(color: ProjectColors.title, fontSize: 20, fontWeight: FontWeight.w800),
             ),
             ProjectPill(label: '$count Available', fontSize: 12),
           ],
@@ -543,17 +443,12 @@ class _PipelineHeader extends StatelessWidget {
             initialValue: sort,
             onSelected: onSort,
             color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             itemBuilder: (_) => _ProjectSort.values
                 .map(
                   (value) => PopupMenuItem(
                     value: value,
-                    child: Text(
-                      value.label,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
+                    child: Text(value.label, style: const TextStyle(fontWeight: FontWeight.w600)),
                   ),
                 )
                 .toList(),
@@ -562,23 +457,12 @@ class _PipelineHeader extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Sort: ',
-                    style: TextStyle(color: ProjectColors.muted, fontSize: 13),
-                  ),
+                  const Text('Sort: ', style: TextStyle(color: ProjectColors.muted, fontSize: 13)),
                   Text(
                     sort.label,
-                    style: const TextStyle(
-                      color: ProjectColors.body,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: const TextStyle(color: ProjectColors.body, fontSize: 13, fontWeight: FontWeight.w700),
                   ),
-                  const Icon(
-                    Icons.arrow_drop_down,
-                    size: 20,
-                    color: ProjectColors.body,
-                  ),
+                  const Icon(Icons.arrow_drop_down, size: 20, color: ProjectColors.body),
                 ],
               ),
             ),
@@ -595,18 +479,11 @@ class _ProjectCard extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const _ProjectCard({
-    required this.project,
-    required this.onOpen,
-    required this.onEdit,
-    required this.onDelete,
-  });
+  const _ProjectCard({required this.project, required this.onOpen, required this.onEdit, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
-    final reference = project.referenceNumber.isEmpty
-        ? 'Project #${project.id}'
-        : project.referenceNumber;
+    final reference = project.referenceNumber.isEmpty ? 'Project #${project.id}' : project.referenceNumber;
     final description = project.description?.trim() ?? '';
     final subtitle = description.isNotEmpty ? description : reference;
     final endDate = project.endDate;
@@ -622,11 +499,7 @@ class _ProjectCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const ProjectIconTile(
-                icon: Icons.apartment_outlined,
-                size: 48,
-                radius: 15,
-              ),
+              const ProjectIconTile(icon: Icons.apartment_outlined, size: 48, radius: 15),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -655,10 +528,7 @@ class _ProjectCard extends StatelessWidget {
                       subtitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: ProjectColors.muted,
-                        fontSize: 14,
-                      ),
+                      style: const TextStyle(color: ProjectColors.muted, fontSize: 14),
                     ),
                   ],
                 ),
@@ -670,9 +540,7 @@ class _ProjectCard extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   icon: const Icon(Icons.more_vert, color: ProjectColors.body),
                   color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   onSelected: (value) {
                     switch (value) {
                       case 'open':
@@ -697,10 +565,7 @@ class _ProjectCard extends StatelessWidget {
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: ProjectColors.tint,
-              borderRadius: BorderRadius.circular(18),
-            ),
+            decoration: BoxDecoration(color: ProjectColors.tint, borderRadius: BorderRadius.circular(18)),
             child: Column(
               children: [
                 Row(
@@ -731,9 +596,7 @@ class _ProjectCard extends StatelessWidget {
                       child: _InfoCell(
                         icon: Icons.event_busy_outlined,
                         label: 'Deadline',
-                        value: endDate == null
-                            ? 'No deadline'
-                            : projectDateIso(endDate),
+                        value: endDate == null ? 'No deadline' : projectDateIso(endDate),
                         muted: endDate == null,
                       ),
                     ),
@@ -742,9 +605,7 @@ class _ProjectCard extends StatelessWidget {
                       child: _InfoCell(
                         icon: Icons.calendar_today_outlined,
                         label: 'Created',
-                        value: createdAt == null
-                            ? '—'
-                            : projectDateIso(createdAt),
+                        value: createdAt == null ? '—' : projectDateIso(createdAt),
                       ),
                     ),
                   ],
@@ -762,11 +623,7 @@ class _ProjectCard extends StatelessWidget {
                   reference,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: ProjectColors.body,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: const TextStyle(color: ProjectColors.body, fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),
               if (industry.isNotEmpty) ...[
@@ -776,11 +633,7 @@ class _ProjectCard extends StatelessWidget {
                     industry,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: ProjectColors.teal,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: const TextStyle(color: ProjectColors.teal, fontSize: 13, fontWeight: FontWeight.w700),
                   ),
                 ),
               ],
@@ -806,12 +659,7 @@ class _InfoCell extends StatelessWidget {
   final String value;
   final bool muted;
 
-  const _InfoCell({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.muted = false,
-  });
+  const _InfoCell({required this.icon, required this.label, required this.value, this.muted = false});
 
   @override
   Widget build(BuildContext context) {
@@ -827,11 +675,7 @@ class _InfoCell extends StatelessWidget {
                 label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: ProjectColors.muted,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: const TextStyle(color: ProjectColors.muted, fontSize: 13, fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -862,35 +706,20 @@ class _CaughtUpCard extends StatelessWidget {
       width: double.infinity,
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-      decoration: BoxDecoration(
-        color: ProjectColors.tint,
-        borderRadius: BorderRadius.circular(24),
-      ),
+      decoration: BoxDecoration(color: ProjectColors.tint, borderRadius: BorderRadius.circular(24)),
       child: const Column(
         children: [
-          ProjectIconTile(
-            icon: Icons.rocket_launch_outlined,
-            size: 60,
-            radius: 30,
-          ),
+          ProjectIconTile(icon: Icons.rocket_launch_outlined, size: 60, radius: 30),
           SizedBox(height: 14),
           Text(
             "You're all caught up!",
-            style: TextStyle(
-              color: ProjectColors.title,
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-            ),
+            style: TextStyle(color: ProjectColors.title, fontSize: 20, fontWeight: FontWeight.w800),
           ),
           SizedBox(height: 6),
           Text(
             'Need to start another project? Tap Create Project above.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: ProjectColors.body,
-              fontSize: 14,
-              height: 1.4,
-            ),
+            style: TextStyle(color: ProjectColors.body, fontSize: 14, height: 1.4),
           ),
         ],
       ),
@@ -905,9 +734,7 @@ class _ProjectEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ProjectEmptyState(
     icon: Icons.folder_off_outlined,
-    message: hasProjects
-        ? 'No projects match this view.'
-        : 'No projects yet. Tap Create Project to get started.',
+    message: hasProjects ? 'No projects match this view.' : 'No projects yet. Tap Create Project to get started.',
   );
 }
 

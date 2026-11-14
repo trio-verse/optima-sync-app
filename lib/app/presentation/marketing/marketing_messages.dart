@@ -29,7 +29,6 @@ extension ContentErrorText on ContentError {
   String text(BuildContext context) => when(
     offline: () => 'No internet connection',
     sessionExpired: () => 'Your session has expired, please log in again',
-    noOrganization: () => 'Please select an organization first',
     invalidData: () => 'The submitted data is invalid, please check it and try again',
     notFound: () => 'This item no longer exists',
     serverError: () => 'Something went wrong, please try again',
@@ -40,7 +39,6 @@ extension AnalyticsErrorText on AnalyticsError {
   String text(BuildContext context) => when(
     offline: () => 'No internet connection',
     sessionExpired: () => 'Your session has expired, please log in again',
-    noOrganization: () => 'Please select an organization first',
     invalidData: () => 'The submitted data is invalid, please check it and try again',
     notFound: () => 'This item no longer exists',
     serverError: () => 'Something went wrong, please try again',

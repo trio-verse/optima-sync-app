@@ -10,22 +10,22 @@ import 'package:optima_sync_v2/app/presentation/connection/pages/connection_list
 import 'package:optima_sync_v2/core/errors/connection/connection_errors.dart';
 
 class ConnectionScreen extends StatefulWidget {
-  final ClientEntity client;
+  // final ClientEntity client;
 
-  const ConnectionScreen({super.key, required this.client});
+  const ConnectionScreen({super.key});
 
   @override
   State<ConnectionScreen> createState() => _ConnectionScreenState();
 }
 
 class _ConnectionScreenState extends State<ConnectionScreen> {
-  String get _clientId => widget.client.id!;
+  // String get _clientId => widget.client.id!;
 
   @override
   void initState() {
     super.initState();
 
-    context.read<ConnectionBloc>().add(LoadConnections(clientId: _clientId));
+    context.read<ConnectionBloc>().add(LoadConnections(clientId: "_clientId"));
   }
 
   void _openAddConnectionForm() {
@@ -34,13 +34,11 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (_) {
         return BlocProvider.value(
           value: bloc,
-          child: AddConnectionForm(clientId: _clientId),
+          child: AddConnectionForm(clientId: "_clientId"),
         );
       },
     );
@@ -49,7 +47,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.client.name} · Connections')),
+      appBar: AppBar(title: Text('widget.client.name} · Connections')),
 
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddConnectionForm,
@@ -59,22 +57,17 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
 
       body: BlocConsumer<ConnectionBloc, ConnectionState>(
         buildWhen: (previous, current) => current.maybeWhen(
-          failure: (_) =>
-              previous.maybeWhen(loading: () => true, orElse: () => false),
+          failure: (_) => previous.maybeWhen(loading: () => true, orElse: () => false),
           orElse: () => true,
         ),
         listener: (context, state) {
           state.whenOrNull(
             success: (_, successType) {
               if (successType == null) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(successType.text(context))),
-              );
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(successType.text(context))));
             },
             failure: (error) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(error.text(context))));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.text(context))));
             },
           );
         },
@@ -100,9 +93,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                context.read<ConnectionBloc>().add(
-                  LoadConnections(clientId: _clientId),
-                );
+                context.read<ConnectionBloc>().add(LoadConnections(clientId: "_clientId"));
               },
               child: const Text("Retry"),
             ),
@@ -140,10 +131,7 @@ class _ConnectionScreenState extends State<ConnectionScreen> {
       itemCount: connections.length,
       separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (context, index) {
-        return ConnectionListItem(
-          clientId: _clientId,
-          connection: connections[index],
-        );
+        return ConnectionListItem(clientId: "_clientId", connection: connections[index]);
       },
     );
   }
